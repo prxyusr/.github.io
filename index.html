@@ -127,29 +127,30 @@
             animation: fadeIn 2s ease-in-out;
         }
 
-        /* Login Input Styles */
-        .login-box {
-            background: rgba(255, 255, 255, 0.01);
+        /* Project Button Styles */
+        .login-btn {
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid #ffffff;
             color: #ffffff;
-            padding: 10px 20px;
+            padding: 12px 30px;
             font-size: 1rem;
             border-radius: 6px;
             outline: none;
             text-align: center;
-            transition: border-color 0.3s, background 0.3s;
+            transition: border-color 0.3s, background 0.3s, transform 0.2s;
             width: 180px;
             letter-spacing: 1px;
-            user-select: text;
+            cursor: pointer;
+            margin-top: 50px;
         }
 
-        .login-box:focus {
-            background: rgba(255, 255, 255, 0.04);
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
-        .login-box::placeholder {
-            color: #ffffff;
-            opacity: 1;
+        .login-btn:active {
+            transform: translateY(0);
         }
 
         /* Showcase Screen Overlay */
@@ -186,7 +187,7 @@
             opacity: 0.9;
         }
 
-        /* Single-column flex layout to cleanly stack and center items */
+        /* Grid holding the rows vertically */
         .showcase-grid {
             position: absolute;
             left: 50%;
@@ -196,18 +197,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            width: 450px;
+            width: 800px;
         }
 
-        /* Reconfigured rows to single element profiles centering correctly */
+        /* Row container splitting into two symmetrical columns */
         .showcase-row {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 380px 380px;
+            gap: 40px;
             width: 100%;
         }
 
-        /* Styled wide text boxes - made clickable */
+        /* Styled wide text boxes - completely uniform */
         .showcase-item {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -221,7 +222,6 @@
             justify-content: center;
             align-items: center;
             height: 100%;
-            width: 100%;
             cursor: pointer;
         }
 
@@ -269,7 +269,7 @@
             color: #0b0c10;
         }
 
-        /* Large Detail Panel Overlay (Modal structure) */
+        /* Large Detail Panel Overlay */
         .detail-panel-overlay {
             position: fixed;
             top: 0;
@@ -324,30 +324,38 @@
             color: #ffffff;
         }
 
-        .detail-panel p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
+.detail-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            width: 600px;
+            max-width: 90%;
+            padding: 40px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            box-sizing: border-box; /* Ensures padding doesn't affect width calculations */
         }
 
-        /* Perfectly Center the Badge Row */
-        .detail-features {
+.detail-features {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            gap: 15px;
-            margin: 15px 0 25px 0;
+            justify-content: center; /* Centers the whole group */
+            align-items: center;     
+            width: 100%;             
+            gap: 15px;               /* Puts an exact, identical gap between them */
+            margin: 20px auto;
             padding: 0;
-            flex-wrap: wrap;
+            box-sizing: border-box;
         }
 
         .feature-badge {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 16px;
+            padding: 8px 0;          /* Vertical padding only */
             border-radius: 20px;
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.7);
@@ -355,7 +363,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            min-width: 140px;
+            width: 140px;            /* Forces every sub-box to be the exact same size */
+            flex-shrink: 0;
         }
 
         .close-panel {
@@ -457,7 +466,6 @@
             color: #ffffff;
         }
 
-        /* Hidden YouTube Container */
         #youtube-audio-player {
             position: absolute;
             width: 1px;
@@ -487,34 +495,49 @@
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <input type="text" class="login-box" id="loginInput" placeholder="Login" autocomplete="off">
+        <button class="login-btn" id="loginBtn">𝐏𝐫𝐨𝐣𝐞𝐜𝐭𝐬</button>
     </div>
 
     <div id="showcase-overlay">
-        <h2 class="showcase-title">𝐊𝐢𝐥𝐞𝐲,  𝐌𝐲 𝐋𝐨𝐯𝐞</h2>
+        <h2 class="showcase-title">𝐒𝐡𝐨𝐰𝐜𝐚𝐬𝐞 𝐑𝐨𝐨𝐦</h2>
         <div class="showcase-grid">
             
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="security">
-                    <i data-lucide="heart"></i>
-                    <h3>𝐌𝐲 𝐋𝐨𝐯𝐞</h3>
-                    <p>𝐈 𝐭𝐫𝐮𝐥𝐲 𝐝𝐨 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮...</p>
+                    <i data-lucide="layers"></i>
+                    <h3>Full Stack Applications</h3>
+                    <p>Interactive web systems...</p>
+                </div>
+                <div class="showcase-item" data-panel="anonymity">
+                    <i data-lucide="shield-check"></i>
+                    <h3>Cybersecurity</h3>
+                    <p>Implementing rigorous defense...</p>
                 </div>
             </div>
 
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="speed">
-                    <i data-lucide="zap"></i>
-                    <h3>𝐓𝐡𝐨𝐮𝐠𝐡𝐭𝐬</h3>
-                    <p>𝐈 𝐬𝐞𝐧𝐭 𝐲𝐨𝐮 𝐭𝐡𝐢𝐬...</p>
+                    <i data-lucide="cpu"></i>
+                    <h3>Backend & APIs</h3>
+                    <p>Designing secure, fast...</p>
+                </div>
+                <div class="showcase-item" data-panel="latency">
+                    <i data-lucide="database"></i>
+                    <h3>Database Design</h3>
+                    <p>Designing high-performance...</p>
                 </div>
             </div>
 
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="global">
-                    <i data-lucide="globe"></i>
-                    <h3>Promise</h3>
-                    <p>I've said it once...</p>
+                    <i data-lucide="cloud"></i>
+                    <h3>Cloud & DevOps</h3>
+                    <p>Provisioning resilient...</p>
+                </div>
+                <div class="showcase-item" data-panel="routing">
+                    <i data-lucide="network"></i>
+                    <h3>System Design</h3>
+                    <p>Structuring modular, robust...</p>
                 </div>
             </div>
 
@@ -524,32 +547,74 @@
 
     <div class="detail-panel-overlay" id="panelOverlay">
         
-        <div class="detail-panel" id="panel-security" style="display: none;">
-            <i data-lucide="heart"></i>
-            <h2>𝐌𝐲 𝐋𝐨𝐯𝐞</h2>
-            <p>𝐈 𝐭𝐫𝐮𝐥𝐲 𝐝𝐨 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮,  𝐘𝐨𝐮'𝐫𝐞 𝐞𝐱𝐭𝐫𝐞𝐦𝐞𝐥𝐲 𝐢𝐧𝐭𝐞𝐥𝐥𝐢𝐠𝐞𝐧𝐭,  𝐜𝐚𝐫𝐢𝐧𝐠 𝐚𝐧𝐝 𝐛𝐫𝐞𝐚𝐭𝐡𝐭𝐚𝐤𝐢𝐧𝐠.  𝐈'𝐦 𝐬𝐨 𝐠𝐫𝐚𝐭𝐞𝐟𝐮𝐥 𝐭𝐨 𝐡𝐚𝐯𝐞 𝐲𝐨𝐮 𝐢𝐧 𝐦𝐲 𝐥𝐢𝐟𝐞.</p>
+<div class="detail-panel" id="panel-security" style="display: none;">
+    <i data-lucide="layers"></i>
+    <h2>Full-Stack Applications</h2>
+    <p>Interactive web systems engineered for scalability. Includes custom user authentication, RESTful/GraphQL API endpoints, responsive front-end interfaces, and optimized relational database schemas for real-time data persistence.</p>
+    <div class="detail-features">
+        <span class="feature-badge">React / Next.js</span>
+        <span class="feature-badge">Node.js / Express</span>
+        <span class="feature-badge">PostgreSQL</span>
+    </div>
+    <button class="close-panel">Close Details</button>
+</div>
+
+        <div class="detail-panel" id="panel-anonymity" style="display: none;">
+            <i data-lucide="shield-check"></i>
+            <h2>Secure Development & Security</h2>
+            <p>Implementing rigorous defense-in-depth security measures. Specializing in secure user authentication, protection against common web vulnerabilities (like SQL Injection and XSS), and configuring end-to-end data encryption.</p>
             <div class="detail-features">
-                <span class="feature-badge">𝐈 𝐋𝐨𝐯𝐞 𝐘𝐨𝐮</span>
+                <span class="feature-badge">OWASP Top 10</span>
+                <span class="feature-badge">JWT / OAuth2</span>
+                <span class="feature-badge">Bcrypt Hashing</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
 
         <div class="detail-panel" id="panel-speed" style="display: none;">
-            <i data-lucide="zap"></i>
-            <h2>𝐓𝐡𝐨𝐮𝐠𝐡𝐭𝐬</h2>
-            <p>𝐈 𝐬𝐞𝐧𝐭 𝐲𝐨𝐮 𝐭𝐡𝐢𝐬 𝐢𝐧 𝐡𝐨𝐩𝐞𝐬 𝐲𝐨𝐮 𝐰𝐞'𝐫𝐞 𝐬𝐦𝐚𝐫𝐭 𝐞𝐧𝐨𝐮𝐠𝐡 𝐭𝐨 𝐟𝐢𝐠𝐮𝐫𝐞 𝐨𝐮𝐭 𝐭𝐡𝐞 𝐩𝐚𝐬𝐬𝐰𝐨𝐫𝐝,  𝐓𝐡𝐚𝐭 𝐛𝐞𝐢𝐧𝐠 𝐨𝐮𝐫 𝐚𝐧𝐧𝐢𝐯𝐞𝐫𝐬𝐚𝐫𝐲 𝐝𝐚𝐭𝐞.  𝐎𝐛𝐯𝐢𝐨𝐮𝐬𝐥𝐲 𝐢𝐟 𝐲𝐨𝐮'𝐫𝐞 𝐫𝐞𝐚𝐝𝐢𝐧𝐠 𝐭𝐡𝐢𝐬 𝐧𝐨𝐰 𝐲𝐨𝐮 𝐟𝐢𝐠𝐮𝐫𝐞𝐝 𝐢𝐭 𝐨𝐮𝐭 𝐬𝐡𝐨𝐰𝐢𝐧𝐠 𝐣𝐮𝐬𝐭 𝐡𝐨𝐰 𝐬𝐦𝐚𝐫𝐭 𝐲𝐨𝐮 𝐚𝐫𝐞 𝐥𝐨𝐥.</p>
+            <i data-lucide="cpu"></i>
+            <h2>Backend & APIs</h2>
+            <p>Designing secure, fast, and highly concurrent server architectures. Focused on constructing optimized REST/gRPC endpoints, implementing robust caching strategies to reduce database load, and managing system memory efficiently.</p>
             <div class="detail-features">
-                <span class="feature-badge">🤍</span>
+                <span class="feature-badge">Go / Python</span>
+                <span class="feature-badge">Redis Caching</span>
+                <span class="feature-badge">Docker / Unix</span>
+            </div>
+            <button class="close-panel">Close Details</button>
+        </div>
+
+        <div class="detail-panel" id="panel-latency" style="display: none;">
+            <i data-lucide="database"></i>
+            <h2>Database & Storage Engineering</h2>
+            <p>Designing high-performance relational and non-relational database structures. Focused on reducing data-retrieval latency through strategic indexing, schema normalization, connection pooling, and efficient query profiling.</p>
+            <div class="detail-features">
+                <span class="feature-badge">SQL Indexing</span>
+                <span class="feature-badge">MongoDB / NoSQL</span>
+                <span class="feature-badge">Prisma / ORM</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
 
         <div class="detail-panel" id="panel-global" style="display: none;">
-            <i data-lucide="globe"></i>
-            <h2>Promise</h2>
-            <p>𝐈'𝐯𝐞 𝐬𝐚𝐢𝐝 𝐢𝐭 𝐨𝐧𝐜𝐞 𝐚𝐧𝐝 𝐈'𝐥𝐥 𝐬𝐚𝐲 𝐢𝐭 𝐚𝐠𝐚𝐢𝐧,  𝐈 𝐩𝐫𝐨𝐦𝐢𝐬𝐞 𝐭𝐨𝐨 𝐧𝐞𝐯𝐞𝐫 𝐟𝐨𝐫𝐜𝐞 𝐲𝐨𝐮 𝐢𝐧𝐭𝐨 𝐚𝐧𝐲𝐭𝐡𝐢𝐧𝐠,  𝐈'𝐥𝐥 𝐚𝐥𝐰𝐚𝐲𝐬 𝐭𝐚𝐤𝐞 𝐜𝐚𝐫𝐞 𝐨𝐟 𝐲𝐨𝐮 𝐭𝐨𝐨 𝐭𝐡𝐞 𝐛𝐞𝐬𝐭 𝐨𝐟 𝐦𝐲 𝐚𝐛𝐢𝐥𝐢𝐭𝐢𝐞𝐬 𝐚𝐧𝐝 𝐈 𝐭𝐫𝐮𝐥𝐲 𝐡𝐨𝐩𝐞 𝐭𝐨𝐨 𝐦𝐚𝐤𝐞 𝐲𝐨𝐮 𝐡𝐚𝐩𝐩𝐲 𝐚𝐬 𝐲𝐨𝐮 𝐝𝐨 𝐦𝐞.  𝐈 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮 𝐬𝐨 𝐦𝐮𝐜𝐡.</p>
+            <i data-lucide="cloud"></i>
+            <h2>Cloud Infrastructure & DevOps</h2>
+            <p>Provisioning resilient, globally distributed network infrastructures. Specializing in automated continuous integration/continuous deployment (CI/CD) pipelines, serverless edge hosting, and dynamic traffic routing to guarantee high availability.</p>
             <div class="detail-features">
-                <span class="feature-badge">🤍</span>
+                <span class="feature-badge">AWS / GCP</span>
+                <span class="feature-badge">GitHub Actions</span>
+                <span class="feature-badge">Vercel Edge</span>
+            </div>
+            <button class="close-panel">Close Details</button>
+        </div>
+
+        <div class="detail-panel" id="panel-routing" style="display: none;">
+            <i data-lucide="network"></i>
+            <h2>System Architecture & Design</h2>
+            <p>Structuring modular, robust codebases using industry-standard design patterns. Experienced in decoupling system services, implementing pub/sub event-driven communication pipelines, and writing highly maintainable, object-oriented, or functional code.</p>
+            <div class="detail-features">
+                <span class="feature-badge">Microservices</span>
+                <span class="feature-badge">Event-Driven</span>
+                <span class="feature-badge">MVC Pattern</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
@@ -568,7 +633,10 @@
             <div class="menu-item">
                 <span>Discord: @d3adawak3</span>
             </div>
-            <div class="menu-item">
+            <a href="https://github.com/prxyusr" target="_blank" class="menu-item">
+                <span>GitHub:   @prxyusr</span>
+            </a>
+            <div class="menu-item" style="opacity: 1;">
                 <span>Email: treybrowntoday@gmail.com</span>
             </div>
         </div>
@@ -579,7 +647,6 @@
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
         // Menu Toggle Logic
@@ -592,26 +659,20 @@
             menuItems.classList.toggle('show');
         });
 
-        // Login Logic & Screen Changes
-        const loginInput = document.getElementById('loginInput');
+        // Button Logic & Screen Changes
+        const loginBtn = document.getElementById('loginBtn');
         const showcaseOverlay = document.getElementById('showcase-overlay');
         const closeShowcase = document.getElementById('closeShowcase');
 
-        // Typing logic to trigger showcase
-        loginInput.addEventListener('input', () => {
-            if (loginInput.value === '052226') {
-                showcaseOverlay.classList.add('show');
-                loginInput.blur(); 
-            }
+        loginBtn.addEventListener('click', () => {
+            showcaseOverlay.classList.add('show');
         });
 
-        // Reset system upon hitting back button
         closeShowcase.addEventListener('click', () => {
             showcaseOverlay.classList.remove('show');
-            loginInput.value = ''; 
         });
 
-        // Interactive Detail Panel Logic (Modals)
+        // Interactive Detail Panel Logic
         const showcaseItems = document.querySelectorAll('.showcase-item');
         const panelOverlay = document.getElementById('panelOverlay');
         const detailPanels = document.querySelectorAll('.detail-panel');
@@ -621,10 +682,8 @@
             item.addEventListener('click', () => {
                 const targetPanelId = 'panel-' + item.getAttribute('data-panel');
                 
-                // Hide all panels first
                 detailPanels.forEach(p => p.style.display = 'none');
                 
-                // Show the specific panel
                 const targetPanel = document.getElementById(targetPanelId);
                 if (targetPanel) {
                     targetPanel.style.display = 'flex';
@@ -633,7 +692,6 @@
             });
         });
 
-        // Close functions for detail panel
         function hideDetailPanel() {
             panelOverlay.classList.remove('show');
         }
@@ -645,7 +703,6 @@
             });
         });
 
-        // Close on clicking the backdrop overlay
         panelOverlay.addEventListener('click', (e) => {
             if (e.target === panelOverlay) {
                 hideDetailPanel();
@@ -681,7 +738,6 @@
                 player.setVolume(7);
             }
 
-            // Handle the overlay click
             const overlay = document.getElementById('click-overlay');
             const mainContainer = document.getElementById('mainContainer');
             const discordInvite = document.getElementById('discordInvite');
@@ -702,7 +758,7 @@
             }, { once: true });
         }
 
-        // Snowfall Animation Logic
+        // Snowfall Animation
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
 
