@@ -1,478 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProxyUser</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
+<script src="https://unpkg.com/lucide@latest"></script>
+    
 
-        body {
-            background-color: #0b0c10;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        /* Top Header Area for View Counter */
-        .top-bar {
-            position: absolute;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 12;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.45);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            letter-spacing: 0.5px;
-        }
-
-        .top-bar i {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2.2px;
-        }
-
-        /* Click to Enter Overlay */
-        #click-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-            cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        #click-overlay.fade-out {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .click-text {
-            font-size: 2rem;
-            color: #ffffff;
-            font-family: inherit;
-            animation: pulse 1.8s infinite ease-in-out;
-            letter-spacing: 2px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.08); opacity: 1; }
-        }
-
-        /* Snowfall Canvas */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        /* Hidden Main Elements */
-        .main-container, .discord-invite, .expandable-menu, .top-bar {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-        }
-
-        /* Active Fade In Class */
-        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* Main Content Positioning */
-        .main-container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            opacity: 0.9;
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        /* Login Input Styles */
-        .login-box {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid #ffffff;
-            color: #ffffff;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 6px;
-            outline: none;
-            text-align: center;
-            transition: border-color 0.3s, background 0.3s;
-            width: 180px;
-            letter-spacing: 1px;
-            user-select: text;
-        }
-
-        .login-box:focus {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .login-box::placeholder {
-            color: #ffffff;
-            opacity: 1;
-        }
-
-        /* Showcase Screen Overlay */
-        #showcase-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0b0c10;
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-            padding: 40px;
-        }
-
-        #showcase-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .showcase-title {
-            font-size: 2.5rem;
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            letter-spacing: 2px;
-            opacity: 0.9;
-        }
-
-        /* Single-column flex layout to cleanly stack and center items */
-        .showcase-grid {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 180px;
-            bottom: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            width: 450px;
-        }
-
-        /* Reconfigured rows to single element profiles centering correctly */
-        .showcase-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        /* Styled wide text boxes - made clickable */
-        .showcase-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s, border-color 0.3s, background 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .showcase-item:hover {
-            transform: translateY(-3px);
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .showcase-item i {
-            width: 28px;
-            height: 28px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-        }
-
-        .showcase-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-            color: #ffffff;
-        }
-
-        .showcase-item p {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .close-showcase {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .close-showcase:hover {
-            background: #ffffff;
-            color: #0b0c10;
-        }
-
-        /* Large Detail Panel Overlay (Modal structure) */
-        .detail-panel-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-
-        .detail-panel-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .detail-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            width: 600px;
-            max-width: 90%;
-            padding: 40px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .detail-panel-overlay.show .detail-panel {
-            transform: scale(1);
-        }
-
-        .detail-panel i {
-            width: 60px;
-            height: 60px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .detail-panel h2 {
-            font-size: 2rem;
-            letter-spacing: 1.5px;
-            color: #ffffff;
-        }
-
-        .detail-panel p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
-        }
-
-        /* Perfectly Center the Badge Row */
-        .detail-features {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            gap: 15px;
-            margin: 15px 0 25px 0;
-            padding: 0;
-            flex-wrap: wrap;
-        }
-
-        .feature-badge {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-width: 140px;
-        }
-
-        .close-panel {
-            background: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 10px 24px;
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .close-panel:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Bottom Center Discord Link */
-        .discord-invite {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 12;
-            color: rgba(255, 255, 255, 0.6);
-            transition: color 0.3s, transform 0.3s, opacity 0.8s ease;
-        }
-
-        .discord-invite:hover {
-            color: #5865F2;
-        }
-
-        /* Bottom Left Expandable Menu */
-        .expandable-menu {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            z-index: 13;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
-            padding: 5px;
-        }
-
-        .menu-toggle:hover {
-            color: #ffffff;
-        }
-
-        .menu-toggle.active {
-            transform: rotate(180deg);
-            color: #ffffff;
-        }
-
-        .menu-items {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            padding: 0 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0);
-        }
-
-        .menu-items.show {
-            max-height: 200px;
-            opacity: 1;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.2s;
-            text-align: left;
-            width: 100%;
-        }
-
-        .menu-item:hover {
-            color: #ffffff;
-        }
-
-        /* Hidden YouTube Container */
-        #youtube-audio-player {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 0.9; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
 
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
@@ -491,30 +20,39 @@
     </div>
 
     <div id="showcase-overlay">
-        <h2 class="showcase-title">𝐊𝐢𝐥𝐞𝐲,  𝐌𝐲 𝐋𝐨𝐯𝐞</h2>
+        <h2 class="showcase-title">𝐒𝐡𝐨𝐰𝐜𝐚𝐬𝐞 𝐑𝐨𝐨𝐦</h2>
         <div class="showcase-grid">
             
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="security">
-                    <i data-lucide="heart"></i>
-                    <h3>𝐌𝐲 𝐋𝐨𝐯𝐞</h3>
-                    <p>𝐈 𝐭𝐫𝐮𝐥𝐲 𝐝𝐨 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮...</p>
+                    <i data-lucide="shield"></i>
+                    <h3>Security</h3>
+                    <p>Fully verified proxies.</p>
+                </div>
+                <div class="showcase-image-slot">
+                    <span>[ Image Slot ]</span>
                 </div>
             </div>
 
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="speed">
                     <i data-lucide="zap"></i>
-                    <h3>𝐓𝐡𝐨𝐮𝐠𝐡𝐭𝐬</h3>
-                    <p>𝐈 𝐬𝐞𝐧𝐭 𝐲𝐨𝐮 𝐭𝐡𝐢𝐬...</p>
+                    <h3>Speed</h3>
+                    <p>Ultra-fast server nodes.</p>
+                </div>
+                <div class="showcase-image-slot">
+                    <span>[ Image Slot ]</span>
                 </div>
             </div>
 
             <div class="showcase-row">
                 <div class="showcase-item" data-panel="global">
                     <i data-lucide="globe"></i>
-                    <h3>Promise</h3>
-                    <p>I've said it once...</p>
+                    <h3>Global</h3>
+                    <p>Multi-region routing.</p>
+                </div>
+                <div class="showcase-image-slot">
+                    <span>[ Image Slot ]</span>
                 </div>
             </div>
 
@@ -525,31 +63,37 @@
     <div class="detail-panel-overlay" id="panelOverlay">
         
         <div class="detail-panel" id="panel-security" style="display: none;">
-            <i data-lucide="heart"></i>
-            <h2>𝐌𝐲 𝐋𝐨𝐯𝐞</h2>
-            <p>𝐈 𝐭𝐫𝐮𝐥𝐲 𝐝𝐨 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮,  𝐘𝐨𝐮'𝐫𝐞 𝐞𝐱𝐭𝐫𝐞𝐦𝐞𝐥𝐲 𝐢𝐧𝐭𝐞𝐥𝐥𝐢𝐠𝐞𝐧𝐭,  𝐜𝐚𝐫𝐢𝐧𝐠 𝐚𝐧𝐝 𝐛𝐫𝐞𝐚𝐭𝐡𝐭𝐚𝐤𝐢𝐧𝐠.  𝐈'𝐦 𝐬𝐨 𝐠𝐫𝐚𝐭𝐞𝐟𝐮𝐥 𝐭𝐨 𝐡𝐚𝐯𝐞 𝐲𝐨𝐮 𝐢𝐧 𝐦𝐲 𝐥𝐢𝐟𝐞.</p>
+            <i data-lucide="shield"></i>
+            <h2>Security Details</h2>
+            <p>Our robust framework provides high-level encryption standards, zero data leakage guarantees, and verified SSL configuration routes to protect your digital identity continuously.</p>
             <div class="detail-features">
-                <span class="feature-badge">𝐈 𝐋𝐨𝐯𝐞 𝐘𝐨𝐮</span>
+                <span class="feature-badge">AES-256 Bit</span>
+                <span class="feature-badge">No-Log Policy</span>
+                <span class="feature-badge">Dynamic Rotation</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
 
         <div class="detail-panel" id="panel-speed" style="display: none;">
             <i data-lucide="zap"></i>
-            <h2>𝐓𝐡𝐨𝐮𝐠𝐡𝐭𝐬</h2>
-            <p>𝐈 𝐬𝐞𝐧𝐭 𝐲𝐨𝐮 𝐭𝐡𝐢𝐬 𝐢𝐧 𝐡𝐨𝐩𝐞𝐬 𝐲𝐨𝐮 𝐰𝐞'𝐫𝐞 𝐬𝐦𝐚𝐫𝐭 𝐞𝐧𝐨𝐮𝐠𝐡 𝐭𝐨 𝐟𝐢𝐠𝐮𝐫𝐞 𝐨𝐮𝐭 𝐭𝐡𝐞 𝐩𝐚𝐬𝐬𝐰𝐨𝐫𝐝,  𝐓𝐡𝐚𝐭 𝐛𝐞𝐢𝐧𝐠 𝐨𝐮𝐫 𝐚𝐧𝐧𝐢𝐯𝐞𝐫𝐬𝐚𝐫𝐲 𝐝𝐚𝐭𝐞.  𝐎𝐛𝐯𝐢𝐨𝐮𝐬𝐥𝐲 𝐢𝐟 𝐲𝐨𝐮'𝐫𝐞 𝐫𝐞𝐚𝐝𝐢𝐧𝐠 𝐭𝐡𝐢𝐬 𝐧𝐨𝐰 𝐲𝐨𝐮 𝐟𝐢𝐠𝐮𝐫𝐞𝐝 𝐢𝐭 𝐨𝐮𝐭 𝐬𝐡𝐨𝐰𝐢𝐧𝐠 𝐣𝐮𝐬𝐭 𝐡𝐨𝐰 𝐬𝐦𝐚𝐫𝐭 𝐲𝐨𝐮 𝐚𝐫𝐞 𝐥𝐨𝐥.</p>
+            <h2>Speed Benchmarks</h2>
+            <p>Built directly over premium network infrastructure backbones. Benefit from sub-millisecond response interfaces, high bandwidth capability, and optimal network pathways with zero throttling thresholds.</p>
             <div class="detail-features">
-                <span class="feature-badge">🤍</span>
+                <span class="feature-badge">10 Gbps Ports</span>
+                <span class="feature-badge">Ultra-Low Latency</span>
+                <span class="feature-badge">99.9% Uptime</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
 
         <div class="detail-panel" id="panel-global" style="display: none;">
             <i data-lucide="globe"></i>
-            <h2>𝐏𝐫𝐨𝐦𝐢𝐬𝐞</h2>
-            <p>𝐈'𝐯𝐞 𝐬𝐚𝐢𝐝 𝐢𝐭 𝐨𝐧𝐜𝐞 𝐚𝐧𝐝 𝐈'𝐥𝐥 𝐬𝐚𝐲 𝐢𝐭 𝐚𝐠𝐚𝐢𝐧,  𝐈 𝐩𝐫𝐨𝐦𝐢𝐬𝐞 𝐭𝐨𝐨 𝐧𝐞𝐯𝐞𝐫 𝐟𝐨𝐫𝐜𝐞 𝐲𝐨𝐮 𝐢𝐧𝐭𝐨 𝐚𝐧𝐲𝐭𝐡𝐢𝐧𝐠,  𝐈'𝐥𝐥 𝐚𝐥𝐰𝐚𝐲𝐬 𝐭𝐚𝐤𝐞 𝐜𝐚𝐫𝐞 𝐨𝐟 𝐲𝐨𝐮 𝐭𝐨𝐨 𝐭𝐡𝐞 𝐛𝐞𝐬𝐭 𝐨𝐟 𝐦𝐲 𝐚𝐛𝐢𝐥𝐢𝐭𝐢𝐞𝐬 𝐚𝐧𝐝 𝐈 𝐭𝐫𝐮𝐥𝐲 𝐡𝐨𝐩𝐞 𝐭𝐨𝐨 𝐦𝐚𝐤𝐞 𝐲𝐨𝐮 𝐡𝐚𝐩𝐩𝐲 𝐚𝐬 𝐲𝐨𝐮 𝐝𝐨 𝐦𝐞.  𝐈 𝐥𝐨𝐯𝐞 𝐲𝐨𝐮 𝐬𝐨 𝐦𝐮𝐜𝐡.</p>
+            <h2>Global Coverage</h2>
+            <p>Connect seamlessly across key multi-region endpoints. Experience comprehensive geographical versatility, uninhibited regional coverage, and intelligent geolocation masking routes.</p>
             <div class="detail-features">
-                <span class="feature-badge">𝐈 𝐋𝐨𝐯𝐞 𝐘𝐨𝐮</span>
+                <span class="feature-badge">50+ Countries</span>
+                <span class="feature-badge">Geo-Bypassing</span>
+                <span class="feature-badge">Smart DNS Routing</span>
             </div>
             <button class="close-panel">Close Details</button>
         </div>
@@ -580,199 +124,3 @@
     <div id="youtube-audio-player"></div>
 
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-    <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
-
-        // Menu Toggle Logic
-        const menuToggle = document.getElementById('menuToggle');
-        const menuItems = document.getElementById('menuItems');
-
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            menuToggle.classList.toggle('active');
-            menuItems.classList.toggle('show');
-        });
-
-        // Login Logic & Screen Changes
-        const loginInput = document.getElementById('loginInput');
-        const showcaseOverlay = document.getElementById('showcase-overlay');
-        const closeShowcase = document.getElementById('closeShowcase');
-
-        // Typing logic to trigger showcase
-        loginInput.addEventListener('input', () => {
-            if (loginInput.value === '052126') {
-                showcaseOverlay.classList.add('show');
-                loginInput.blur(); 
-            }
-        });
-
-        // Reset system upon hitting back button
-        closeShowcase.addEventListener('click', () => {
-            showcaseOverlay.classList.remove('show');
-            loginInput.value = ''; 
-        });
-
-        // Interactive Detail Panel Logic (Modals)
-        const showcaseItems = document.querySelectorAll('.showcase-item');
-        const panelOverlay = document.getElementById('panelOverlay');
-        const detailPanels = document.querySelectorAll('.detail-panel');
-        const closePanelButtons = document.querySelectorAll('.close-panel');
-
-        showcaseItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const targetPanelId = 'panel-' + item.getAttribute('data-panel');
-                
-                // Hide all panels first
-                detailPanels.forEach(p => p.style.display = 'none');
-                
-                // Show the specific panel
-                const targetPanel = document.getElementById(targetPanelId);
-                if (targetPanel) {
-                    targetPanel.style.display = 'flex';
-                    panelOverlay.classList.add('show');
-                }
-            });
-        });
-
-        // Close functions for detail panel
-        function hideDetailPanel() {
-            panelOverlay.classList.remove('show');
-        }
-
-        closePanelButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                hideDetailPanel();
-            });
-        });
-
-        // Close on clicking the backdrop overlay
-        panelOverlay.addEventListener('click', (e) => {
-            if (e.target === panelOverlay) {
-                hideDetailPanel();
-            }
-        });
-
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio-player', {
-                height: '1',
-                width: '1',
-                videoId: 'JiC8lgLOdck', 
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'JiC8lgLOdck' 
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(7);
-            }
-
-            // Handle the overlay click
-            const overlay = document.getElementById('click-overlay');
-            const mainContainer = document.getElementById('mainContainer');
-            const discordInvite = document.getElementById('discordInvite');
-            const expandableMenu = document.getElementById('expandableMenu');
-            const topBar = document.getElementById('topBar');
-
-            overlay.addEventListener('click', () => {
-                overlay.classList.add('fade-out');
-                
-                mainContainer.classList.add('fade-in');
-                discordInvite.classList.add('fade-in');
-                expandableMenu.classList.add('fade-in');
-                topBar.classList.add('fade-in');
-                
-                if (player && typeof player.playVideo === 'function') {
-                    player.playVideo();
-                }
-            }, { once: true });
-        }
-
-        // Snowfall Animation Logic
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        const numFlakes = 75;
-        const flakes = [];
-
-        for (let i = 0; i < numFlakes; i++) {
-            flakes.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                r: Math.random() * 2 + 1,
-                d: Math.random() * numFlakes,
-                speedY: Math.random() * 1 + 0.5,
-                speedX: Math.random() * 0.5 - 0.25
-            });
-        }
-
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.beginPath();
-            
-            for (let i = 0; i < numFlakes; i++) {
-                const f = flakes[i];
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-            }
-            ctx.fill();
-            moveSnow();
-        }
-
-        function moveSnow() {
-            for (let i = 0; i < numFlakes; i++) {
-                const f = flakes[i];
-                
-                f.y += f.speedY;
-                f.x += f.speedX;
-
-                if (f.y > height) {
-                    flakes[i] = {
-                        x: Math.random() * width,
-                        y: -10,
-                        r: f.r,
-                        d: f.d,
-                        speedY: f.speedY,
-                        speedX: f.speedX
-                    };
-                }
-                if (f.x > width) f.x = 0;
-                else if (f.x < 0) f.x = width;
-            }
-        }
-
-        function update() {
-            drawSnow();
-            requestAnimationFrame(update);
-        }
-
-        update();
-    </script>
-</body>
-</html>
