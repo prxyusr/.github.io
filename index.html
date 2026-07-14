@@ -25,6 +25,32 @@
             align-items: center;
         }
 
+        /* Top Header Area for View Counter */
+        .top-bar {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5px;
+        }
+
+        .top-bar i {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.2px;
+        }
+
         /* Click to Enter Overlay - Semi-transparent to reveal snow behind it */
         #click-overlay {
             position: fixed;
@@ -72,14 +98,14 @@
         }
 
         /* Hidden Main Elements (Hidden initially, fades in later) */
-        .main-container, .discord-invite, .expandable-menu {
+        .main-container, .discord-invite, .expandable-menu, .top-bar {
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease;
         }
 
         /* Active Fade In Class */
-        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in {
+        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
             opacity: 1;
             pointer-events: auto;
         }
@@ -198,6 +224,11 @@
 </head>
 <body>
 
+    <div class="top-bar" id="topBar">
+        <i data-lucide="eye"></i>
+        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
+    </div>
+
     <div id="click-overlay">
         <div class="click-text">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
     </div>
@@ -230,6 +261,8 @@
     </div>
 
     <div id="youtube-audio-player"></div>
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
         // Initialize Lucide Icons
@@ -279,6 +312,7 @@
             const mainContainer = document.getElementById('mainContainer');
             const discordInvite = document.getElementById('discordInvite');
             const expandableMenu = document.getElementById('expandableMenu');
+            const topBar = document.getElementById('topBar');
 
             overlay.addEventListener('click', () => {
                 // Fade out overlay
@@ -288,6 +322,7 @@
                 mainContainer.classList.add('fade-in');
                 discordInvite.classList.add('fade-in');
                 expandableMenu.classList.add('fade-in');
+                topBar.classList.add('fade-in');
                 
                 if (player && typeof player.playVideo === 'function') {
                     player.playVideo();
