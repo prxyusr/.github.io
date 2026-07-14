@@ -23,6 +23,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer; /* Gives a visual cue that the page is interactable */
         }
 
         /* Snowfall Canvas */
@@ -133,6 +134,15 @@
             color: #ffffff;
         }
 
+        /* Hidden YouTube Container */
+        #youtube-audio-player {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 0.9; transform: translateY(0); }
@@ -147,7 +157,7 @@
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
     </div>
 
-    <a href="discord.gg/WDuzBFjR7h" class="discord-invite" aria-label="Discord Invite">
+    <a href="https://discord.gg/WDuzBFjR7h" target="_blank" class="discord-invite" aria-label="Discord Invite">
         <i data-lucide="disc"></i>
     </a>
 
@@ -159,7 +169,7 @@
             <div class="menu-item">
                 <span>Discord: @d3adawak3</span>
             </div>
-            <a href="https://github.com/prxyusr" class="menu-item">
+            <a href="https://github.com/prxyusr" target="_blank" class="menu-item">
                 <span>GitHub:   @prxyusr</span>
             </a>
             <div class="menu-item" style="opacity: 0.4;">
@@ -167,6 +177,8 @@
             </div>
         </div>
     </div>
+
+    <div id="youtube-audio-player"></div>
 
     <script>
         // Initialize Lucide Icons
@@ -176,10 +188,45 @@
         const menuToggle = document.getElementById('menuToggle');
         const menuItems = document.getElementById('menuItems');
 
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents toggle click from interfering with page interactions
             menuToggle.classList.toggle('active');
             menuItems.classList.toggle('show');
         });
+
+        // YouTube Audio Integration
+        // Load the IFrame Player API code asynchronously
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-audio-player', {
+                height: '1',
+                width: '1',
+                videoId: 'JiC8lgLOdck', // Your YouTube video ID
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'JiC8lgLOdck' // Required for looping single videos
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Because modern browsers block autoplay with sound, we start audio on first user click
+            document.body.addEventListener('click', () => {
+                if (player && typeof player.playVideo === 'function') {
+                    player.playVideo();
+                }
+            }, { once: true }); // '{ once: true }' ensures this event listener only runs once
+        }
 
         // Snowfall Animation Logic
         const canvas = document.getElementById('snowCanvas');
@@ -200,8 +247,8 @@
             flakes.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                r: Math.random() * 2 + 1, // Flake radius
-                d: Math.random() * numFlakes, // Density/speed factor
+                r: Math.random() * 2 + 1,
+                d: Math.random() * numFlakes,
                 speedY: Math.random() * 1 + 0.5,
                 speedX: Math.random() * 0.5 - 0.25
             });
@@ -228,7 +275,6 @@
                 f.y += f.speedY;
                 f.x += f.speedX;
 
-                // Reset flake if it goes off screen
                 if (f.y > height) {
                     flakes[i] = {
                         x: Math.random() * width,
