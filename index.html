@@ -26,7 +26,7 @@
 
         header h1 {
             font-size: 1.5rem;
-            color: #58a6ff;
+            color: #8d00ff;
             margin: 0;
         }
 
@@ -38,7 +38,7 @@
         }
 
         nav a:hover {
-            color: #58a6ff;
+            color: #8d00ff;
         }
 
         .container {
@@ -84,17 +84,21 @@
             border: 1px solid #30363d;
             border-radius: 6px;
             padding: 1.5rem;
-            transition: transform 0.2s, border-color 0.2s;
+            outline: none;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
 
-        .card:hover {
+        /* Fixed Blue Outline & Turned it Purple */
+        .card:hover, .card:focus, .card:active {
             transform: translateY(-5px);
-            border-color: #58a6ff;
+            border-color: #8d00ff;
+            box-shadow: 0 0 10px rgba(141, 0, 255, 0.3);
+            outline: 1px solid #8d00ff;
         }
 
         .card h3 {
             margin-top: 0;
-            color: #58a6ff;
+            color: #8d00ff;
         }
 
         .card p {
@@ -133,17 +137,17 @@
             <h2 class="section-title">Featured Projects</h2>
             <div class="grid">
                 
-                <div class="card">
+                <div class="card" tabindex="0">
                     <h3>Project Name One</h3>
                     <p>A cool description of what this project does. Mention the tech stack you used here (e.g., Python, JavaScript, HTML).</p>
                 </div>
 
-                <div class="card">
+                <div class="card" tabindex="0">
                     <h3>Project Name Two</h3>
                     <p>Another project overview. Talk about what problem it solves or why you decided to build it.</p>
                 </div>
 
-                <div class="card">
+                <div class="card" tabindex="0">
                     <h3>Project Name Three</h3>
                     <p>Keep adding cards as you build more things! Great for showing off your progress.</p>
                 </div>
@@ -154,7 +158,7 @@
         <section id="contact">
             <h2 class="section-title">Get in Touch</h2>
             <p>Feel free to reach out if you want to collaborate on a project or just talk tech!</p>
-            <p>📬 Email: <a href="mailto:your-email@example.com" style="color: #58a6ff;">your-email@example.com</a></p>
+            <p>📬 Email: <a href="mailto:treybrowntoday@gmail.com" style="color: #8d00ff; text-decoration: none;">treybrowntoday@gmail.com</a></p>
         </section>
     </div>
 
