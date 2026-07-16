@@ -25,6 +25,59 @@
             align-items: center;
         }
 
+        /* ---------------------------------------------------- */
+        /* MOBILE BLOCKER STYLING                               */
+        /* ---------------------------------------------------- */
+        #mobile-blocker {
+            display: none; /* Hidden by default on Desktop */
+        }
+
+        @media (max-width: 992px) {
+            /* Hide the main website elements */
+            .main-container, 
+            .top-bar, 
+            .discord-invite, 
+            .expandable-menu, 
+            #click-overlay, 
+            #showcase-overlay, 
+            .detail-panel-overlay {
+                display: none !important;
+            }
+
+            /* Display and style the blocker with matching background */
+            #mobile-blocker {
+                display: flex !important;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: #0b0c10; /* Matching background */
+                color: #ffffff;
+                text-align: center;
+                font-family: inherit;
+                z-index: 10; /* Behind the snow canvas (z-index 20) */
+                padding: 20px;
+            }
+
+            #mobile-blocker h1 {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+                letter-spacing: 1.5px;
+                animation: fadeIn 1.5s ease-in-out;
+            }
+
+            #mobile-blocker p {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.6);
+                animation: fadeIn 2s ease-in-out;
+            }
+        }
+        /* ---------------------------------------------------- */
+
         /* Top Header Area for View Counter */
         .top-bar {
             position: absolute;
@@ -94,7 +147,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 20;
+            z-index: 20; /* Stays above the mobile block screen */
         }
 
         /* Hidden Main Elements */
@@ -306,6 +359,7 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
+            box-sizing: border-box; /* Ensures padding doesn't affect width calculations */
         }
 
         .detail-panel-overlay.show .detail-panel {
@@ -324,24 +378,7 @@
             color: #ffffff;
         }
 
-.detail-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            width: 600px;
-            max-width: 90%;
-            padding: 40px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            box-sizing: border-box; /* Ensures padding doesn't affect width calculations */
-        }
-
-.detail-features {
+        .detail-features {
             display: flex;
             justify-content: center; /* Centers the whole group */
             align-items: center;     
@@ -482,6 +519,10 @@
 </head>
 <body>
 
+    <div id="mobile-blocker">
+        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
+        <p>This website is inaccessible on mobile devices. Please switch to desktop.</p>
+    </div>
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
         <span>views: <span id="busuanzi_value_site_pv">...</span></span>
@@ -547,17 +588,17 @@
 
     <div class="detail-panel-overlay" id="panelOverlay">
         
-<div class="detail-panel" id="panel-security" style="display: none;">
-    <i data-lucide="layers"></i>
-    <h2>Full-Stack Applications</h2>
-    <p>Interactive web systems engineered for scalability. Includes custom user authentication, RESTful/GraphQL API endpoints, responsive front-end interfaces, and optimized relational database schemas for real-time data persistence.</p>
-    <div class="detail-features">
-        <span class="feature-badge">React / Next.js</span>
-        <span class="feature-badge">Node.js / Express</span>
-        <span class="feature-badge">PostgreSQL</span>
-    </div>
-    <button class="close-panel">Close Details</button>
-</div>
+        <div class="detail-panel" id="panel-security" style="display: none;">
+            <i data-lucide="layers"></i>
+            <h2>Full-Stack Applications</h2>
+            <p>Interactive web systems engineered for scalability. Includes custom user authentication, RESTful/GraphQL API endpoints, responsive front-end interfaces, and optimized relational database schemas for real-time data persistence.</p>
+            <div class="detail-features">
+                <span class="feature-badge">React / Next.js</span>
+                <span class="feature-badge">Node.js / Express</span>
+                <span class="feature-badge">PostgreSQL</span>
+            </div>
+            <button class="close-panel">Close Details</button>
+        </div>
 
         <div class="detail-panel" id="panel-anonymity" style="display: none;">
             <i data-lucide="shield-check"></i>
