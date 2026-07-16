@@ -19,7 +19,7 @@
             --accent-border: rgba(255, 255, 255, 0.05);
             --accent-btn-hover: rgba(255, 255, 255, 0.1);
             --accent-text-glow: #ffffff;
-            --terminal-color: #4af626;
+            --terminal-color: #ffffff;
         }
 
         body {
@@ -159,7 +159,7 @@
         }
 
         .boot-text {
-            color: #8d00ff; /* Deep purple logs */
+            color: #ffffff; /* Deep purple logs */
         }
 
         /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
@@ -798,11 +798,11 @@
                     <div class="terminal-dot"></div>
                     <div class="terminal-dot"></div>
                 </div>
-                <div>terminal@proxyuser:~</div>
+                <div>terminal@user:~</div>
                 <div style="font-size:0.7rem;">press [TAB] to close</div>
             </div>
             <div class="terminal-body" id="terminalBody">
-                <div class="terminal-output" id="terminalOutput">ProxyUser OS [Version 1.0.0]
+                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.0]
 Type "help" to view available options.
 
 </div>
@@ -993,7 +993,7 @@ Type "help" to view available options.
                             }
                         }, 1200); // Also scaled up final delay before entry
                     }
-                }, 150); 
+                }, 250); 
 
             }, { once: true });
         }
