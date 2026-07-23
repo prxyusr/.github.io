@@ -48,8 +48,6 @@
             .discord-invite, 
             .expandable-menu, 
             #click-overlay, 
-            #showcase-overlay, 
-            .detail-panel-overlay,
             #terminal-overlay {
                 display: none !important;
             }
@@ -142,26 +140,6 @@
             letter-spacing: 2px;
         }
 
-        /* Boot up logs design */
-        .boot-container {
-            display: none;
-            width: 500px;
-            max-width: 90%;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* Styling for parts inside the log */
-        .boot-prompt {
-            color: #ffffff; /* White prompt symbol */
-            font-weight: bold;
-        }
-
-        .boot-text {
-            color: #ffffff; /* Deep purple logs */
-        }
-
         /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
         canvas {
             position: absolute;
@@ -202,249 +180,6 @@
             opacity: 0.9;
             animation: fadeIn 2s ease-in-out;
             text-shadow: 0 0 15px var(--accent-text-glow);
-        }
-
-        /* Project Button Styles */
-        .login-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--accent-text-glow);
-            color: var(--text-color);
-            padding: 12px 30px;
-            font-size: 1rem;
-            border-radius: 6px;
-            outline: none;
-            text-align: center;
-            transition: border-color 0.3s, background 0.3s, transform 0.2s, box-shadow 0.3s;
-            width: 180px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-top: 50px;
-        }
-
-        .login-btn:hover {
-            background: var(--accent-btn-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px var(--accent-text-glow);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Showcase Screen Overlay */
-        #showcase-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-color);
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease, visibility 0.6s ease, background-color 0.8s ease;
-            padding: 40px;
-        }
-
-        #showcase-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .showcase-title {
-            font-size: 2.5rem;
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            letter-spacing: 2px;
-            opacity: 0.9;
-            text-shadow: 0 0 15px var(--accent-text-glow);
-        }
-
-        /* Grid holding the rows vertically */
-        .showcase-grid {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 180px;
-            bottom: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 800px;
-        }
-
-        /* Row container splitting into two symmetrical columns */
-        .showcase-row {
-            display: grid;
-            grid-template-columns: 380px 380px;
-            gap: 40px;
-            width: 100%;
-        }
-
-        /* Styled wide text boxes - completely uniform */
-        .showcase-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--accent-border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .showcase-item:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent-text-glow);
-            background: rgba(255, 255, 255, 0.04);
-            box-shadow: 0 0 10px rgba(255,255,255,0.05);
-        }
-
-        .showcase-item i {
-            width: 28px;
-            height: 28px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-        }
-
-        .showcase-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-            color: var(--text-color);
-        }
-
-        .showcase-item p {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .close-showcase {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid var(--accent-border);
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .close-showcase:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
-        }
-
-        /* Large Detail Panel Overlay */
-        .detail-panel-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-
-        .detail-panel-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .detail-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--accent-border);
-            border-radius: 16px;
-            width: 600px;
-            max-width: 90%;
-            padding: 40px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            box-sizing: border-box;
-        }
-
-        .detail-panel-overlay.show .detail-panel {
-            transform: scale(1);
-        }
-
-        .detail-panel i {
-            width: 60px;
-            height: 60px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .detail-panel h2 {
-            font-size: 2rem;
-            letter-spacing: 1.5px;
-            color: var(--text-color);
-        }
-
-        .detail-features {
-            display: flex;
-            justify-content: center;
-            align-items: center;     
-            width: 100%;             
-            gap: 15px;
-            margin: 20px auto;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .feature-badge {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--accent-border);
-            padding: 8px 0;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 140px;
-            flex-shrink: 0;
-        }
-
-        .close-panel {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-color);
-            border: 1px solid var(--accent-border);
-            padding: 10px 24px;
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .close-panel:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--accent-text-glow);
         }
 
         /* Bottom Center Discord Link */
@@ -657,137 +392,12 @@
 
     <div id="click-overlay">
         <div class="click-text" id="clickText">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
-        <div class="boot-container" id="bootContainer"></div>
     </div>
 
     <canvas id="snowCanvas"></canvas>
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <button class="login-btn" id="loginBtn">𝐏𝐫𝐨𝐣𝐞𝐜𝐭𝐬</button>
-    </div>
-
-    <div id="showcase-overlay">
-        <h2 class="showcase-title">𝐒𝐡𝐨𝐰𝐜𝐚𝐬𝐞 𝐑𝐨𝐨𝐦</h2>
-        <div class="showcase-grid">
-            
-            <div class="showcase-row">
-                <div class="showcase-item" data-panel="security">
-                    <i data-lucide="layers"></i>
-                    <h3>Full Stack Applications</h3>
-                    <p>Interactive web systems...</p>
-                </div>
-                <div class="showcase-item" data-panel="anonymity">
-                    <i data-lucide="shield-check"></i>
-                    <h3>Cybersecurity</h3>
-                    <p>Implementing rigorous defense...</p>
-                </div>
-            </div>
-
-            <div class="showcase-row">
-                <div class="showcase-item" data-panel="speed">
-                    <i data-lucide="cpu"></i>
-                    <h3>Backend & APIs</h3>
-                    <p>Designing secure, fast...</p>
-                </div>
-                <div class="showcase-item" data-panel="latency">
-                    <i data-lucide="database"></i>
-                    <h3>Database Design</h3>
-                    <p>Designing high-performance...</p>
-                </div>
-            </div>
-
-            <div class="showcase-row">
-                <div class="showcase-item" data-panel="global">
-                    <i data-lucide="cloud"></i>
-                    <h3>Cloud & DevOps</h3>
-                    <p>Provisioning resilient...</p>
-                </div>
-                <div class="showcase-item" data-panel="routing">
-                    <i data-lucide="network"></i>
-                    <h3>System Design</h3>
-                    <p>Structuring modular, robust...</p>
-                </div>
-            </div>
-
-        </div>
-        <button class="close-showcase" id="closeShowcase">Return Home</button>
-    </div>
-
-    <div class="detail-panel-overlay" id="panelOverlay">
-        
-        <div class="detail-panel" id="panel-security" style="display: none;">
-            <i data-lucide="layers"></i>
-            <h2>Full-Stack Applications</h2>
-            <p>Interactive web systems engineered for scalability. Includes custom user authentication, RESTful/GraphQL API endpoints, responsive front-end interfaces, and optimized relational database schemas for real-time data persistence.</p>
-            <div class="detail-features">
-                <span class="feature-badge">React / Next.js</span>
-                <span class="feature-badge">Node.js / Express</span>
-                <span class="feature-badge">PostgreSQL</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
-        <div class="detail-panel" id="panel-anonymity" style="display: none;">
-            <i data-lucide="shield-check"></i>
-            <h2>Secure Development & Security</h2>
-            <p>Implementing rigorous defense-in-depth security measures. Specializing in secure user authentication, protection against common web vulnerabilities (like SQL Injection and XSS), and configuring end-to-end data encryption.</p>
-            <div class="detail-features">
-                <span class="feature-badge">OWASP Top 10</span>
-                <span class="feature-badge">JWT / OAuth2</span>
-                <span class="feature-badge">Bcrypt Hashing</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
-        <div class="detail-panel" id="panel-speed" style="display: none;">
-            <i data-lucide="cpu"></i>
-            <h2>Backend & APIs</h2>
-            <p>Designing secure, fast, and highly concurrent server architectures. Focused on constructing optimized REST/gRPC endpoints, implementing robust caching strategies to reduce database load, and managing system memory efficiently.</p>
-            <div class="detail-features">
-                <span class="feature-badge">Go / Python</span>
-                <span class="feature-badge">Redis Caching</span>
-                <span class="feature-badge">Docker / Unix</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
-        <div class="detail-panel" id="panel-latency" style="display: none;">
-            <i data-lucide="database"></i>
-            <h2>Database & Storage Engineering</h2>
-            <p>Designing high-performance relational and non-relational database structures. Focused on reducing data-retrieval latency through strategic indexing, schema normalization, connection pooling, and efficient query profiling.</p>
-            <div class="detail-features">
-                <span class="feature-badge">SQL Indexing</span>
-                <span class="feature-badge">MongoDB / NoSQL</span>
-                <span class="feature-badge">Prisma / ORM</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
-        <div class="detail-panel" id="panel-global" style="display: none;">
-            <i data-lucide="cloud"></i>
-            <h2>Cloud Infrastructure & DevOps</h2>
-            <p>Provisioning resilient, globally distributed network infrastructures. Specializing in automated continuous integration/continuous deployment (CI/CD) pipelines, serverless edge hosting, and dynamic traffic routing to guarantee high availability.</p>
-            <div class="detail-features">
-                <span class="feature-badge">AWS / GCP</span>
-                <span class="feature-badge">GitHub Actions</span>
-                <span class="feature-badge">Vercel Edge</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
-        <div class="detail-panel" id="panel-routing" style="display: none;">
-            <i data-lucide="network"></i>
-            <h2>System Architecture & Design</h2>
-            <p>Structuring modular, robust codebases using industry-standard design patterns. Experienced in decoupling system services, implementing pub/sub event-driven communication pipelines, and writing highly maintainable, object-oriented, or functional code.</p>
-            <div class="detail-features">
-                <span class="feature-badge">Microservices</span>
-                <span class="feature-badge">Event-Driven</span>
-                <span class="feature-badge">MVC Pattern</span>
-            </div>
-            <button class="close-panel">Close Details</button>
-        </div>
-
     </div>
 
     <div id="terminal-overlay">
@@ -830,7 +440,7 @@ Type "help" to view available options.
                 <span>GitHub:   @prxyusr</span>
             </a>
             <div class="menu-item" style="opacity: 1;">
-                <span>Email: treybrowntoday@gmail.com</span>
+                <span>N/A: N/A</span>
             </div>
         </div>
     </div>
@@ -840,6 +450,63 @@ Type "help" to view available options.
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
+        // ----------------------------------------------------
+        // Snowfall Animation Logic
+        // ----------------------------------------------------
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const numFlakes = 100;
+        const flakes = [];
+
+        for (let i = 0; i < numFlakes; i++) {
+            flakes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 3 + 1,
+                speedY: Math.random() * 1 + 0.5,
+                speedX: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.7 + 0.3
+            });
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+
+            flakes.forEach(flake => {
+                ctx.beginPath();
+                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+                ctx.fill();
+
+                flake.y += flake.speedY;
+                flake.x += flake.speedX;
+
+                // Reset flake when it goes off screen
+                if (flake.y > height) {
+                    flake.y = -flake.radius;
+                    flake.x = Math.random() * width;
+                }
+                if (flake.x > width) flake.x = 0;
+                if (flake.x < 0) flake.x = width;
+            });
+
+            requestAnimationFrame(drawSnow);
+        }
+
+        drawSnow();
+
+        // ----------------------------------------------------
+        // UI & Event Handlers
+        // ----------------------------------------------------
         lucide.createIcons();
 
         // Menu Toggle Logic
@@ -852,56 +519,6 @@ Type "help" to view available options.
             menuItems.classList.toggle('show');
         });
 
-        // Button Logic & Screen Changes
-        const loginBtn = document.getElementById('loginBtn');
-        const showcaseOverlay = document.getElementById('showcase-overlay');
-        const closeShowcase = document.getElementById('closeShowcase');
-
-        loginBtn.addEventListener('click', () => {
-            showcaseOverlay.classList.add('show');
-        });
-
-        closeShowcase.addEventListener('click', () => {
-            showcaseOverlay.classList.remove('show');
-        });
-
-        // Interactive Detail Panel Logic
-        const showcaseItems = document.querySelectorAll('.showcase-item');
-        const panelOverlay = document.getElementById('panelOverlay');
-        const detailPanels = document.querySelectorAll('.detail-panel');
-        const closePanelButtons = document.querySelectorAll('.close-panel');
-
-        showcaseItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const targetPanelId = 'panel-' + item.getAttribute('data-panel');
-                
-                detailPanels.forEach(p => p.style.display = 'none');
-                
-                const targetPanel = document.getElementById(targetPanelId);
-                if (targetPanel) {
-                    targetPanel.style.display = 'flex';
-                    panelOverlay.classList.add('show');
-                }
-            });
-        });
-
-        function hideDetailPanel() {
-            panelOverlay.classList.remove('show');
-        }
-
-        closePanelButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                hideDetailPanel();
-            });
-        });
-
-        panelOverlay.addEventListener('click', (e) => {
-            if (e.target === panelOverlay) {
-                hideDetailPanel();
-            }
-        });
-
         // YouTube Audio Integration
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
@@ -909,7 +526,6 @@ Type "help" to view available options.
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
-        let isBooted = false; // Flags when the site is fully loaded
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-audio-player', {
@@ -928,270 +544,31 @@ Type "help" to view available options.
             });
         }
 
-        // #2 BOOT UP SEQUENCER
         function onPlayerReady(event) {
             if (player && typeof player.setVolume === 'function') {
                 player.setVolume(7);
             }
 
             const overlay = document.getElementById('click-overlay');
-            const clickText = document.getElementById('clickText');
-            const bootContainer = document.getElementById('bootContainer');
-
             const mainContainer = document.getElementById('mainContainer');
             const discordInvite = document.getElementById('discordInvite');
             const expandableMenu = document.getElementById('expandableMenu');
             const topBar = document.getElementById('topBar');
 
-            overlay.addEventListener('click', () => {
-                // Hide prompt, show mock logging stream
-                clickText.style.display = 'none';
-                bootContainer.style.display = 'block';
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    overlay.classList.add('fade-out');
+                    mainContainer.classList.add('fade-in');
+                    discordInvite.classList.add('fade-in');
+                    expandableMenu.classList.add('fade-in');
+                    topBar.classList.add('fade-in');
 
-                const bootLogs = [
-                    "LOAD PROXY_OS v1.0.0 ... [SUCCESS]",
-                    "CONN ADDR http://127.0.0.1:443 ... [ESTABLISHED]",
-                    "MOUNT /dev/sys/network/ports ... [OK]",
-                    "INIT SNOW_ENGINE_v2 ... [RUNNING]",
-                    "DECRYPTING INTERFACE CORE ARCHITECTURE...",
-                    "BOOT SUCCESSFUL. WELCOME PROXY USER."
-                ];
-
-                let lineIndex = 0;
-                // Changed interval step from 250ms to 500ms to double the sequence length
-                const logInterval = setInterval(() => {
-                    if (lineIndex < bootLogs.length) {
-                        const newline = document.createElement('div');
-                        
-                        // Separate white prompt and purple log styling
-                        const promptSpan = document.createElement('span');
-                        promptSpan.className = 'boot-prompt';
-                        promptSpan.textContent = '> ';
-                        
-                        const textSpan = document.createElement('span');
-                        textSpan.className = 'boot-text';
-                        textSpan.textContent = bootLogs[lineIndex];
-
-                        newline.appendChild(promptSpan);
-                        newline.appendChild(textSpan);
-                        bootContainer.appendChild(newline);
-                        lineIndex++;
-                    } else {
-                        clearInterval(logInterval);
-                        
-                        // Transition to the main page UI
-                        setTimeout(() => {
-                            overlay.classList.add('fade-out');
-                            mainContainer.classList.add('fade-in');
-                            discordInvite.classList.add('fade-in');
-                            expandableMenu.classList.add('fade-in');
-                            topBar.classList.add('fade-in');
-                            isBooted = true;
-
-                            if (player && typeof player.playVideo === 'function') {
-                                player.playVideo();
-                            }
-                        }, 1200); // Also scaled up final delay before entry
+                    if (player && typeof player.playVideo === 'function') {
+                        player.playVideo();
                     }
-                }, 250); 
-
-            }, { once: true });
-        }
-
-        // Snowfall Engine Variables
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        let numFlakes = 75;
-        let flakes = [];
-
-        function createFlakes() {
-            flakes = [];
-            for (let i = 0; i < numFlakes; i++) {
-                flakes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    r: Math.random() * 2 + 1,
-                    d: Math.random() * numFlakes,
-                    speedY: Math.random() * 1 + 0.5,
-                    speedX: Math.random() * 0.5 - 0.25
                 });
             }
         }
-        createFlakes();
-
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.beginPath();
-            
-            for (let i = 0; i < numFlakes; i++) {
-                const f = flakes[i];
-                if (!f) continue;
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-            }
-            ctx.fill();
-            moveSnow();
-        }
-
-        function moveSnow() {
-            for (let i = 0; i < numFlakes; i++) {
-                const f = flakes[i];
-                if (!f) continue;
-                
-                f.y += f.speedY;
-                f.x += f.speedX;
-
-                if (f.y > height) {
-                    flakes[i] = {
-                        x: Math.random() * width,
-                        y: -10,
-                        r: f.r,
-                        d: f.d,
-                        speedY: f.speedY,
-                        speedX: f.speedX
-                    };
-                }
-                if (f.x > width) f.x = 0;
-                else if (f.x < 0) f.x = width;
-            }
-        }
-
-        function update() {
-            drawSnow();
-            requestAnimationFrame(update);
-        }
-
-        update();
-
-        // ---------------------------------------------------- 
-        // TERMINAL LOGIC & COMMANDS                            
-        // ---------------------------------------------------- 
-        const terminalOverlay = document.getElementById('terminal-overlay');
-        const terminalBody = document.getElementById('terminalBody');
-        const terminalOutput = document.getElementById('terminalOutput');
-        const terminalInput = document.getElementById('terminalInput');
-
-        // Toggle terminal with TAB key
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault(); 
-                
-                // Block terminal if still locked behind click/boot wall
-                if (isBooted) {
-                    terminalOverlay.classList.toggle('active');
-                    if (terminalOverlay.classList.contains('active')) {
-                        setTimeout(() => terminalInput.focus(), 100);
-                    }
-                }
-            }
-        });
-
-        terminalBody.addEventListener('click', () => {
-            terminalInput.focus();
-        });
-
-        // #5 INTERACTIVE TERMINAL EASTER EGGS
-        terminalInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const rawInput = terminalInput.value.trim();
-                const cmd = rawInput.toLowerCase();
-                const logRow = `\n> ${rawInput}`;
-                let response = '';
-
-                if (cmd === 'help') {
-                    response = `\nAvailable Commands:
-  [help]            - Display this list
-  [projects]        - Open projects showcase view
-  [socials]         - Display active social links
-  [clear]           - Clear screen logs
-  [exit]            - Close terminal console
-  
-Easter Eggs & Modifiers:
-  [theme blizzard]  - Trigger a massive digital winter storm
-  [theme cyber]     - Inject custom neon-synthware UI accents
-  [theme dark]      - Restore standard dark deep ice aesthetics
-  [music pause]     - Halt dynamic YouTube player background stream
-  [music play]      - Restart dynamic YouTube background music
-  [sudo]            - Force administrative system override`;
-                } else if (cmd === 'projects') {
-                    response = '\nOpening Showcase Room...';
-                    setTimeout(() => {
-                        showcaseOverlay.classList.add('show');
-                        terminalOverlay.classList.remove('active');
-                    }, 500);
-                } else if (cmd === 'socials') {
-                    response = `\nSocial profiles:
-  Discord:  @d3adawak3
-  GitHub:   https://github.com/prxyusr
-  Email:    treybrowntoday@gmail.com`;
-                } else if (cmd === 'clear') {
-                    terminalOutput.textContent = '';
-                } else if (cmd === 'exit') {
-                    terminalOverlay.classList.remove('active');
-                } 
-                // EASTER EGGS:
-                else if (cmd === 'theme blizzard') {
-                    numFlakes = 400; // Skyrocket the snowflake cap
-                    createFlakes();
-                    flakes.forEach(f => {
-                        f.speedY = Math.random() * 4 + 2; // Speed up vertical speed
-                        f.speedX = Math.random() * 2 - 1; 
-                    });
-                    response = '\n[SYSTEM] Warning: Local blizzard thresholds active. Visual load updated.';
-                } else if (cmd === 'theme cyber') {
-                    document.documentElement.style.setProperty('--bg-color', '#120124');
-                    document.documentElement.style.setProperty('--text-color', '#ff007f');
-                    document.documentElement.style.setProperty('--accent-text-glow', '#ff007f');
-                    document.documentElement.style.setProperty('--accent-border', 'rgba(255, 0, 127, 0.25)');
-                    document.documentElement.style.setProperty('--accent-btn-hover', 'rgba(255, 0, 127, 0.15)');
-                    response = '\n[SYSTEM] Neon grid layout configured. Mode: Cyberpunk Synthwave.';
-                } else if (cmd === 'theme dark') {
-                    document.documentElement.style.setProperty('--bg-color', '#0b0c10');
-                    document.documentElement.style.setProperty('--text-color', '#ffffff');
-                    document.documentElement.style.setProperty('--accent-text-glow', '#ffffff');
-                    document.documentElement.style.setProperty('--accent-border', 'rgba(255, 255, 255, 0.05)');
-                    document.documentElement.style.setProperty('--accent-btn-hover', 'rgba(255, 255, 255, 0.1)');
-                    numFlakes = 75; // Restore regular calm snow limits
-                    createFlakes();
-                    response = '\n[SYSTEM] System restored to deep frost dark theme.';
-                } else if (cmd === 'music pause') {
-                    if (player && typeof player.pauseVideo === 'function') {
-                        player.pauseVideo();
-                        response = '\n[SYSTEM] Audio interface stream: Paused.';
-                    } else {
-                        response = '\n[ERROR] Audio client not responsive.';
-                    }
-                } else if (cmd === 'music play') {
-                    if (player && typeof player.playVideo === 'function') {
-                        player.playVideo();
-                        response = '\n[SYSTEM] Audio interface stream: Restored.';
-                    } else {
-                        response = '\n[ERROR] Audio client not responsive.';
-                    }
-                } else if (cmd === 'sudo') {
-                    response = '\n[SYSTEM ERROR] Nice try. User is not in the sudoers file. This incident has been reported.';
-                } else if (cmd !== '') {
-                    response = `\nCommand not found: "${rawInput}". Type "help" for a list of commands.`;
-                }
-
-                if (cmd !== 'clear') {
-                    terminalOutput.textContent += logRow + response + '\n';
-                }
-                
-                terminalInput.value = '';
-                terminalBody.scrollTop = terminalBody.scrollHeight;
-            }
-        });
     </script>
 </body>
 </html>
