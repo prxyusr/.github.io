@@ -1,11 +1,9 @@
+# ============================================================================== # PROXYUSER VIDEO HARDWARE TERMINAL EMULATOR
+# CONFIGURATION BLUEPRINT # FILE MANIFEST:
+# 1. Commands.ts (State, Typing schemas, Persistent Web Storage Hooks)
+# 2. VideoTerminalWindow.tsx (Encapsulated Video Interface with Live ASCII bars)
+# 3. Shell.tsx (Main Processing Command Routing Loop Engine)
 # ==============================================================================
-# PROXYUSER VIDEO HARDWARE TERMINAL EMULATOR CONFIGURATION BLUEPRINT
-# FILE MANIFEST: 
-#   1. Commands.ts (State, Typing schemas, Persistent Web Storage Hooks)
-#   2. VideoTerminalWindow.tsx (Encapsulated Video Interface with Live ASCII bars)
-#   3. Shell.tsx (Main Processing Command Routing Loop Engine)
-# ==============================================================================
-
 
 # ------------------------------------------------------------------------------
 # SECTION 1: Commands.ts
@@ -67,12 +65,10 @@ export const initialVideoDatabase: Video[] = [
   }
 ];
 
-const LOCAL_STORAGE_KEY = 'proxyuser_video_db';
-
 export function loadSavedDatabase(): Video[] {
   if (typeof window === 'undefined') return initialVideoDatabase;
   try {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const saved = localStorage.getItem('proxyuser_video_db');
     return saved ? JSON.parse(saved) : initialVideoDatabase;
   } catch {
     return initialVideoDatabase;
@@ -82,7 +78,7 @@ export function loadSavedDatabase(): Video[] {
 export function saveDatabase(videos: Video[]): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(videos));
+    localStorage.setItem('proxyuser_video_db', JSON.stringify(videos));
   } catch (err) {
     console.error("Failed persisting session state: ", err);
   }
@@ -95,10 +91,10 @@ export function formatVideoTable(videos: Video[]): string[] {
   const truncate = (str: string, len: number) => 
     str.length > len ? str.substring(0, len - 3) + "..." : str.padEnd(len);
 
-  const topBorder = `┌${'─'.repeat(colWidths.id)}┬${'─'.repeat(colWidths.title)}┬${'─'.repeat(colWidths.category)}┬${'─'.repeat(colWidths.views)}┬${'─'.repeat(colWidths.duration)}┐`;
-  const header = `│${"ID".padEnd(colWidths.id)}│${"TITLE".padEnd(colWidths.title)}│${"CATEGORY".padEnd(colWidths.category)}│${"VIEWS".padEnd(colWidths.views)}│${"DURATION".padEnd(colWidths.duration)}│`;
-  const divider = `├${'─'.repeat(colWidths.id)}┼${'─'.repeat(colWidths.title)}┼${'─'.repeat(colWidths.category)}┼${'─'.repeat(colWidths.views)}┼${'─'.repeat(colWidths.duration)}┤`;
-  const bottomBorder = `└${'─'.repeat(colWidths.id)}┴${'─'.repeat(colWidths.title)}┴${'─'.repeat(colWidths.category)}┴${'─'.repeat(colWidths.views)}┴${'─'.repeat(colWidths.duration)}┘`;
+  const topBorder = `┌\${'─'.repeat(colWidths.id)}┬\${'─'.repeat(colWidths.title)}┬\${'─'.repeat(colWidths.category)}┬\${'─'.repeat(colWidths.views)}┬\${'─'.repeat(colWidths.duration)}┐`;
+  const header = `│\${"ID".padEnd(colWidths.id)}│\${"TITLE".padEnd(colWidths.title)}│\${"CATEGORY".padEnd(colWidths.category)}│\${"VIEWS".padEnd(colWidths.views)}│\${"DURATION".padEnd(colWidths.duration)}│`;
+  const divider = `├\${'─'.repeat(colWidths.id)}┼\${'─'.repeat(colWidths.title)}┼\${'─'.repeat(colWidths.category)}┼\${'─'.repeat(colWidths.views)}┼\${'─'.repeat(colWidths.duration)}┤`;
+  const bottomBorder = `└\${'─'.repeat(colWidths.id)}┴\${'─'.repeat(colWidths.title)}┴\${'─'.repeat(colWidths.category)}┴\${'─'.repeat(colWidths.views)}┴\${'─'.repeat(colWidths.duration)}┘`;
 
   const rows = videos.map(v => {
     const id = truncate(v.id, colWidths.id);
@@ -106,7 +102,7 @@ export function formatVideoTable(videos: Video[]): string[] {
     const cat = truncate(v.category, colWidths.category);
     const views = truncate(v.views.toLocaleString(), colWidths.views);
     const dur = truncate(v.duration, colWidths.duration);
-    return `│${id}│${title}│${cat}│${views}│${dur}│`;
+    return `│\${id}│\${title}│\${cat}│\${views}│\${dur}│`;
   });
 
   return [topBorder, header, divider, ...rows, bottomBorder];
@@ -125,7 +121,7 @@ import { Video } from './Commands';
 
 interface VideoTerminalWindowProps {
   video: Video;
-  initialVolume: number; // 0 to 1
+  initialVolume: number;
   onClose: () => void;
 }
 
@@ -196,7 +192,7 @@ export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminal
 
       const mins = Math.floor(current / 60).toString().padStart(2, '0');
       const secs = Math.floor(current % 60).toString().padStart(2, '0');
-      setCurrentTime(`${mins}:${secs}`);
+      setCurrentTime(`\${mins}:\${secs}`);
     };
 
     const goFullscreen = () => {
@@ -210,7 +206,7 @@ export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminal
       const barsCount = Math.round((progress / 100) * 30);
       const activeSegments = '■'.repeat(barsCount);
       const inactiveSegments = '─'.repeat(30 - barsCount);
-      return `[${activeSegments}${inactiveSegments}] ${Math.round(progress)}%`;
+      return `[\${activeSegments}\${inactiveSegments}] \${Math.round(progress)}%`;
     };
 
     return (
@@ -222,11 +218,11 @@ export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminal
         <div className="bg-zinc-900 border-b border-emerald-500/30 px-3 py-1.5 flex items-center justify-between text-xs text-emerald-400/80 font-mono">
           <div className="flex items-center gap-2">
             <Monitor size={14} className="animate-pulse text-emerald-400" />
-            <span>DISPLAY NODE // CONSOLE_PLAYER // ID: {video.id}</span>
+            <span>DISPLAY NODE // CONSOLE_PLAYER // ID: \${video.id}</span>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-[10px] text-zinc-500 bg-zinc-950 px-2 py-0.5 border border-zinc-800">
-              VOL: {Math.round(currentVol * 100)}% | PRESS [TAB] TO DISCONNECT
+              VOL: \${Math.round(currentVol * 100)}% | PRESS [TAB] TO DISCONNECT
             </span>
             <button onClick={onClose} className="hover:text-red-400 transition-colors">
               <X size={14} />
@@ -245,48 +241,32 @@ export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminal
           />
           
           <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur-sm border border-emerald-500/20 p-3 font-mono text-xs text-emerald-400 rounded-sm pointer-events-none max-w-sm">
-            <p className="font-bold text-emerald-300 uppercase tracking-wider">{video.title}</p>
-            <p className="text-zinc-400 mt-1 text-[11px] leading-relaxed">{video.description}</p>
+            <p className="font-bold text-emerald-300 uppercase tracking-wider">\${video.title}</p>
+            <p className="text-zinc-400 mt-1 text-[11px] leading-relaxed">\${video.description}</p>
             <div className="mt-2 flex gap-4 text-[10px] text-emerald-500/70">
-              <span>CAT: {video.category}</span>
-              <span>VIEWS: {video.views.toLocaleString()}</span>
+              <span>CAT: \${video.category}</span>
+              <span>VIEWS: \${video.views.toLocaleString()}</span>
             </div>
             <div className="mt-3 pt-2 border-t border-zinc-800/60 font-mono text-[10px] text-cyan-400 tracking-tight">
-              {renderAsciiProgressBar()}
+              {\${renderAsciiProgressBar()}}
             </div>
           </div>
         </div>
 
         <div className="bg-zinc-900 p-3 border-t border-emerald-500/20 font-mono flex items-center gap-4 text-xs">
-          <button 
-            onClick={togglePlay} 
-            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
-          >
+          <button onClick={togglePlay} className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all">
             {isPlaying ? <Pause size={14} /> : <Play size={14} />}
           </button>
-
-          <button 
-            onClick={toggleMute} 
-            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
-          >
+          <button onClick={toggleMute} className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all">
             {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
-
           <div className="text-emerald-500/80 font-mono text-[11px] min-w-[70px]">
-            {currentTime} / {video.duration}
+            \${currentTime} / \${video.duration}
           </div>
-
           <div className="flex-1 h-2 bg-zinc-950 border border-zinc-800 rounded-full relative overflow-hidden">
-            <div 
-              className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.7)] transition-all duration-100" 
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.7)] transition-all duration-100" style={{ width: `\${progress}%` }} />
           </div>
-
-          <button 
-            onClick={goFullscreen} 
-            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
-          >
+          <button onClick={goFullscreen} className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all">
             <Maximize size={14} />
           </button>
         </div>
@@ -294,7 +274,6 @@ export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminal
     );
   }
 );
-
 VideoTerminalWindow.displayName = 'VideoTerminalWindow';
 
 
@@ -306,14 +285,7 @@ VideoTerminalWindow.displayName = 'VideoTerminalWindow';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, ShieldAlert } from 'lucide-react';
-import { 
-  Video, 
-  TerminalLine, 
-  UploadWizardState, 
-  loadSavedDatabase, 
-  saveDatabase, 
-  formatVideoTable 
-} from './Commands';
+import { Video, TerminalLine, UploadWizardState, loadSavedDatabase, saveDatabase, formatVideoTable } from './Commands';
 import { VideoTerminalWindow, VideoTerminalHandle } from './VideoTerminalWindow';
 
 export default function Shell() {
@@ -328,12 +300,7 @@ export default function Shell() {
   const [systemVolume, setSystemVolume] = useState(0.7);
   const [isMobile, setIsMobile] = useState(false);
   
-  const [wizard, setWizard] = useState<UploadWizardState>({
-    isActive: false,
-    step: 'title',
-    data: {}
-  });
-
+  const [wizard, setWizard] = useState<UploadWizardState>({ isActive: false, step: 'title', data: {} });
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const playerRef = useRef<VideoTerminalHandle>(null);
@@ -356,25 +323,19 @@ export default function Shell() {
     if (!activeVideo) inputRef.current?.focus();
   };
 
-  useEffect(() => {
-    focusInput();
-  }, [activeVideo]);
+  useEffect(() => { focusInput(); }, [activeVideo]);
 
   const pushLine = (text: string, type: TerminalLine['type'] = 'output') => {
     setHistory(prev => [...prev, { id: crypto.randomUUID(), text, type }]);
   };
 
   const pushMultipleLines = (lines: string[], type: TerminalLine['type'] = 'output') => {
-    setHistory(prev => [
-      ...prev,
-      ...lines.map(line => ({ id: crypto.randomUUID(), text: line, type }))
-    ]);
+    setHistory(prev => [...prev, ...lines.map(line => ({ id: crypto.randomUUID(), text: line, type }))]);
   };
 
   const processStandardCommand = (rawInput: string) => {
     const trimmed = rawInput.trim();
-    pushLine(`terminal@proxyuser:~ > ${rawInput}`, 'input');
-
+    pushLine(`terminal@proxyuser:~ > \${rawInput}`, 'input');
     if (!trimmed) return;
 
     const parts = trimmed.split(/\s+/);
@@ -397,11 +358,9 @@ export default function Shell() {
         setHistory([]);
         break;
 
-      case 'videos': {
-        const structuralLayout = formatVideoTable(database);
-        pushMultipleLines(structuralLayout, 'output');
+      case 'videos':
+        pushMultipleLines(formatVideoTable(database), 'output');
         break;
-      }
 
       case 'search': {
         if (args.length === 0) {
@@ -409,20 +368,15 @@ export default function Shell() {
           break;
         }
         const query = args.join(' ').toLowerCase();
-        const matches = database.filter(v => 
-          v.title.toLowerCase().includes(query) || 
-          v.description.toLowerCase().includes(query) ||
-          v.category.toLowerCase().includes(query)
-        );
-        pushLine(`Searching database for: "${query}"...`, 'system');
-        const structuralLayout = formatVideoTable(matches);
-        pushMultipleLines(structuralLayout, 'output');
+        const matches = database.filter(v => v.title.toLowerCase().includes(query) || v.description.toLowerCase().includes(query) || v.category.toLowerCase().includes(query));
+        pushLine(`Searching database for: "\${query}"...`, 'system');
+        pushMultipleLines(formatVideoTable(matches), 'output');
         break;
       }
 
       case 'volume': {
         if (args.length === 0) {
-          pushLine(`Current System Volume Parameter: ${Math.round(systemVolume * 100)}%`, 'system');
+          pushLine(`Current System Volume Parameter: \${Math.round(systemVolume * 100)}%`, 'system');
           break;
         }
         const targetVolInt = parseInt(args[0], 10);
@@ -432,11 +386,8 @@ export default function Shell() {
         }
         const normalizedVol = targetVolInt / 100;
         setSystemVolume(normalizedVol);
-        pushLine(`System control deck re-calibrated. Volume: ${targetVolInt}%`, 'system');
-        
-        if (playerRef.current) {
-          playerRef.current.setVolume(normalizedVol);
-        }
+        pushLine(`System control deck re-calibrated. Volume: \${targetVolInt}%`, 'system');
+        if (playerRef.current) playerRef.current.setVolume(normalizedVol);
         break;
       }
 
@@ -447,11 +398,10 @@ export default function Shell() {
         }
         const targetId = args[0];
         const match = database.find(v => v.id.toLowerCase() === targetId.toLowerCase());
-        
         if (!match) {
-          pushLine(`Error: Video signature node "${targetId}" not resolved in active arrays.`, 'error');
+          pushLine(`Error: Video signature node "\${targetId}" not resolved in active arrays.`, 'error');
         } else {
-          pushLine(`Allocating network streams for video node ${targetId}...`, 'system');
+          pushLine(`Allocating network streams for video node \${targetId}...`, 'system');
           const nextDatabase = database.map(v => v.id === match.id ? { ...v, views: v.views + 1 } : v);
           setDatabase(nextDatabase);
           saveDatabase(nextDatabase);
@@ -467,17 +417,16 @@ export default function Shell() {
         break;
 
       default:
-        pushLine(`Command not found: "${cmd}". Type "help" for execution specifications.`, 'error');
+        pushLine(`Command not found: "\${cmd}". Type "help" for execution specifications.`, 'error');
     }
   };
 
   const processWizardStep = (value: string) => {
     const inputClean = value.trim();
-    pushLine(`> ${value}`, 'input');
-
+    pushLine(`> \${value}`, 'input');
     if (!inputClean) {
       pushLine('Field validation error: Input parameter cannot be null.', 'error');
-      pushLine(`Re-enter ${wizard.step.toUpperCase()}:`, 'system');
+      pushLine(`Re-enter \${wizard.step.toUpperCase()}:`, 'system');
       return;
     }
 
@@ -489,29 +438,25 @@ export default function Shell() {
         setWizard({ isActive: true, step: 'description', data: updatedData });
         pushLine('Enter Description String:', 'system');
         break;
-
       case 'description':
         updatedData.description = inputClean;
         setWizard({ isActive: true, step: 'url', data: updatedData });
         pushLine('Enter File Path String / Mock Source URL:', 'system');
         break;
-
       case 'url':
         updatedData.streamUrl = inputClean;
         setWizard({ isActive: true, step: 'category', data: updatedData });
         pushLine('Enter Categorical Domain Asset tag:', 'system');
         break;
-
       case 'category':
         updatedData.category = inputClean;
         setWizard({ isActive: true, step: 'duration', data: updatedData });
         pushLine('Enter Runtime Duration Metric (e.g. MM:SS):', 'system');
         break;
-
       case 'duration': {
         updatedData.duration = inputClean;
         const completeNode: Video = {
-          id: `v${database.length + 1}`,
+          id: `v\${database.length + 1}`,
           title: updatedData.title || "Unknown Asset",
           description: updatedData.description || "N/A Description",
           streamUrl: updatedData.streamUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -520,12 +465,10 @@ export default function Shell() {
           duration: updatedData.duration || "00:00",
           timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
         };
-
         const nextDb = [...database, completeNode];
         setDatabase(nextDb);
         saveDatabase(nextDb);
-
-        pushLine(`✔ PIPELINE SECURED: Successfully indexed dynamic video node "${completeNode.id}".`, 'system');
+        pushLine(`✔ PIPELINE SECURED: Successfully indexed dynamic video node "\${completeNode.id}".`, 'system');
         setWizard({ isActive: false, step: 'title', data: {} });
         break;
       }
@@ -546,80 +489,33 @@ export default function Shell() {
     return (
       <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-6 text-center font-mono text-red-500 select-none">
         <ShieldAlert size={64} className="animate-bounce mb-4 text-red-500" />
-        <h1 className="text-xl font-bold tracking-widest border border-red-500/40 px-4 py-2 bg-red-950/20 mb-3 uppercase">
-          Device Restriction Warning
-        </h1>
-        <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
-          This system endpoint utilizes terminal box-drawing structures requiring desktop layout widths. 
-          Please scale viewport boundaries or shift terminals to desktop-class devices.
-        </p>
+        <h1 className="text-xl font-bold tracking-widest border border-red-500/40 px-4 py-2 bg-red-950/20 mb-3 uppercase">Device Restriction Warning</h1>
+        <p className="text-xs text-zinc-400 max-w-md leading-relaxed">This system endpoint utilizes terminal box-drawing structures requiring desktop layout widths. Please scale viewport boundaries or shift terminals to desktop-class devices.</p>
       </div>
     );
   }
 
   return (
-    <div 
-      className="min-h-screen bg-zinc-950 text-emerald-400 font-mono p-4 flex flex-col text-sm selection:bg-emerald-500 selection:text-black"
-      onClick={focusInput}
-    >
+    <div className="min-h-screen bg-zinc-950 text-emerald-400 font-mono p-4 flex flex-col text-sm selection:bg-emerald-500 selection:text-black" onClick={focusInput}>
       <div className="flex items-center gap-2 text-xs border-b border-zinc-900 pb-2 mb-4 text-emerald-500/60 select-none">
         <Terminal size={14} className="text-emerald-400" />
         <span>SYSTEM WORKSTATION // PROXYUSER-VIDEO-STREAM-ENGINE-V2</span>
       </div>
-
       <div className="flex-1 flex flex-col overflow-y-auto space-y-1.5 whitespace-pre-wrap leading-relaxed">
         {history.map(line => (
-          <div 
-            key={line.id} 
-            className={`
-              ${line.type === 'input' ? 'text-zinc-200' : ''}
-              ${line.type === 'error' ? 'text-red-400 font-bold' : ''}
-              ${line.type === 'system' ? 'text-cyan-400' : ''}
-              ${line.type === 'output' ? 'text-emerald-400/90' : ''}
-            `}
-          >
+          <div key={line.id} className={`\${line.type === 'input' ? 'text-zinc-200' : ''} \${line.type === 'error' ? 'text-red-400 font-bold' : ''} \${line.type === 'system' ? 'text-cyan-400' : ''} \${line.type === 'output' ? 'text-emerald-400/90' : ''}`}>
             {line.text}
           </div>
         ))}
-
         {activeVideo && (
-          <VideoTerminalWindow 
-            ref={playerRef}
-            video={activeVideo} 
-            initialVolume={systemVolume}
-            onClose={() => {
-              setActiveVideo(null);
-              pushLine('Media execution process closed. Shell focus returned.', 'system');
-            }} 
-          />
+          <VideoTerminalWindow ref={playerRef} video={activeVideo} initialVolume={systemVolume} onClose={() => { setActiveVideo(null); pushLine('Media execution process closed. Shell focus returned.', 'system'); }} />
         )}
-
         {!activeVideo && (
           <form onSubmit={handleSubmit} className="flex items-center pt-1">
-            <span className="text-emerald-500 select-none mr-2 font-bold">
-              {wizard.isActive ? `wizard[${wizard.step}] > ` : 'terminal@proxyuser:~ > '}
-            </span>
+            <span className="text-emerald-500 select-none mr-2 font-bold">{wizard.isActive ? `wizard[\${wizard.step}] > ` : 'terminal@proxyuser:~ > '}</span>
             <div className="flex-1 relative flex items-center">
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                className="w-full bg-transparent text-zinc-100 focus:outline-none caret-transparent font-mono"
-                autoFocus
-                disabled={!!activeVideo}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-              />
-              <div 
-                className="absolute pointer-events-none h-4 w-2 bg-emerald-400 animate-[pulse_1s_infinite]"
-                style={{
-                  left: `${inputVal.length * 8.4}px`, 
-                  opacity: 0.95
-                }}
-              />
+              <input ref={inputRef} type="text" value={inputVal} onChange={(e) => setInputVal(e.target.value)} className="w-full bg-transparent text-zinc-100 focus:outline-none caret-transparent font-mono" autoFocus disabled={!!activeVideo} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
+              <div className="absolute pointer-events-none h-4 w-2 bg-emerald-400 animate-[pulse_1s_infinite]" style={{ left: `\${inputVal.length * 8.4}px`, opacity: 0.95 }} />
             </div>
           </form>
         )}
