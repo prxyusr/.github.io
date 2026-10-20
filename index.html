@@ -381,7 +381,7 @@
 <body>
 
     <div id="mobile-blocker">
-        <h1><b> ðð«ð¨ð±ð² ðð¬ðð« </b></h1>
+        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
         <p>This website is inaccessible on mobile devices. Please switch to desktop.</p>
     </div>
 
@@ -391,13 +391,13 @@
     </div>
 
     <div id="click-overlay">
-        <div class="click-text" id="clickText">ðð¥ð¢ðð¤ ðð</div>
+        <div class="click-text" id="clickText">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
     </div>
 
     <canvas id="snowCanvas"></canvas>
 
     <div class="main-container" id="mainContainer">
-        <h1><b> ðð«ð¨ð±ð² ðð¬ðð« </b></h1>
+        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
     </div>
 
     <div id="terminal-overlay">
@@ -544,46 +544,72 @@ Type "help" or "zokoanime" to view available options.
             if (!terminalOverlay.classList.contains('active')) {
                 toggleTerminal();
             }
-            terminalOutput.innerHTML += `\n> Connecting to ZokoAnime...\n[SUCCESS] Linked to zokoanime database.\n\nâ¨ --- ZOKOANIME VAULT --- â¨\nStatus: Online\nModules: Stream Engine v2.4\nType "help" to head back.\n\n`;
+            terminalOutput.innerHTML += `\n> Connecting to ZokoAnime...\n[SUCCESS] Linked to zokoanime database.\n\n✨ --- ZOKOANIME VAULT --- ✨\nStatus: Online\nModules: Stream Engine v2.4\nType "help" to head back.\n\n`;
+            
+            // Injecting the requested iframe stream directly upon opening or when running the command
+            terminalOutput.innerHTML += `\n⚡ [ZOKOANIME] INJECTING EMBED VIA IFRAME API...\n`;
+            terminalOutput.innerHTML += `
+            <div style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 100%; max-width: 640px; aspect-ratio: 16/9;">
+                <iframe 
+                    src="https://zokoanime.video/embed?mal=56789&ep=1&type=sub&accent=ff4a4a" 
+                    style="width: 100%; height: 100%; border: none;" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            `;
+            
             terminalInput.value = '';
             const body = document.getElementById('terminalBody');
-            body.scrollTop = body.scrollHeight;
+            if (body) body.scrollTop = body.scrollHeight;
         }
 
-        zokoAnimeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            triggerZokoAnime();
-        });
+        if(zokoAnimeBtn) {
+            zokoAnimeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                triggerZokoAnime();
+            });
+        }
 
-        terminalInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const cmd = terminalInput.value.trim().toLowerCase();
-                terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
-                
-                if (cmd === 'help') {
-                    terminalOutput.innerHTML += `Available Options:\n  zokoanime - Open the ZokoAnime subsystem\n  clear     - Clear screen\n  exit      - Close terminal\n`;
-                } else if (cmd === 'zokoanime') {
-                    terminalOutput.innerHTML += `â¨ --- ZOKOANIME VAULT --- â¨\nStatus: Online\nModules: Stream Engine v2.4\n`;
-                } else if (cmd === 'clear') {
-                    terminalOutput.innerHTML = '';
-                } else if (cmd === 'exit') {
-                    toggleTerminal();
-                } else if (cmd !== '') {
-                    terminalOutput.innerHTML += `Command not recognized. Type "help" for options.\n`;
+        if(terminalInput) {
+            terminalInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = terminalInput.value.trim().toLowerCase();
+                    terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
+                    
+                    if (cmd === 'help') {
+                        terminalOutput.innerHTML += `Available Options:\n  zokoanime - Open the ZokoAnime subsystem\n  clear     - Clear screen\n  exit      - Close terminal\n`;
+                    } else if (cmd === 'zokoanime' || (cmd.includes('cyberpunk') && cmd.includes('s2e1'))) {
+                        terminalOutput.innerHTML += `\n✨ --- ZOKOANIME VAULT --- ✨\n[LOADING] Cyberpunk: Edgerunners 2 - Episode 1\n`;
+                        terminalOutput.innerHTML += `
+                        <div style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 100%; max-width: 640px; aspect-ratio: 16/9;">
+                            <iframe 
+                                src="https://zokoanime.video/embed?mal=56789&ep=1&type=sub&accent=ff4a4a" 
+                                style="width: 100%; height: 100%; border: none;" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        `;
+                    } else if (cmd === 'clear') {
+                        terminalOutput.innerHTML = '';
+                    } else if (cmd === 'exit') {
+                        toggleTerminal();
+                    } else if (cmd !== '') {
+                        terminalOutput.innerHTML += `Command not recognized. Type "help" for options.\n`;
+                    }
+                    
+                    terminalInput.value = '';
+                    const body = document.getElementById('terminalBody');
+                    if(body) body.scrollTop = body.scrollHeight;
                 }
-                
-                terminalInput.value = '';
-                const body = document.getElementById('terminalBody');
-                body.scrollTop = body.scrollHeight;
-            }
-        });
+            });
+        }
 
         // YouTube Audio Integration
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script');
-        if(firstScriptTag && firstScriptTag.length > 0) {
-            firstScriptTag[0].parentNode.insertBefore(tag, firstScriptTag[0]);
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        if(firstScriptTag) {
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         } else {
             document.head.appendChild(tag);
         }
