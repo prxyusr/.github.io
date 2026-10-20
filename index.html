@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProxyUser - Anime Station</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>ProxyUser</title>
+    <script src="https://unpkg.com"></script>
     <style>
         * {
             margin: 0;
@@ -20,11 +20,6 @@
             --accent-btn-hover: rgba(255, 255, 255, 0.1);
             --accent-text-glow: #ffffff;
             --terminal-color: #ffffff;
-            
-            /* Enhanced Streaming Platform Engine Variables */
-            --glass-panel: rgba(255, 255, 255, 0.02);
-            --glass-panel-active: rgba(255, 255, 255, 0.06);
-            --panel-blur: blur(12px);
         }
 
         body {
@@ -48,9 +43,15 @@
         }
 
         @media (max-width: 992px) {
-            .main-container, .top-bar, .discord-invite, .expandable-menu, #click-overlay {
+            .main-container, 
+            .top-bar, 
+            .discord-invite, 
+            .expandable-menu, 
+            #click-overlay, 
+            #terminal-overlay {
                 display: none !important;
             }
+
             #mobile-blocker {
                 display: flex !important;
                 flex-direction: column;
@@ -64,17 +65,22 @@
                 background-color: #0b0c10;
                 color: #ffffff;
                 text-align: center;
+                font-family: inherit;
                 z-index: 10;
                 padding: 20px;
             }
+
             #mobile-blocker h1 {
                 font-size: 2.2rem;
                 margin-bottom: 15px;
                 letter-spacing: 1.5px;
+                animation: fadeIn 1.5s ease-in-out;
             }
+
             #mobile-blocker p {
                 font-size: 1rem;
                 color: rgba(255, 255, 255, 0.6);
+                animation: fadeIn 2s ease-in-out;
             }
         }
 
@@ -91,11 +97,17 @@
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.45);
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: var(--panel-blur);
+            backdrop-filter: blur(8px);
             padding: 6px 14px;
             border-radius: 20px;
             border: 1px solid var(--accent-border);
             letter-spacing: 0.5px;
+        }
+
+        .top-bar i {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.2px;
         }
 
         /* Click to Enter Overlay */
@@ -109,7 +121,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 5;
             cursor: pointer;
             transition: opacity 0.8s ease, visibility 0.8s ease;
         }
@@ -123,22 +135,19 @@
         .click-text {
             font-size: 2rem;
             color: #ffffff;
-            letter-spacing: 2px;
+            font-family: inherit;
             animation: pulse 1.8s infinite ease-in-out;
+            letter-spacing: 2px;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-
+        /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
         canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none; /* Allows user to click elements behind the snow */
             z-index: 50;
         }
 
@@ -149,196 +158,188 @@
             transition: opacity 0.8s ease;
         }
 
+        /* Active Fade In Class */
         .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
             opacity: 1;
             pointer-events: auto;
         }
 
-        /* Main Content Workspace Layout Matrix */
+        /* Main Content Positioning */
         .main-container {
             position: relative;
             z-index: 2;
-            width: 85vw;
-            max-width: 1400px;
-            height: 80vh;
+            text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 24px;
-        }
-
-        .platform-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            border-bottom: 1px solid var(--accent-border);
-            padding-bottom: 12px;
+            align-items: center;
+            gap: 20px;
         }
 
         h1 {
-            font-size: 2.2rem;
-            opacity: 0.95;
+            font-size: 3.5rem;
+            opacity: 0.9;
+            animation: fadeIn 2s ease-in-out;
             text-shadow: 0 0 15px var(--accent-text-glow);
-            letter-spacing: 1px;
         }
 
-        /* Main Media Matrix Application Workspace */
-        .streaming-grid {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 24px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        /* Sidebar Directory Engine Layout */
-        .anime-sidebar {
-            background: var(--glass-panel);
-            backdrop-filter: var(--panel-blur);
-            border: 1px solid var(--accent-border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-        }
-
-        .sidebar-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 4px;
-        }
-
-        .anime-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .anime-card:hover {
-            background: var(--glass-panel-active);
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateX(4px);
-        }
-
-        .anime-card.active {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
-        }
-
-        .anime-thumb {
-            width: 45px;
-            height: 60px;
-            border-radius: 4px;
-            background-size: cover;
-            background-position: center;
-            border: 1px solid var(--accent-border);
-            flex-shrink: 0;
-        }
-
-        .anime-info {
-            overflow: hidden;
-            text-align: left;
-        }
-
-        .anime-title {
-            font-size: 0.9rem;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: text-overflow;
-            text-overflow: ellipsis;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .anime-meta {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 4px;
-        }
-
-        /* Active Core Processing Stage Layer */
-        .stage-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-height: 0;
-        }
-
-        .player-viewport {
-            position: relative;
-            width: 100%;
-            flex: 1;
-            background: #000000;
-            border-radius: 12px;
-            border: 1px solid var(--accent-border);
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-
-        .player-viewport iframe {
+        /* Bottom Center Discord Link */
+        .discord-invite {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 12;
+            color: rgba(255, 255, 255, 0.6);
+            transition: color 0.3s, transform 0.3s, opacity 0.8s ease;
         }
 
-        /* Episode Navigation Array Matrix */
-        .episode-matrix-wrapper {
-            background: var(--glass-panel);
-            backdrop-filter: var(--panel-blur);
-            border: 1px solid var(--accent-border);
-            border-radius: 12px;
-            padding: 16px;
+        .discord-invite:hover {
+            color: #5865F2;
+        }
+
+        /* Bottom Left Expandable Menu */
+        .expandable-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            z-index: 13;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            padding: 5px;
+        }
+
+        .menu-toggle:hover {
+            color: var(--text-color);
+        }
+
+        .menu-toggle.active {
+            transform: rotate(180deg);
+            color: var(--text-color);
+        }
+
+        .menu-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 0 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0);
         }
 
-        .matrix-header {
+        .menu-items.show {
+            max-height: 250px;
+            opacity: 1;
+            padding: 20px;
+            border: 1px solid var(--accent-border);
+        }
+
+        .menu-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: flex-start;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.2s;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
         }
 
-        .active-meta-display {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
+        .menu-item:hover {
+            color: var(--text-color);
         }
 
-        .episode-grid {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 4px;
+        #youtube-audio-player {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .episode-node {
-            min-width: 45px;
-            height: 36px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 0.9; transform: translateY(0); }
+        }
+
+        /* ---------------------------------------------------- */
+        /* TERMINAL INTERACTIVE OVERLAY                         */
+        /* ---------------------------------------------------- */
+        #terminal-overlay {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(11, 12, 16, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 40; /* Canvas sits above this at z-index 50 */
+            transition: top 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
             display: flex;
             justify-content: center;
             align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--accent-border);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.7);
-            transition: all 0.2s ease;
+            padding: 40px;
         }
 
-        .episode-node:hover {
-            background: var(--glass-panel-active);
-            color: #ffffff;
+        #terminal-overlay.active {
+            top: 0;
+        }
+
+        .terminal-window {
+            width: 800px;
+            max-width: 95%;
+            height: 500px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .terminal-header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .terminal-body {
+            flex-grow: 1;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
