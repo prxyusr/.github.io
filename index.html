@@ -140,7 +140,7 @@
             letter-spacing: 2px;
         }
 
-        /* Snowfall Canvas */
+        /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
         canvas {
             position: absolute;
             top: 0;
@@ -434,7 +434,7 @@
             </div>
             <div class="terminal-body" id="terminalBody">
                 <div id="anime-container">
-                    <iframe id="anime-frame" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+                    <iframe id="anime-frame" src="" allow="autoplay; fullscreen; encrypted-media"></iframe>
                 </div>
 
                 <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.0]
@@ -568,21 +568,25 @@ Type "help" to view available options.
 
         terminalInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const args = terminalInput.value.trim().split(' ');
-                const command = args[0].toLowerCase();
-                
-                if (command === '') return;
+                const inputVal = terminalInput.value.trim().toLowerCase();
+                if (inputVal === '') return;
 
                 terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
 
+                const args = inputVal.split(' ');
+                const command = args[0];
+
                 if (command === 'help') {
-                    terminalOutput.innerHTML += `Available commands:\n  help                     - Show available commands\n  zokoanime [anime-id]     - Load embedded player (e.g., zokoanime 20)\n  close                    - Exit and close the anime player\n  clear                    - Clear terminal history\n`;
+                    terminalOutput.innerHTML += `Available commands:\n  help                     - Show available commands\n  zokoanime                - Open default anime home player\n  zokoanime <mal_id>       - Load a specific MyAnimeList ID stream (e.g. zokoanime 20)\n  close                    - Close and hide the anime player frame\n  clear                    - Clear terminal lines\n`;
                 } else if (command === 'zokoanime') {
-                    const animeId = args[1] || "20"; // Fallback to Naruto if no ID provided
-                    terminalOutput.innerHTML += `Launching player stream container for ID: ${animeId}...\n`;
-                    
-                    // Route directly to the embed target structure
-                    animeFrame.src = `https://zokoanime.video/embed/mal/${animeId}/1`;
+                    terminalOutput.innerHTML += `Launching player stream container...\n`;
+                    if (args.length > 1 && !isNaN(args[1])) {
+                        // If they type "zokoanime 20", use the direct player embed link structure
+                        animeFrame.src = "https://zokoanime.video/embed/mal/" + args[1] + "/1";
+                    } else {
+                        // Otherwise fallback to main interface
+                        animeFrame.src = "https://zokoanime.video";
+                    }
                     animeContainer.style.display = "block";
                 } else if (command === 'close' || command === 'exit') {
                     terminalOutput.innerHTML += `Terminating interface streams...\n`;
@@ -591,7 +595,7 @@ Type "help" to view available options.
                 } else if (command === 'clear') {
                     terminalOutput.innerHTML = `Proxy OS [Version 1.0.0]\nType "help" to view available options.\n\n`;
                 } else {
-                    terminalOutput.innerHTML += `Command not recognized: "${command}". Type "help" for a list of commands.\n`;
+                    terminalOutput.innerHTML += `Command not recognized: "${inputVal}". Type "help" for a list of commands.\n`;
                 }
 
                 terminalInput.value = '';
@@ -603,7 +607,7 @@ Type "help" to view available options.
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
-        if (firstScriptTag) {
+        if (firstScriptTag && firstScriptTag.parentNode) {
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         } else {
             document.head.appendChild(tag);
