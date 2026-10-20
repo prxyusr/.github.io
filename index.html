@@ -415,8 +415,10 @@
         <div class="click-text" id="clickText">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
     </div>
 
+    <canvas id="snowCanvas"></canvas>
+
     <div class="main-container" id="mainContainer">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞 r </b></h1>
+        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
     </div>
 
     <div id="terminal-overlay">
@@ -467,6 +469,10 @@ Type "help" to view available options.
             </div>
         </div>
     </div>
+
+    <div id="youtube-audio-player"></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
         // ----------------------------------------------------
@@ -588,16 +594,6 @@ Type "help" to view available options.
             }
         });
 
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script');
-        if (firstScriptTag && firstScriptTag.length > 0) {
-            firstScriptTag[0].parentNode.insertBefore(tag, firstScriptTag[0]);
-        } else {
-            document.head.appendChild(tag);
-        }
-
         var player;
 
         function onYouTubeIframeAPIReady() {
@@ -621,26 +617,26 @@ Type "help" to view available options.
             if (player && typeof player.setVolume === 'function') {
                 player.setVolume(7);
             }
+        }
 
-            const overlay = document.getElementById('click-overlay');
-            const mainContainer = document.getElementById('mainContainer');
-            const discordInvite = document.getElementById('discordInvite');
-            const expandableMenu = document.getElementById('expandableMenu');
-            const topBar = document.getElementById('topBar');
+        const overlay = document.getElementById('click-overlay');
+        const mainContainer = document.getElementById('mainContainer');
+        const discordInvite = document.getElementById('discordInvite');
+        const expandableMenu = document.getElementById('expandableMenu');
+        const topBar = document.getElementById('topBar');
 
-            if (overlay) {
-                overlay.addEventListener('click', () => {
-                    overlay.classList.add('fade-out');
-                    mainContainer.classList.add('fade-in');
-                    discordInvite.classList.add('fade-in');
-                    expandableMenu.classList.add('fade-in');
-                    topBar.classList.add('fade-in');
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                overlay.classList.add('fade-out');
+                mainContainer.classList.add('fade-in');
+                discordInvite.classList.add('fade-in');
+                expandableMenu.classList.add('fade-in');
+                topBar.classList.add('fade-in');
 
-                    if (player && typeof player.playVideo === 'function') {
-                        player.playVideo();
-                    }
-                });
-            }
+                if (player && typeof player.playVideo === 'function') {
+                    player.playVideo();
+                }
+            });
         }
     </script>
 </body>
