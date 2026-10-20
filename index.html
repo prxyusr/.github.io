@@ -511,6 +511,7 @@ Type "help" or "zokoanime" to view available options.
         // ----------------------------------------------------
         lucide.createIcons();
 
+        // Menu Toggle Logic
         const menuToggle = document.getElementById('menuToggle');
         const menuItems = document.getElementById('menuItems');
 
@@ -520,154 +521,62 @@ Type "help" or "zokoanime" to view available options.
             menuItems.classList.toggle('show');
         });
 
-        // Terminal Toggle & Functionality
+        // ----------------------------------------------------
+        // TERMINAL COMMAND LOGIC & ZOKOANIME INTEGRATION
+        // ----------------------------------------------------
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminalInput');
         const terminalOutput = document.getElementById('terminalOutput');
-        const zokoAnimeBtn = document.getElementById('zokoAnimeBtn');
+        const terminalBody = document.getElementById('terminalBody');
 
-        function toggleTerminal() {
-            terminalOverlay.classList.toggle('active');
-            if (terminalOverlay.classList.contains('active')) {
-                setTimeout(() => terminalInput.focus(), 100);
-            }
-        }
-
+        // Toggle terminal with TAB key
         window.addEventListener('keydown', (e) => {
-            if ((e.key === 'Tab' || e.key === 'Escape') && terminalOverlay.classList.contains('active')) {
-                e.preventDefault();
-                toggleTerminal();
+            if (e.key === 'Tab') {
+                e.preventDefault(); // Stop default browser focus switching
+                terminalOverlay.classList.toggle('active');
+                if (terminalOverlay.classList.contains('active')) {
+                    terminalInput.focus();
+                }
             }
         });
 
-        function triggerZokoAnime() {
-            if (!terminalOverlay.classList.contains('active')) {
-                toggleTerminal();
-            }
-            terminalOutput.innerHTML += `\n✨ --- ZOKOANIME VAULT --- ✨\n[LOADING] Cyberpunk: Edgerunners 2 - Episode 1\n`;
-            
-            // Injects a real working item identifier (mal=53393) matching the series framework instead of a placeholder
-            terminalOutput.innerHTML += `
-            <div style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 100%; max-width: 640px; aspect-ratio: 16/9; background: #000; position: relative; z-index: 100;">
-                <iframe 
-                    src="https://zokoanime.video" 
-                    style="width: 100%; height: 100%; border: none; background: #000;" 
-                    allow="autoplay; fullscreen"
-                    allowfullscreen>
-                </iframe>
-            </div>
-            `;
-            terminalInput.value = '';
-            const body = document.getElementById('terminalBody');
-            if(body) body.scrollTop = body.scrollHeight;
-        }
+        // Keep input focused when clicking inside terminal body
+        terminalBody.addEventListener('click', () => {
+            terminalInput.focus();
+        });
 
-        if(zokoAnimeBtn) {
-            zokoAnimeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                triggerZokoAnime();
-            });
-        }
+        // Handle Command Input
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const inputVal = terminalInput.value.trim().toLowerCase();
+                if (inputVal === '') return;
 
-        if(terminalInput) {
-            terminalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const cmd = terminalInput.value.trim().toLowerCase();
-                    terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
-                    
-                    if (cmd === 'help') {
-                        terminalOutput.innerHTML += `Available Options:\n  zokoanime - Open the ZokoAnime subsystem\n  clear     - Clear screen\n  exit      - Close terminal\n`;
-                    } else if (cmd === 'zokoanime' || (cmd.includes('cyberpunk') && cmd.includes('s2e1'))) {
-                        triggerZokoAnime();
-                    } else if (cmd === 'clear') {
-                        terminalOutput.innerHTML = '';
-                    } else if (cmd === 'exit') {
-                        toggleTerminal();
-                    } else if (cmd !== '') {
-                        terminalOutput.innerHTML += `Command not recognized. Type "help" for options.\n`;
-                    }
-                    
-                    terminalInput.value = '';
-                    const body = document.getElementById('terminalBody');
-                    if(body) body.scrollTop = body.scrollHeight;
+                // Append the typed command to output log
+                terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
+
+                // Command Processing Routing
+                if (inputVal === 'help') {
+                    terminalOutput.innerHTML += `Available commands:\n  help        - Show available commands\n  zokoanime   - Open ZokoAnime to watch anime\n  clear       - Clear the terminal screen\n`;
+                } else if (inputVal === 'zokoanime') {
+                    terminalOutput.innerHTML += `Opening zokoanime.video...\n`;
+                    window.open('https://zokoanime.video', '_blank');
+                } else if (inputVal === 'clear') {
+                    terminalOutput.innerHTML = `Proxy OS [Version 1.0.0]\nType "help" to view available options.\n\n`;
+                } else {
+                    terminalOutput.innerHTML += `Command not recognized: "${inputVal}". Type "help" for a list of commands.\n`;
                 }
-            });
-        }
 
-
-        function triggerZokoAnime() {
-            if (!terminalOverlay.classList.contains('active')) {
-                toggleTerminal();
+                // Reset field and scroll down automatically
+                terminalInput.value = '';
+                terminalBody.scrollTop = terminalBody.scrollHeight;
             }
-            terminalOutput.innerHTML += `\n> Connecting to ZokoAnime...\n[SUCCESS] Linked to zokoanime database.\n\n✨ --- ZOKOANIME VAULT --- ✨\nStatus: Online\nModules: Stream Engine v2.4\nType "help" to head back.\n\n`;
-            
-            // Injecting the requested iframe stream directly upon opening or when running the command
-            terminalOutput.innerHTML += `\n⚡ [ZOKOANIME] INJECTING EMBED VIA IFRAME API...\n`;
-            terminalOutput.innerHTML += `
-            <div style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 100%; max-width: 640px; aspect-ratio: 16/9;">
-                <iframe 
-                    src="https://zokoanime.video/embed?mal=56789&ep=1&type=sub&accent=ff4a4a" 
-                    style="width: 100%; height: 100%; border: none;" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-            `;
-            
-            terminalInput.value = '';
-            const body = document.getElementById('terminalBody');
-            if (body) body.scrollTop = body.scrollHeight;
-        }
-
-        if(zokoAnimeBtn) {
-            zokoAnimeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                triggerZokoAnime();
-            });
-        }
-
-        if(terminalInput) {
-            terminalInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const cmd = terminalInput.value.trim().toLowerCase();
-                    terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
-                    
-                    if (cmd === 'help') {
-                        terminalOutput.innerHTML += `Available Options:\n  zokoanime - Open the ZokoAnime subsystem\n  clear     - Clear screen\n  exit      - Close terminal\n`;
-                    } else if (cmd === 'zokoanime' || (cmd.includes('cyberpunk') && cmd.includes('s2e1'))) {
-                        terminalOutput.innerHTML += `\n✨ --- ZOKOANIME VAULT --- ✨\n[LOADING] Cyberpunk: Edgerunners 2 - Episode 1\n`;
-                        terminalOutput.innerHTML += `
-                        <div style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 100%; max-width: 640px; aspect-ratio: 16/9;">
-                            <iframe 
-                                src="https://zokoanime.video/embed?mal=56789&ep=1&type=sub&accent=ff4a4a" 
-                                style="width: 100%; height: 100%; border: none;" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                        `;
-                    } else if (cmd === 'clear') {
-                        terminalOutput.innerHTML = '';
-                    } else if (cmd === 'exit') {
-                        toggleTerminal();
-                    } else if (cmd !== '') {
-                        terminalOutput.innerHTML += `Command not recognized. Type "help" for options.\n`;
-                    }
-                    
-                    terminalInput.value = '';
-                    const body = document.getElementById('terminalBody');
-                    if(body) body.scrollTop = body.scrollHeight;
-                }
-            });
-        }
+        });
 
         // YouTube Audio Integration
         var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
+        tag.src = "https://youtube.com";
         var firstScriptTag = document.getElementsByTagName('script')[0];
-        if(firstScriptTag) {
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        } else {
-            document.head.appendChild(tag);
-        }
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
 
@@ -714,5 +623,3 @@ Type "help" or "zokoanime" to view available options.
             }
         }
     </script>
-</body>
-</html>
