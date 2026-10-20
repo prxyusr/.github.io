@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProxyUser</title>
+    <title>ProxyUser - Anime Station</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
@@ -20,6 +20,11 @@
             --accent-btn-hover: rgba(255, 255, 255, 0.1);
             --accent-text-glow: #ffffff;
             --terminal-color: #ffffff;
+            
+            /* Enhanced Streaming Platform Engine Variables */
+            --glass-panel: rgba(255, 255, 255, 0.02);
+            --glass-panel-active: rgba(255, 255, 255, 0.06);
+            --panel-blur: blur(12px);
         }
 
         body {
@@ -43,15 +48,9 @@
         }
 
         @media (max-width: 992px) {
-            .main-container, 
-            .top-bar, 
-            .discord-invite, 
-            .expandable-menu, 
-            #click-overlay, 
-            #terminal-overlay {
+            .main-container, .top-bar, .discord-invite, .expandable-menu, #click-overlay {
                 display: none !important;
             }
-
             #mobile-blocker {
                 display: flex !important;
                 flex-direction: column;
@@ -65,22 +64,17 @@
                 background-color: #0b0c10;
                 color: #ffffff;
                 text-align: center;
-                font-family: inherit;
                 z-index: 10;
                 padding: 20px;
             }
-
             #mobile-blocker h1 {
                 font-size: 2.2rem;
                 margin-bottom: 15px;
                 letter-spacing: 1.5px;
-                animation: fadeIn 1.5s ease-in-out;
             }
-
             #mobile-blocker p {
                 font-size: 1rem;
                 color: rgba(255, 255, 255, 0.6);
-                animation: fadeIn 2s ease-in-out;
             }
         }
 
@@ -97,17 +91,11 @@
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.45);
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px);
+            backdrop-filter: var(--panel-blur);
             padding: 6px 14px;
             border-radius: 20px;
             border: 1px solid var(--accent-border);
             letter-spacing: 0.5px;
-        }
-
-        .top-bar i {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2.2px;
         }
 
         /* Click to Enter Overlay */
@@ -121,7 +109,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 5;
+            z-index: 100;
             cursor: pointer;
             transition: opacity 0.8s ease, visibility 0.8s ease;
         }
@@ -135,19 +123,22 @@
         .click-text {
             font-size: 2rem;
             color: #ffffff;
-            font-family: inherit;
-            animation: pulse 1.8s infinite ease-in-out;
             letter-spacing: 2px;
+            animation: pulse 1.8s infinite ease-in-out;
         }
 
-        /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
         canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Allows user to click elements behind the snow */
+            pointer-events: none;
             z-index: 50;
         }
 
@@ -158,417 +149,196 @@
             transition: opacity 0.8s ease;
         }
 
-        /* Active Fade In Class */
         .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
             opacity: 1;
             pointer-events: auto;
         }
 
-        /* Main Content Positioning */
+        /* Main Content Workspace Layout Matrix */
         .main-container {
             position: relative;
             z-index: 2;
-            text-align: center;
+            width: 85vw;
+            max-width: 1400px;
+            height: 80vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            gap: 24px;
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid var(--accent-border);
+            padding-bottom: 12px;
         }
 
         h1 {
-            font-size: 3.5rem;
-            opacity: 0.9;
-            animation: fadeIn 2s ease-in-out;
+            font-size: 2.2rem;
+            opacity: 0.95;
             text-shadow: 0 0 15px var(--accent-text-glow);
+            letter-spacing: 1px;
         }
 
-        /* Bottom Center Discord Link */
-        .discord-invite {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 12;
-            color: rgba(255, 255, 255, 0.6);
-            transition: color 0.3s, transform 0.3s, opacity 0.8s ease;
+        /* Main Media Matrix Application Workspace */
+        .streaming-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            flex: 1;
+            min-height: 0;
         }
 
-        .discord-invite:hover {
-            color: #5865F2;
-        }
-
-        /* Bottom Left Expandable Menu */
-        .expandable-menu {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            z-index: 13;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
-            padding: 5px;
-        }
-
-        .menu-toggle:hover {
-            color: var(--text-color);
-        }
-
-        .menu-toggle.active {
-            transform: rotate(180deg);
-            color: var(--text-color);
-        }
-
-        .menu-items {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
+        /* Sidebar Directory Engine Layout */
+        .anime-sidebar {
+            background: var(--glass-panel);
+            backdrop-filter: var(--panel-blur);
+            border: 1px solid var(--accent-border);
+            border-radius: 12px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            padding: 0 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0);
+            overflow-y: auto;
         }
 
-        .menu-items.show {
-            max-height: 200px;
-            opacity: 1;
-            padding: 20px;
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 4px;
+        }
+
+        .anime-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .anime-card:hover {
+            background: var(--glass-panel-active);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .anime-card.active {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+        }
+
+        .anime-thumb {
+            width: 45px;
+            height: 60px;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
             border: 1px solid var(--accent-border);
+            flex-shrink: 0;
         }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.2s;
+        .anime-info {
+            overflow: hidden;
             text-align: left;
-            width: 100%;
         }
 
-        .menu-item:hover {
-            color: var(--text-color);
+        .anime-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: text-overflow;
+            text-overflow: ellipsis;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        #youtube-audio-player {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
+        .anime-meta {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 4px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 0.9; transform: translateY(0); }
-        }
-
-        /* ---------------------------------------------------- */
-        /* TERMINAL INTERACTIVE OVERLAY                         */
-        /* ---------------------------------------------------- */
-        #terminal-overlay {
-            position: fixed;
-            top: -100%;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.95);
-            backdrop-filter: blur(15px);
-            z-index: 40; /* Canvas sits above this at z-index 50 */
-            transition: top 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-        }
-
-        #terminal-overlay.active {
-            top: 0;
-        }
-
-        .terminal-window {
-            width: 800px;
-            max-width: 95%;
-            height: 500px;
-            background: #050508;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+        /* Active Core Processing Stage Layer */
+        .stage-container {
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            gap: 20px;
+            min-height: 0;
         }
 
-        .terminal-header {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 15px;
+        .player-viewport {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            background: #000000;
+            border-radius: 12px;
+            border: 1px solid var(--accent-border);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .player-viewport iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Episode Navigation Array Matrix */
+        .episode-matrix-wrapper {
+            background: var(--glass-panel);
+            backdrop-filter: var(--panel-blur);
+            border: 1px solid var(--accent-border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .matrix-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.4);
         }
 
-        .terminal-dots {
+        .active-meta-display {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .episode-grid {
             display: flex;
-            gap: 6px;
-        }
-
-        .terminal-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .terminal-body {
-            flex-grow: 1;
-            padding: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            color: var(--terminal-color);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            cursor: text;
-        }
-
-        .terminal-output {
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-
-        .terminal-input-row {
-            display: flex;
-            align-items: center;
             gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
         }
 
-        .terminal-prompt {
-            color: var(--terminal-color);
-            font-weight: bold;
+        .episode-node {
+            min-width: 45px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--accent-border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease;
         }
 
-        .terminal-input {
-            background: transparent;
-            border: none;
-            outline: none;
+        .episode-node:hover {
+            background: var(--glass-panel-active);
             color: #ffffff;
-            font-family: inherit;
-            font-size: inherit;
-            flex-grow: 1;
-            caret-color: var(--terminal-color);
-        }
-    </style>
-</head>
-<body>
-
-    <div id="mobile-blocker">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <p>This website is inaccessible on mobile devices. Please switch to desktop.</p>
-    </div>
-    <div class="top-bar" id="topBar">
-        <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
-    </div>
-
-    <div id="click-overlay">
-        <div class="click-text" id="clickText">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
-    </div>
-
-    <canvas id="snowCanvas"></canvas>
-
-    <div class="main-container" id="mainContainer">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-    </div>
-
-    <div id="terminal-overlay">
-        <div class="terminal-window">
-            <div class="terminal-header">
-                <div class="terminal-dots">
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                </div>
-                <div>terminal@user:~</div>
-                <div style="font-size:0.7rem;">press [TAB] to close</div>
-            </div>
-            <div class="terminal-body" id="terminalBody">
-                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.0]
-Type "help" to view available options.
-
-</div>
-                <div class="terminal-input-row">
-                    <span class="terminal-prompt">></span>
-                    <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="discord-invite" id="discordInvite" aria-label="Discord Invite">
-        <i data-lucide="disc"></i>
-    </a>
-
-    <div class="expandable-menu" id="expandableMenu">
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Info Menu">
-            <i data-lucide="chevron-up"></i>
-        </button>
-        <div class="menu-items" id="menuItems">
-            <div class="menu-item">
-                <span>Discord: @d3adawak3</span>
-            </div>
-            <a href="https://github.com/prxyusr" target="_blank" class="menu-item">
-                <span>GitHub:   @prxyusr</span>
-            </a>
-            <div class="menu-item" style="opacity: 1;">
-                <span>N/A: N/A</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="youtube-audio-player"></div>
-
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-    <script>
-        // ----------------------------------------------------
-        // Snowfall Animation Logic
-        // ----------------------------------------------------
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        const numFlakes = 100;
-        const flakes = [];
-
-        for (let i = 0; i < numFlakes; i++) {
-            flakes.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                radius: Math.random() * 3 + 1,
-                speedY: Math.random() * 1 + 0.5,
-                speedX: Math.random() * 0.5 - 0.25,
-                opacity: Math.random() * 0.7 + 0.3
-            });
-        }
-
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-
-            flakes.forEach(flake => {
-                ctx.beginPath();
-                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
-                ctx.fill();
-
-                flake.y += flake.speedY;
-                flake.x += flake.speedX;
-
-                // Reset flake when it goes off screen
-                if (flake.y > height) {
-                    flake.y = -flake.radius;
-                    flake.x = Math.random() * width;
-                }
-                if (flake.x > width) flake.x = 0;
-                if (flake.x < 0) flake.x = width;
-            });
-
-            requestAnimationFrame(drawSnow);
-        }
-
-        drawSnow();
-
-        // ----------------------------------------------------
-        // UI & Event Handlers
-        // ----------------------------------------------------
-        lucide.createIcons();
-
-        // Menu Toggle Logic
-        const menuToggle = document.getElementById('menuToggle');
-        const menuItems = document.getElementById('menuItems');
-
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            menuToggle.classList.toggle('active');
-            menuItems.classList.toggle('show');
-        });
-
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio-player', {
-                height: '1',
-                width: '1',
-                videoId: 'JiC8lgLOdck', 
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'JiC8lgLOdck' 
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(7);
-            }
-
-            const overlay = document.getElementById('click-overlay');
-            const mainContainer = document.getElementById('mainContainer');
-            const discordInvite = document.getElementById('discordInvite');
-            const expandableMenu = document.getElementById('expandableMenu');
-            const topBar = document.getElementById('topBar');
-
-            if (overlay) {
-                overlay.addEventListener('click', () => {
-                    overlay.classList.add('fade-out');
-                    mainContainer.classList.add('fade-in');
-                    discordInvite.classList.add('fade-in');
-                    expandableMenu.classList.add('fade-in');
-                    topBar.classList.add('fade-in');
-
-                    if (player && typeof player.playVideo === 'function') {
-                        player.playVideo();
-                    }
-                });
-            }
-        }
-    </script>
-</body>
-</html>
