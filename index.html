@@ -140,7 +140,7 @@
             letter-spacing: 2px;
         }
 
-        /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
+        /* Snowfall Canvas */
         canvas {
             position: absolute;
             top: 0;
@@ -472,7 +472,7 @@ Type "help" to view available options.
 
     <div id="youtube-audio-player"></div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
         // ----------------------------------------------------
@@ -577,7 +577,8 @@ Type "help" to view available options.
                     terminalOutput.innerHTML += `Available commands:\n  help        - Show available commands\n  zokoanime   - Load anime player directly inside the console frame\n  close       - Close and exit the anime player frame\n  clear       - Clear terminal lines\n`;
                 } else if (inputVal === 'zokoanime') {
                     terminalOutput.innerHTML += `Launching player stream container...\n`;
-                    animeFrame.src = "https://zokoanime.video";
+                    // Using the official webmaster embed framework layout
+                    animeFrame.src = "https://zokoanime.video/";
                     animeContainer.style.display = "block";
                 } else if (inputVal === 'close' || inputVal === 'exit') {
                     terminalOutput.innerHTML += `Terminating interface streams...\n`;
@@ -593,6 +594,14 @@ Type "help" to view available options.
                 terminalBody.scrollTop = terminalBody.scrollHeight;
             }
         });
+
+        // YouTube Audio Integration
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        if (firstScriptTag && firstScriptTag.parentNode) {
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
 
         var player;
 
@@ -617,26 +626,26 @@ Type "help" to view available options.
             if (player && typeof player.setVolume === 'function') {
                 player.setVolume(7);
             }
-        }
 
-        const overlay = document.getElementById('click-overlay');
-        const mainContainer = document.getElementById('mainContainer');
-        const discordInvite = document.getElementById('discordInvite');
-        const expandableMenu = document.getElementById('expandableMenu');
-        const topBar = document.getElementById('topBar');
+            const overlay = document.getElementById('click-overlay');
+            const mainContainer = document.getElementById('mainContainer');
+            const discordInvite = document.getElementById('discordInvite');
+            const expandableMenu = document.getElementById('expandableMenu');
+            const topBar = document.getElementById('topBar');
 
-        if (overlay) {
-            overlay.addEventListener('click', () => {
-                overlay.classList.add('fade-out');
-                mainContainer.classList.add('fade-in');
-                discordInvite.classList.add('fade-in');
-                expandableMenu.classList.add('fade-in');
-                topBar.classList.add('fade-in');
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    overlay.classList.add('fade-out');
+                    mainContainer.classList.add('fade-in');
+                    discordInvite.classList.add('fade-in');
+                    expandableMenu.classList.add('fade-in');
+                    topBar.classList.add('fade-in');
 
-                if (player && typeof player.playVideo === 'function') {
-                    player.playVideo();
-                }
-            });
+                    if (player && typeof player.playVideo === 'function') {
+                        player.playVideo();
+                    }
+                });
+            }
         }
     </script>
 </body>
