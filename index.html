@@ -1,662 +1,630 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProxyUser</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
+# ==============================================================================
+# PROXYUSER VIDEO HARDWARE TERMINAL EMULATOR CONFIGURATION BLUEPRINT
+# FILE MANIFEST: 
+#   1. Commands.ts (State, Typing schemas, Persistent Web Storage Hooks)
+#   2. VideoTerminalWindow.tsx (Encapsulated Video Interface with Live ASCII bars)
+#   3. Shell.tsx (Main Processing Command Routing Loop Engine)
+# ==============================================================================
+
+
+# ------------------------------------------------------------------------------
+# SECTION 1: Commands.ts
+# ------------------------------------------------------------------------------
+
+export interface Video {
+  id: string;
+  title: string;
+  description: string;
+  streamUrl: string;
+  views: number;
+  category: string;
+  duration: string;
+  timestamp: string;
+}
+
+export interface TerminalLine {
+  id: string;
+  text: string;
+  type: 'input' | 'output' | 'error' | 'system';
+}
+
+export interface UploadWizardState {
+  isActive: boolean;
+  step: 'title' | 'description' | 'url' | 'category' | 'duration';
+  data: Partial<Video>;
+}
+
+export const initialVideoDatabase: Video[] = [
+  {
+    id: "v1",
+    title: "Synthesizer Soundscapes & Neon Horizons",
+    description: "A 4K looping retro futuristic synthwave experience.",
+    streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    views: 14205,
+    category: "Music",
+    duration: "09:56",
+    timestamp: "2026-10-15 08:32"
+  },
+  {
+    id: "v2",
+    title: "Next.js 16 Architectural Paradigms",
+    description: "Deep dive into sub-millisecond hydration and streaming patterns.",
+    streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    views: 8942,
+    category: "Education",
+    duration: "14:20",
+    timestamp: "2026-10-18 14:10"
+  },
+  {
+    id: "v3",
+    title: "Hyper-Optimized Linux Kernel Compilation",
+    description: "Stripping down unnecessary modules for custom real-time embedded environments.",
+    streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    views: 3104,
+    category: "Engineering",
+    duration: "05:12",
+    timestamp: "2026-10-20 01:45"
+  }
+];
+
+const LOCAL_STORAGE_KEY = 'proxyuser_video_db';
+
+export function loadSavedDatabase(): Video[] {
+  if (typeof window === 'undefined') return initialVideoDatabase;
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : initialVideoDatabase;
+  } catch {
+    return initialVideoDatabase;
+  }
+}
+
+export function saveDatabase(videos: Video[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(videos));
+  } catch (err) {
+    console.error("Failed persisting session state: ", err);
+  }
+}
+
+export function formatVideoTable(videos: Video[]): string[] {
+  if (videos.length === 0) return ["No records matching criteria found."];
+
+  const colWidths = { id: 6, title: 35, category: 14, views: 9, duration: 9 };
+  const truncate = (str: string, len: number) => 
+    str.length > len ? str.substring(0, len - 3) + "..." : str.padEnd(len);
+
+  const topBorder = `┌${'─'.repeat(colWidths.id)}┬${'─'.repeat(colWidths.title)}┬${'─'.repeat(colWidths.category)}┬${'─'.repeat(colWidths.views)}┬${'─'.repeat(colWidths.duration)}┐`;
+  const header = `│${"ID".padEnd(colWidths.id)}│${"TITLE".padEnd(colWidths.title)}│${"CATEGORY".padEnd(colWidths.category)}│${"VIEWS".padEnd(colWidths.views)}│${"DURATION".padEnd(colWidths.duration)}│`;
+  const divider = `├${'─'.repeat(colWidths.id)}┼${'─'.repeat(colWidths.title)}┼${'─'.repeat(colWidths.category)}┼${'─'.repeat(colWidths.views)}┼${'─'.repeat(colWidths.duration)}┤`;
+  const bottomBorder = `└${'─'.repeat(colWidths.id)}┴${'─'.repeat(colWidths.title)}┴${'─'.repeat(colWidths.category)}┴${'─'.repeat(colWidths.views)}┴${'─'.repeat(colWidths.duration)}┘`;
+
+  const rows = videos.map(v => {
+    const id = truncate(v.id, colWidths.id);
+    const title = truncate(v.title, colWidths.title);
+    const cat = truncate(v.category, colWidths.category);
+    const views = truncate(v.views.toLocaleString(), colWidths.views);
+    const dur = truncate(v.duration, colWidths.duration);
+    return `│${id}│${title}│${cat}│${views}│${dur}│`;
+  });
+
+  return [topBorder, header, divider, ...rows, bottomBorder];
+}
+
+
+# ------------------------------------------------------------------------------
+# SECTION 2: VideoTerminalWindow.tsx
+# ------------------------------------------------------------------------------
+
+'use client';
+
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize, X, Monitor } from 'lucide-react';
+import { Video } from './Commands';
+
+interface VideoTerminalWindowProps {
+  video: Video;
+  initialVolume: number; // 0 to 1
+  onClose: () => void;
+}
+
+export interface VideoTerminalHandle {
+  setVolume: (volume: number) => void;
+}
+
+export const VideoTerminalWindow = forwardRef<VideoTerminalHandle, VideoTerminalWindowProps>(
+  ({ video, initialVolume, onClose }, ref) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [currentTime, setCurrentTime] = useState('00:00');
+    const [currentVol, setCurrentVol] = useState(initialVolume);
+
+    useImperativeHandle(ref, () => ({
+      setVolume: (vol: number) => {
+        if (!videoRef.current) return;
+        videoRef.current.volume = vol;
+        setCurrentVol(vol);
+        if (vol > 0) {
+          videoRef.current.muted = false;
+          setIsMuted(false);
         }
+      }
+    }));
 
-        :root {
-            --bg-color: #0b0c10;
-            --text-color: #ffffff;
-            --accent-border: rgba(255, 255, 255, 0.05);
-            --accent-btn-hover: rgba(255, 255, 255, 0.1);
-            --accent-text-glow: #ffffff;
-            --terminal-color: #ffffff;
+    useEffect(() => {
+      containerRef.current?.focus();
+      if (videoRef.current) {
+        videoRef.current.volume = initialVolume;
+      }
+
+      const handleGlobalKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Tab' || e.key === 'Escape') {
+          e.preventDefault();
+          onClose();
         }
+      };
+      window.addEventListener('keydown', handleGlobalKeyDown, { capture: true });
+      return () => window.removeEventListener('keydown', handleGlobalKeyDown, { capture: true });
+    }, [onClose, initialVolume]);
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.8s ease, color 0.8s ease;
-        }
+    const togglePlay = () => {
+      if (!videoRef.current) return;
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play().catch(() => {});
+      }
+      setIsPlaying(!isPlaying);
+    };
 
-        /* ---------------------------------------------------- */
-        /* MOBILE BLOCKER STYLING                               */
-        /* ---------------------------------------------------- */
-        #mobile-blocker {
-            display: none;
-        }
+    const toggleMute = () => {
+      if (!videoRef.current) return;
+      const targetMute = !isMuted;
+      videoRef.current.muted = targetMute;
+      setIsMuted(targetMute);
+    };
 
-        @media (max-width: 992px) {
-            .main-container, 
-            .top-bar, 
-            .discord-invite, 
-            .expandable-menu, 
-            #click-overlay, 
-            #terminal-overlay {
-                display: none !important;
-            }
+    const handleTimeUpdate = () => {
+      if (!videoRef.current) return;
+      const current = videoRef.current.currentTime;
+      const duration = videoRef.current.duration || 1;
+      setProgress((current / duration) * 100);
 
-            #mobile-blocker {
-                display: flex !important;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background-color: #0b0c10;
-                color: #ffffff;
-                text-align: center;
-                font-family: inherit;
-                z-index: 10;
-                padding: 20px;
-            }
+      const mins = Math.floor(current / 60).toString().padStart(2, '0');
+      const secs = Math.floor(current % 60).toString().padStart(2, '0');
+      setCurrentTime(`${mins}:${secs}`);
+    };
 
-            #mobile-blocker h1 {
-                font-size: 2.2rem;
-                margin-bottom: 15px;
-                letter-spacing: 1.5px;
-                animation: fadeIn 1.5s ease-in-out;
-            }
+    const goFullscreen = () => {
+      if (!videoRef.current) return;
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      }
+    };
 
-            #mobile-blocker p {
-                font-size: 1rem;
-                color: rgba(255, 255, 255, 0.6);
-                animation: fadeIn 2s ease-in-out;
-            }
-        }
+    const renderAsciiProgressBar = () => {
+      const barsCount = Math.round((progress / 100) * 30);
+      const activeSegments = '■'.repeat(barsCount);
+      const inactiveSegments = '─'.repeat(30 - barsCount);
+      return `[${activeSegments}${inactiveSegments}] ${Math.round(progress)}%`;
+    };
 
-        /* Top Header Area for View Counter */
-        .top-bar {
-            position: absolute;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 12;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.45);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--accent-border);
-            letter-spacing: 0.5px;
-        }
-
-        .top-bar i {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2.2px;
-        }
-
-        /* Click to Enter Overlay */
-        #click-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-            cursor: pointer;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        #click-overlay.fade-out {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .click-text {
-            font-size: 2rem;
-            color: #ffffff;
-            font-family: inherit;
-            animation: pulse 1.8s infinite ease-in-out;
-            letter-spacing: 2px;
-        }
-
-        /* Snowfall Canvas - MOVED TO Z-INDEX 50 TO SIT OVER TERMINAL */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        /* Hidden Main Elements */
-        .main-container, .discord-invite, .expandable-menu, .top-bar {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease;
-        }
-
-        /* Active Fade In Class */
-        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* Main Content Positioning */
-        .main-container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            opacity: 0.9;
-            animation: fadeIn 2s ease-in-out;
-            text-shadow: 0 0 15px var(--accent-text-glow);
-        }
-
-        /* Bottom Center Discord Link */
-        .discord-invite {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 12;
-            color: rgba(255, 255, 255, 0.6);
-            transition: color 0.3s, transform 0.3s, opacity 0.8s ease;
-        }
-
-        .discord-invite:hover {
-            color: #5865F2;
-        }
-
-        /* Bottom Left Expandable Menu */
-        .expandable-menu {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            z-index: 13;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
-            padding: 5px;
-        }
-
-        .menu-toggle:hover {
-            color: var(--text-color);
-        }
-
-        .menu-toggle.active {
-            transform: rotate(180deg);
-            color: var(--text-color);
-        }
-
-        .menu-items {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            padding: 0 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0);
-        }
-
-        .menu-items.show {
-            max-height: 200px;
-            opacity: 1;
-            padding: 20px;
-            border: 1px solid var(--accent-border);
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.2s;
-            text-align: left;
-            width: 100%;
-        }
-
-        .menu-item:hover {
-            color: var(--text-color);
-        }
-
-        #youtube-audio-player {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 0.9; transform: translateY(0); }
-        }
-
-        /* ---------------------------------------------------- */
-        /* TERMINAL INTERACTIVE OVERLAY                         */
-        /* ---------------------------------------------------- */
-        #terminal-overlay {
-            position: fixed;
-            top: -100%;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 12, 16, 0.95);
-            backdrop-filter: blur(15px);
-            z-index: 40;
-            transition: top 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-        }
-
-        #terminal-overlay.active {
-            top: 0;
-        }
-
-        .terminal-window {
-            width: 900px;
-            max-width: 95%;
-            height: 600px;
-            background: #050508;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            position: relative;
-        }
-
-        .terminal-header {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.4);
-            z-index: 10;
-        }
-
-        .terminal-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .terminal-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .terminal-body {
-            flex-grow: 1;
-            padding: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            color: var(--terminal-color);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            cursor: text;
-            position: relative;
-        }
-
-        .terminal-output {
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-
-        .terminal-input-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .terminal-prompt {
-            color: var(--terminal-color);
-            font-weight: bold;
-        }
-
-        .terminal-input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ffffff;
-            font-family: inherit;
-            font-size: inherit;
-            flex-grow: 1;
-            caret-color: var(--terminal-color);
-        }
-
-        /* Embedded Anime Container Styling */
-        #anime-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            display: none;
-            z-index: 5;
-        }
-
-        #anime-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="mobile-blocker">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <p>This website is inaccessible on mobile devices. Please switch to desktop.</p>
-    </div>
-    <div class="top-bar" id="topBar">
-        <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
-    </div>
-
-    <div id="click-overlay">
-        <div class="click-text" id="clickText">𝐂𝐥𝐢𝐜𝐤 𝐌𝐞</div>
-    </div>
-
-    <canvas id="snowCanvas"></canvas>
-
-    <div class="main-container" id="mainContainer">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-    </div>
-
-    <div id="terminal-overlay">
-        <div class="terminal-window">
-            <div class="terminal-header">
-                <div class="terminal-dots">
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                </div>
-                <div>terminal@user:~</div>
-                <div style="font-size:0.7rem;">press [TAB] to close</div>
-            </div>
-            <div class="terminal-body" id="terminalBody">
-                <div id="anime-container">
-                    <iframe id="anime-frame" src="" allow="autoplay; fullscreen; encrypted-media"></iframe>
-                </div>
-
-                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.0]
-Type "help" to view available options.
-
-</div>
-                <div class="terminal-input-row">
-                    <span class="terminal-prompt">></span>
-                    <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false">
-                </div>
-            </div>
+    return (
+      <div 
+        ref={containerRef}
+        tabIndex={0}
+        className="w-full border border-emerald-500/40 bg-zinc-950 shadow-[0_0_30px_rgba(16,185,129,0.1)] rounded-sm overflow-hidden mb-4 outline-none focus:border-emerald-400 group transition-all"
+      >
+        <div className="bg-zinc-900 border-b border-emerald-500/30 px-3 py-1.5 flex items-center justify-between text-xs text-emerald-400/80 font-mono">
+          <div className="flex items-center gap-2">
+            <Monitor size={14} className="animate-pulse text-emerald-400" />
+            <span>DISPLAY NODE // CONSOLE_PLAYER // ID: {video.id}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] text-zinc-500 bg-zinc-950 px-2 py-0.5 border border-zinc-800">
+              VOL: {Math.round(currentVol * 100)}% | PRESS [TAB] TO DISCONNECT
+            </span>
+            <button onClick={onClose} className="hover:text-red-400 transition-colors">
+              <X size={14} />
+            </button>
+          </div>
         </div>
-    </div>
 
-    <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="discord-invite" id="discordInvite" aria-label="Discord Invite">
-        <i data-lucide="disc"></i>
-    </a>
-
-    <div class="expandable-menu" id="expandableMenu">
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Info Menu">
-            <i data-lucide="chevron-up"></i>
-        </button>
-        <div class="menu-items" id="menuItems">
-            <div class="menu-item">
-                <span>Discord: @d3adawak3</span>
+        <div className="relative aspect-video w-full max-h-[480px] bg-black flex items-center justify-center">
+          <video
+            ref={videoRef}
+            src={video.streamUrl}
+            autoPlay
+            onTimeUpdate={handleTimeUpdate}
+            onClick={togglePlay}
+            className="w-full h-full object-contain cursor-pointer"
+          />
+          
+          <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur-sm border border-emerald-500/20 p-3 font-mono text-xs text-emerald-400 rounded-sm pointer-events-none max-w-sm">
+            <p className="font-bold text-emerald-300 uppercase tracking-wider">{video.title}</p>
+            <p className="text-zinc-400 mt-1 text-[11px] leading-relaxed">{video.description}</p>
+            <div className="mt-2 flex gap-4 text-[10px] text-emerald-500/70">
+              <span>CAT: {video.category}</span>
+              <span>VIEWS: {video.views.toLocaleString()}</span>
             </div>
-            <a href="https://github.com/prxyusr" target="_blank" class="menu-item">
-                <span>GitHub:   @prxyusr</span>
-            </a>
-            <div class="menu-item" style="opacity: 1;">
-                <span>N/A: N/A</span>
+            <div className="mt-3 pt-2 border-t border-zinc-800/60 font-mono text-[10px] text-cyan-400 tracking-tight">
+              {renderAsciiProgressBar()}
             </div>
+          </div>
         </div>
-    </div>
 
-    <div id="youtube-audio-player"></div>
+        <div className="bg-zinc-900 p-3 border-t border-emerald-500/20 font-mono flex items-center gap-4 text-xs">
+          <button 
+            onClick={togglePlay} 
+            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
+          >
+            {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+          </button>
 
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          <button 
+            onClick={toggleMute} 
+            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
+          >
+            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+          </button>
 
-    <script>
-        // ----------------------------------------------------
-        // Snowfall Animation Logic
-        // ----------------------------------------------------
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
+          <div className="text-emerald-500/80 font-mono text-[11px] min-w-[70px]">
+            {currentTime} / {video.duration}
+          </div>
 
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+          <div className="flex-1 h-2 bg-zinc-950 border border-zinc-800 rounded-full relative overflow-hidden">
+            <div 
+              className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.7)] transition-all duration-100" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
+          <button 
+            onClick={goFullscreen} 
+            className="p-1.5 rounded-sm bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
+          >
+            <Maximize size={14} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+);
 
-        const numFlakes = 100;
-        const flakes = [];
+VideoTerminalWindow.displayName = 'VideoTerminalWindow';
 
-        for (let i = 0; i < numFlakes; i++) {
-            flakes.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                radius: Math.random() * 3 + 1,
-                speedY: Math.random() * 1 + 0.5,
-                speedX: Math.random() * 0.5 - 0.25,
-                opacity: Math.random() * 0.7 + 0.3
-            });
+
+# ------------------------------------------------------------------------------
+# SECTION 3: Shell.tsx
+# ------------------------------------------------------------------------------
+
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { Terminal, ShieldAlert } from 'lucide-react';
+import { 
+  Video, 
+  TerminalLine, 
+  UploadWizardState, 
+  loadSavedDatabase, 
+  saveDatabase, 
+  formatVideoTable 
+} from './Commands';
+import { VideoTerminalWindow, VideoTerminalHandle } from './VideoTerminalWindow';
+
+export default function Shell() {
+  const [database, setDatabase] = useState<Video[]>([]);
+  const [history, setHistory] = useState<TerminalLine[]>([
+    { id: 'init-1', text: 'Proxy Video OS [Version 2.5.2]', type: 'system' },
+    { id: 'init-2', text: 'Persistent local storage pipeline engaged. Type "help" for syntax tables.', type: 'system' },
+    { id: 'init-3', text: ' ', type: 'output' }
+  ]);
+  const [inputVal, setInputVal] = useState('');
+  const [activeVideo, setActiveVideo] = useState<Video | null>(null);
+  const [systemVolume, setSystemVolume] = useState(0.7);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  const [wizard, setWizard] = useState<UploadWizardState>({
+    isActive: false,
+    step: 'title',
+    data: {}
+  });
+
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const playerRef = useRef<VideoTerminalHandle>(null);
+
+  useEffect(() => {
+    setDatabase(loadSavedDatabase());
+    const evaluateAgent = () => {
+      setIsMobile(window.innerWidth < 1024 || /Mobi|Android|iPhone/i.test(navigator.userAgent));
+    };
+    evaluateAgent();
+    window.addEventListener('resize', evaluateAgent);
+    return () => window.removeEventListener('resize', evaluateAgent);
+  }, []);
+
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history, wizard.isActive, activeVideo]);
+
+  const focusInput = () => {
+    if (!activeVideo) inputRef.current?.focus();
+  };
+
+  useEffect(() => {
+    focusInput();
+  }, [activeVideo]);
+
+  const pushLine = (text: string, type: TerminalLine['type'] = 'output') => {
+    setHistory(prev => [...prev, { id: crypto.randomUUID(), text, type }]);
+  };
+
+  const pushMultipleLines = (lines: string[], type: TerminalLine['type'] = 'output') => {
+    setHistory(prev => [
+      ...prev,
+      ...lines.map(line => ({ id: crypto.randomUUID(), text: line, type }))
+    ]);
+  };
+
+  const processStandardCommand = (rawInput: string) => {
+    const trimmed = rawInput.trim();
+    pushLine(`terminal@proxyuser:~ > ${rawInput}`, 'input');
+
+    if (!trimmed) return;
+
+    const parts = trimmed.split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    switch (cmd) {
+      case 'help':
+        pushLine('AVAILABLE SYSTEM FUNCTIONS:', 'system');
+        pushLine('  help            - Display interface systems blueprint parameters.');
+        pushLine('  videos          - Fetch comprehensive database logs of all online nodes.');
+        pushLine('  search [query]  - Probe active indexing arrays using token parameters.');
+        pushLine('  watch [vid_id]  - Allocate canvas hardware pipelines and open video feed.');
+        pushLine('  volume [0-100]  - Set default playback or active sound scalar array.');
+        pushLine('  upload          - Launch multi-step contextual configuration array.');
+        pushLine('  clear           - Purge transient memory allocations from view.');
+        break;
+
+      case 'clear':
+        setHistory([]);
+        break;
+
+      case 'videos': {
+        const structuralLayout = formatVideoTable(database);
+        pushMultipleLines(structuralLayout, 'output');
+        break;
+      }
+
+      case 'search': {
+        if (args.length === 0) {
+          pushLine('Error: Query argument required. Usage: search [query]', 'error');
+          break;
         }
+        const query = args.join(' ').toLowerCase();
+        const matches = database.filter(v => 
+          v.title.toLowerCase().includes(query) || 
+          v.description.toLowerCase().includes(query) ||
+          v.category.toLowerCase().includes(query)
+        );
+        pushLine(`Searching database for: "${query}"...`, 'system');
+        const structuralLayout = formatVideoTable(matches);
+        pushMultipleLines(structuralLayout, 'output');
+        break;
+      }
 
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-
-            flakes.forEach(flake => {
-                ctx.beginPath();
-                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
-                ctx.fill();
-
-                flake.y += flake.speedY;
-                flake.x += flake.speedX;
-
-                if (flake.y > height) {
-                    flake.y = -flake.radius;
-                    flake.x = Math.random() * width;
-                }
-                if (flake.x > width) flake.x = 0;
-                if (flake.x < 0) flake.x = width;
-            });
-
-            requestAnimationFrame(drawSnow);
+      case 'volume': {
+        if (args.length === 0) {
+          pushLine(`Current System Volume Parameter: ${Math.round(systemVolume * 100)}%`, 'system');
+          break;
         }
+        const targetVolInt = parseInt(args[0], 10);
+        if (isNaN(targetVolInt) || targetVolInt < 0 || targetVolInt > 100) {
+          pushLine('Syntax Error: Range specification must fall between [0 - 100]', 'error');
+          break;
+        }
+        const normalizedVol = targetVolInt / 100;
+        setSystemVolume(normalizedVol);
+        pushLine(`System control deck re-calibrated. Volume: ${targetVolInt}%`, 'system');
+        
+        if (playerRef.current) {
+          playerRef.current.setVolume(normalizedVol);
+        }
+        break;
+      }
 
-        drawSnow();
-
-        // ----------------------------------------------------
-        // UI & Event Handlers
-        // ----------------------------------------------------
-        lucide.createIcons();
-
-        const menuToggle = document.getElementById('menuToggle');
-        const menuItems = document.getElementById('menuItems');
-
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            menuToggle.classList.toggle('active');
-            menuItems.classList.toggle('show');
-        });
-
-        // ----------------------------------------------------
-        // TERMINAL ROUTING & IN-SITE PLAYER CONTROL
-        // ----------------------------------------------------
-        const terminalOverlay = document.getElementById('terminal-overlay');
-        const terminalInput = document.getElementById('terminalInput');
-        const terminalOutput = document.getElementById('terminalOutput');
-        const terminalBody = document.getElementById('terminalBody');
-        const animeContainer = document.getElementById('anime-container');
-        const animeFrame = document.getElementById('anime-frame');
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault(); 
-                terminalOverlay.classList.toggle('active');
-                if (terminalOverlay.classList.contains('active')) {
-                    terminalInput.focus();
-                }
-            }
-        });
-
-        terminalBody.addEventListener('click', () => {
-            terminalInput.focus();
-        });
-
-        terminalInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const inputVal = terminalInput.value.trim().toLowerCase();
-                if (inputVal === '') return;
-
-                terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
-
-                const args = inputVal.split(' ');
-                const command = args[0];
-
-                if (command === 'help') {
-                    terminalOutput.innerHTML += `Available commands:\n  help                     - Show available commands\n  zokoanime                - Open default anime home player\n  zokoanime <mal_id>       - Load a specific MyAnimeList ID stream (e.g. zokoanime 20)\n  close                    - Close and hide the anime player frame\n  clear                    - Clear terminal lines\n`;
-                } else if (command === 'zokoanime') {
-                    terminalOutput.innerHTML += `Launching player stream container...\n`;
-                    if (args.length > 1 && !isNaN(args[1])) {
-                        // If they type "zokoanime 20", use the direct player embed link structure
-                        animeFrame.src = "https://zokoanime.video/embed/mal/" + args[1] + "/1";
-                    } else {
-                        // Otherwise fallback to main interface
-                        animeFrame.src = "https://zokoanime.video";
-                    }
-                    animeContainer.style.display = "block";
-                } else if (command === 'close' || command === 'exit') {
-                    terminalOutput.innerHTML += `Terminating interface streams...\n`;
-                    animeFrame.src = "";
-                    animeContainer.style.display = "none";
-                } else if (command === 'clear') {
-                    terminalOutput.innerHTML = `Proxy OS [Version 1.0.0]\nType "help" to view available options.\n\n`;
-                } else {
-                    terminalOutput.innerHTML += `Command not recognized: "${inputVal}". Type "help" for a list of commands.\n`;
-                }
-
-                terminalInput.value = '';
-                terminalBody.scrollTop = terminalBody.scrollHeight;
-            }
-        });
-
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        if (firstScriptTag && firstScriptTag.parentNode) {
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      case 'watch': {
+        if (args.length === 0) {
+          pushLine('Error: Target ID parameter requested. Usage: watch [video_id]', 'error');
+          break;
+        }
+        const targetId = args[0];
+        const match = database.find(v => v.id.toLowerCase() === targetId.toLowerCase());
+        
+        if (!match) {
+          pushLine(`Error: Video signature node "${targetId}" not resolved in active arrays.`, 'error');
         } else {
-            document.head.appendChild(tag);
+          pushLine(`Allocating network streams for video node ${targetId}...`, 'system');
+          const nextDatabase = database.map(v => v.id === match.id ? { ...v, views: v.views + 1 } : v);
+          setDatabase(nextDatabase);
+          saveDatabase(nextDatabase);
+          setActiveVideo({ ...match, views: match.views + 1 });
         }
+        break;
+      }
 
-        var player;
+      case 'upload':
+        pushLine('⚡ ENTERING INTERACTIVE CREATION APPARATUS WIZARD...', 'system');
+        pushLine('Enter Title: ', 'system');
+        setWizard({ isActive: true, step: 'title', data: {} });
+        break;
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio-player', {
-                height: '1',
-                width: '1',
-                videoId: 'JiC8lgLOdck', 
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'JiC8lgLOdck' 
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
+      default:
+        pushLine(`Command not found: "${cmd}". Type "help" for execution specifications.`, 'error');
+    }
+  };
 
-        function onPlayerReady(event) {
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(7);
-            }
+  const processWizardStep = (value: string) => {
+    const inputClean = value.trim();
+    pushLine(`> ${value}`, 'input');
 
-            const overlay = document.getElementById('click-overlay');
-            const mainContainer = document.getElementById('mainContainer');
-            const discordInvite = document.getElementById('discordInvite');
-            const expandableMenu = document.getElementById('expandableMenu');
-            const topBar = document.getElementById('topBar');
+    if (!inputClean) {
+      pushLine('Field validation error: Input parameter cannot be null.', 'error');
+      pushLine(`Re-enter ${wizard.step.toUpperCase()}:`, 'system');
+      return;
+    }
 
-            if (overlay) {
-                overlay.addEventListener('click', () => {
-                    overlay.classList.add('fade-out');
-                    mainContainer.classList.add('fade-in');
-                    discordInvite.classList.add('fade-in');
-                    expandableMenu.classList.add('fade-in');
-                    topBar.classList.add('fade-in');
+    const updatedData = { ...wizard.data };
 
-                    if (player && typeof player.playVideo === 'function') {
-                        player.playVideo();
-                    }
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+    switch (wizard.step) {
+      case 'title':
+        updatedData.title = inputClean;
+        setWizard({ isActive: true, step: 'description', data: updatedData });
+        pushLine('Enter Description String:', 'system');
+        break;
+
+      case 'description':
+        updatedData.description = inputClean;
+        setWizard({ isActive: true, step: 'url', data: updatedData });
+        pushLine('Enter File Path String / Mock Source URL:', 'system');
+        break;
+
+      case 'url':
+        updatedData.streamUrl = inputClean;
+        setWizard({ isActive: true, step: 'category', data: updatedData });
+        pushLine('Enter Categorical Domain Asset tag:', 'system');
+        break;
+
+      case 'category':
+        updatedData.category = inputClean;
+        setWizard({ isActive: true, step: 'duration', data: updatedData });
+        pushLine('Enter Runtime Duration Metric (e.g. MM:SS):', 'system');
+        break;
+
+      case 'duration': {
+        updatedData.duration = inputClean;
+        const completeNode: Video = {
+          id: `v${database.length + 1}`,
+          title: updatedData.title || "Unknown Asset",
+          description: updatedData.description || "N/A Description",
+          streamUrl: updatedData.streamUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          views: 0,
+          category: updatedData.category || "General",
+          duration: updatedData.duration || "00:00",
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        };
+
+        const nextDb = [...database, completeNode];
+        setDatabase(nextDb);
+        saveDatabase(nextDb);
+
+        pushLine(`✔ PIPELINE SECURED: Successfully indexed dynamic video node "${completeNode.id}".`, 'system');
+        setWizard({ isActive: false, step: 'title', data: {} });
+        break;
+      }
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (wizard.isActive) {
+      processWizardStep(inputVal);
+    } else {
+      processStandardCommand(inputVal);
+    }
+    setInputVal('');
+  };
+
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-6 text-center font-mono text-red-500 select-none">
+        <ShieldAlert size={64} className="animate-bounce mb-4 text-red-500" />
+        <h1 className="text-xl font-bold tracking-widest border border-red-500/40 px-4 py-2 bg-red-950/20 mb-3 uppercase">
+          Device Restriction Warning
+        </h1>
+        <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
+          This system endpoint utilizes terminal box-drawing structures requiring desktop layout widths. 
+          Please scale viewport boundaries or shift terminals to desktop-class devices.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="min-h-screen bg-zinc-950 text-emerald-400 font-mono p-4 flex flex-col text-sm selection:bg-emerald-500 selection:text-black"
+      onClick={focusInput}
+    >
+      <div className="flex items-center gap-2 text-xs border-b border-zinc-900 pb-2 mb-4 text-emerald-500/60 select-none">
+        <Terminal size={14} className="text-emerald-400" />
+        <span>SYSTEM WORKSTATION // PROXYUSER-VIDEO-STREAM-ENGINE-V2</span>
+      </div>
+
+      <div className="flex-1 flex flex-col overflow-y-auto space-y-1.5 whitespace-pre-wrap leading-relaxed">
+        {history.map(line => (
+          <div 
+            key={line.id} 
+            className={`
+              ${line.type === 'input' ? 'text-zinc-200' : ''}
+              ${line.type === 'error' ? 'text-red-400 font-bold' : ''}
+              ${line.type === 'system' ? 'text-cyan-400' : ''}
+              ${line.type === 'output' ? 'text-emerald-400/90' : ''}
+            `}
+          >
+            {line.text}
+          </div>
+        ))}
+
+        {activeVideo && (
+          <VideoTerminalWindow 
+            ref={playerRef}
+            video={activeVideo} 
+            initialVolume={systemVolume}
+            onClose={() => {
+              setActiveVideo(null);
+              pushLine('Media execution process closed. Shell focus returned.', 'system');
+            }} 
+          />
+        )}
+
+        {!activeVideo && (
+          <form onSubmit={handleSubmit} className="flex items-center pt-1">
+            <span className="text-emerald-500 select-none mr-2 font-bold">
+              {wizard.isActive ? `wizard[${wizard.step}] > ` : 'terminal@proxyuser:~ > '}
+            </span>
+            <div className="flex-1 relative flex items-center">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                className="w-full bg-transparent text-zinc-100 focus:outline-none caret-transparent font-mono"
+                autoFocus
+                disabled={!!activeVideo}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+              />
+              <div 
+                className="absolute pointer-events-none h-4 w-2 bg-emerald-400 animate-[pulse_1s_infinite]"
+                style={{
+                  left: `${inputVal.length * 8.4}px`, 
+                  opacity: 0.95
+                }}
+              />
+            </div>
+          </form>
+        )}
+        <div ref={terminalEndRef} />
+      </div>
+    </div>
+  );
+}
