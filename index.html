@@ -434,7 +434,7 @@
             </div>
             <div class="terminal-body" id="terminalBody">
                 <div id="anime-container">
-                    <iframe id="anime-frame" src="" allow="autoplay; fullscreen"></iframe>
+                    <iframe id="anime-frame" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
                 </div>
 
                 <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.0]
@@ -568,26 +568,30 @@ Type "help" to view available options.
 
         terminalInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const inputVal = terminalInput.value.trim().toLowerCase();
-                if (inputVal === '') return;
+                const args = terminalInput.value.trim().split(' ');
+                const command = args[0].toLowerCase();
+                
+                if (command === '') return;
 
                 terminalOutput.innerHTML += `\n> ${terminalInput.value}\n`;
 
-                if (inputVal === 'help') {
-                    terminalOutput.innerHTML += `Available commands:\n  help        - Show available commands\n  zokoanime   - Load anime player directly inside the console frame\n  close       - Close and exit the anime player frame\n  clear       - Clear terminal lines\n`;
-                } else if (inputVal === 'zokoanime') {
-                    terminalOutput.innerHTML += `Launching player stream container...\n`;
-                    // Using the official webmaster embed framework layout
-                    animeFrame.src = "https://zokoanime.video/";
+                if (command === 'help') {
+                    terminalOutput.innerHTML += `Available commands:\n  help                     - Show available commands\n  zokoanime [anime-id]     - Load embedded player (e.g., zokoanime 20)\n  close                    - Exit and close the anime player\n  clear                    - Clear terminal history\n`;
+                } else if (command === 'zokoanime') {
+                    const animeId = args[1] || "20"; // Fallback to Naruto if no ID provided
+                    terminalOutput.innerHTML += `Launching player stream container for ID: ${animeId}...\n`;
+                    
+                    // Route directly to the embed target structure
+                    animeFrame.src = `https://zokoanime.video/embed/mal/${animeId}/1`;
                     animeContainer.style.display = "block";
-                } else if (inputVal === 'close' || inputVal === 'exit') {
+                } else if (command === 'close' || command === 'exit') {
                     terminalOutput.innerHTML += `Terminating interface streams...\n`;
                     animeFrame.src = "";
                     animeContainer.style.display = "none";
-                } else if (inputVal === 'clear') {
+                } else if (command === 'clear') {
                     terminalOutput.innerHTML = `Proxy OS [Version 1.0.0]\nType "help" to view available options.\n\n`;
                 } else {
-                    terminalOutput.innerHTML += `Command not recognized: "${inputVal}". Type "help" for a list of commands.\n`;
+                    terminalOutput.innerHTML += `Command not recognized: "${command}". Type "help" for a list of commands.\n`;
                 }
 
                 terminalInput.value = '';
@@ -599,8 +603,10 @@ Type "help" to view available options.
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
-        if (firstScriptTag && firstScriptTag.parentNode) {
+        if (firstScriptTag) {
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+            document.head.appendChild(tag);
         }
 
         var player;
