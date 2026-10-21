@@ -35,7 +35,7 @@
         #mobile-blocker { display: none; }
 
         @media (max-width: 992px) {
-            .main-container, .top-bar, .discord-invite, .expandable-menu, #click-overlay, #terminal-overlay, #catalog-page {
+            .main-container, .top-bar, .discord-invite, .expandable-menu, .spotify-widget, #click-overlay, #terminal-overlay, #catalog-page {
                 display: none !important;
             }
             #mobile-blocker {
@@ -83,11 +83,11 @@
             pointer-events: none; z-index: 85;
         }
 
-        .main-container, .discord-invite, .expandable-menu, .top-bar {
+        .main-container, .discord-invite, .expandable-menu, .top-bar, .spotify-widget {
             opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
         }
 
-        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in {
+        .main-container.fade-in, .discord-invite.fade-in, .expandable-menu.fade-in, .top-bar.fade-in, .spotify-widget.fade-in {
             opacity: 1; pointer-events: auto;
         }
 
@@ -126,6 +126,35 @@
         .menu-item { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); text-decoration: none; }
         .menu-item:hover { color: #fff; }
 
+        /* Spotify-themed Vibe Widget */
+        .spotify-widget {
+            position: absolute; bottom: 30px; right: 40px; z-index: 15;
+            display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px;
+        }
+        .spotify-toggle {
+            background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #1DB954; padding: 8px 14px; border-radius: 20px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;
+            backdrop-filter: blur(8px); transition: background 0.2s, transform 0.2s;
+        }
+        .spotify-toggle:hover { background: rgba(30, 41, 59, 0.95); transform: scale(1.05); }
+        .spotify-toggle svg { width: 16px; height: 16px; fill: currentColor; }
+        
+        .spotify-player-container {
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(12px);
+            border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            display: flex; flex-direction: column; gap: 10px; width: 260px; color: #fff;
+        }
+        .spotify-player-container.show { max-height: 140px; opacity: 1; }
+        .vibe-info { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; font-weight: 500; }
+        .vibe-controls { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #b3b3b3; }
+        .vibe-controls input[type="range"] { flex-grow: 1; accent-color: #1DB954; cursor: pointer; height: 4px; }
+        .vibe-btn { background: #1DB954; color: #000; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+        .vibe-btn:hover { transform: scale(1.1); }
+
         /* Terminal Overlay */
         #terminal-overlay {
             position: fixed; top: -100%; left: 0; width: 100vw; height: 100vh;
@@ -158,7 +187,7 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI with Transparent Background */
+        /* Fullscreen Catalog Page UI */
         #catalog-page {
             display: none;
             position: fixed;
@@ -170,7 +199,7 @@
             overflow-y: auto;
         }
         .catalog-header {
-            background: rgba(17, 24, 39, 0.85);
+            background: rgba(17, 24, 39, 0.95);
             backdrop-filter: blur(10px);
             padding: 20px 40px;
             display: grid;
@@ -178,104 +207,94 @@
             align-items: center;
             gap: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            position: sticky; top: 0; z-index: 10;
+            position: sticky; top: 0; z-index: 20;
         }
-        .catalog-header h2 {
-            justify-self: start;
-        }
+        .catalog-header h2 { justify-self: start; }
         .catalog-search {
             width: 100%; max-width: 400px;
             padding: 10px 16px;
             border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(31, 41, 55, 0.8); color: #fff; font-size: 0.95rem; outline: none;
-            justify-self: center;
-            grid-column: 2;
+            justify-self: center; grid-column: 2;
         }
         .catalog-socials-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            justify-self: start;
-            grid-column: 3;
+            display: flex; align-items: center; gap: 15px;
+            justify-self: start; grid-column: 3;
         }
         .catalog-social-btn {
-            color: #ffffff;
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none;
-            transition: color 0.2s, transform 0.2s;
+            color: #ffffff; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: color 0.2s, transform 0.2s;
         }
         .catalog-social-btn svg { width: 22px; height: 22px; fill: currentColor; }
         .catalog-social-btn.discord:hover { color: #5865F2; transform: scale(1.1); }
         .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
 
-        .catalog-header button#closeCatalog {
-            justify-self: end;
-            grid-column: 4;
-        }
+        .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
+
+        /* Clean Flow Stack for Disclaimer & Genre Bar (No Clipping) */
         .catalog-disclaimer {
-            background: rgba(239, 68, 68, 0.15);
-            backdrop-filter: blur(5px);
-            border-left: 4px solid #ef4444;
-            color: #fca5a5;
-            padding: 12px 24px;
-            font-size: 0.85rem;
-            text-align: center;
+            background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
+            border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
+            font-size: 0.85rem; text-align: center;
+            position: relative; z-index: 15;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
+        .genre-bar {
+            background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(6px);
+            padding: 12px 40px; display: flex; gap: 10px; overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            position: relative; z-index: 15;
+        }
+        .genre-pill {
+            background: rgba(30, 41, 59, 0.7); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
+        .genre-pill.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+
         .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding: 40px;
-            max-width: 1300px;
-            margin: 0 auto;
-            width: 100%;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px; padding: 40px; max-width: 1300px; margin: 0 auto; width: 100%;
+            position: relative; z-index: 1;
         }
         .catalog-card {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(5px);
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            display: flex; flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(5px);
+            border-radius: 8px; overflow: hidden; cursor: pointer;
+            transition: transform 0.2s, background 0.2s; display: flex; flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
         }
         .catalog-card:hover { transform: translateY(-5px); background: rgba(30, 41, 59, 0.95); }
         .catalog-card img { width: 100%; height: 240px; object-fit: cover; }
         .catalog-card-info { padding: 12px; }
         .catalog-card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .catalog-card-sub { font-size: 0.75rem; color: #94a3b8; }
+        
+        .bookmark-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; cursor: pointer; transition: all 0.2s; z-index: 3;
+        }
+        .bookmark-btn:hover { transform: scale(1.1); color: #fff; }
+        .bookmark-btn.saved { color: #f59e0b; background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); }
+
         .catalog-loading { grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 40px; font-size: 1.1rem; }
 
         /* Details Modal */
         #details-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.85);
-            z-index: 90;
-            justify-content: center; align-items: center;
-            padding: 20px;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85); z-index: 90; justify-content: center; align-items: center; padding: 20px;
         }
         .details-box {
-            background: #1e293b;
-            width: 100%; max-width: 750px;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            border: 1px solid #334155;
+            background: #1e293b; width: 100%; max-width: 750px; border-radius: 12px;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9); border: 1px solid #334155;
         }
-        .details-content {
-            display: flex;
-            gap: 20px;
-            padding: 30px;
-        }
-        .details-content img {
-            width: 200px; height: 280px; object-fit: cover; border-radius: 8px;
-        }
+        .details-content { display: flex; gap: 20px; padding: 30px; }
+        .details-content img { width: 200px; height: 280px; object-fit: cover; border-radius: 8px; }
         .details-info { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
         .details-info h2 { font-size: 1.6rem; color: #f8fafc; }
         .details-badge {
@@ -294,8 +313,7 @@
 
         /* Zokoanime Player Overlay */
         #player-view {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(11, 12, 16, 0.95); z-index: 100;
             flex-direction: column; justify-content: center; align-items: center; padding: 20px;
         }
@@ -303,8 +321,6 @@
         .video-container { position: relative; padding-top: 56.25%; background: #000; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; }
-
-        #youtube-audio-player { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -327,6 +343,25 @@
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
+    </div>
+
+    <!-- Spotify-Themed Custom YouTube Audio Controller -->
+    <div class="spotify-widget" id="spotifyWidget">
+        <button class="spotify-toggle" id="spotifyToggle">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.599-.12-.42.18-.78.6-.9 4.56-1.021 8.52-.6 11.64 1.32.36.18.48.66.24 1.08zm1.44-3.84c-.301.48-.901.66-1.381.36-3.24-1.98-8.16-2.58-11.94-1.38-.54.18-1.14-.12-1.32-.66-.18-.54.12-1.14.66-1.32 4.38-1.38 9.84-.72 13.62 1.56.48.3.66.9.36 1.38zm.12-4.08C13.5 7.32 7.8 7.14 4.62 8.1c-.66.18-1.38-.18-1.56-.84-.18-.66.18-1.38.84-1.56 3.78-1.14 10.2-.9 14.76 1.86.6.36.78 1.14.42 1.74-.36.6-1.14.78-1.74.42z"/></svg>
+            Spotify Vibe
+        </button>
+        <div class="spotify-player-container" id="spotifyContainer">
+            <div class="vibe-info">
+                <span>Background Vibe</span>
+                <button class="vibe-btn" id="vibePlayBtn">❚❚</button>
+            </div>
+            <div class="vibe-controls">
+                <span>Vol:</span>
+                <input type="range" id="vibeVolume" min="0" max="100" value="15">
+                <span id="vibeVolVal">15%</span>
+            </div>
+        </div>
     </div>
 
     <!-- Terminal Overlay -->
@@ -364,9 +399,23 @@ Type "catalog" or "cat" to open the live anime catalog search.
             </div>
             <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
         </div>
+
         <div class="catalog-disclaimer">
             ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain. Please browse and watch with caution.
         </div>
+
+        <!-- Genre Filtering Bar (In Normal Flow to Prevent Overlap) -->
+        <div class="genre-bar" id="genreBar">
+            <button class="genre-pill active" data-genre="all">All Popular</button>
+            <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
+            <button class="genre-pill" data-genre="Action">Action</button>
+            <button class="genre-pill" data-genre="Sci-Fi">Sci-Fi</button>
+            <button class="genre-pill" data-genre="Romance">Romance</button>
+            <button class="genre-pill" data-genre="Fantasy">Fantasy</button>
+            <button class="genre-pill" data-genre="Comedy">Comedy</button>
+            <button class="genre-pill" data-genre="Drama">Drama</button>
+        </div>
+
         <div class="catalog-grid" id="catalogGrid">
             <div class="catalog-loading">Loading popular titles...</div>
         </div>
@@ -384,6 +433,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
                         <p><strong>MAL ID:</strong> <span id="detailId" style="color: #38bdf8; font-weight: bold; font-size: 1.1rem;"></span></p>
                         <p><strong>Aired:</strong> <span id="detailDate">N/A</span></p>
                         <p><strong>Studios:</strong> <span id="detailAuthor">N/A</span></p>
+                        <p><strong>Genres:</strong> <span id="detailGenres" style="color: #38bdf8;">N/A</span></p>
                         <p id="detailSynopsis" style="margin-top: 10px; font-size: 0.85rem; color: #cbd5e1; max-height: 120px; overflow-y: auto;"></p>
                     </div>
                 </div>
@@ -472,6 +522,18 @@ Type "catalog" or "cat" to open the live anime catalog search.
             menuItems.classList.toggle('show');
         });
 
+        // Spotify-Themed Widget Toggle & Controls Logic
+        const spotifyToggle = document.getElementById('spotifyToggle');
+        const spotifyContainer = document.getElementById('spotifyContainer');
+        const vibePlayBtn = document.getElementById('vibePlayBtn');
+        const vibeVolume = document.getElementById('vibeVolume');
+        const vibeVolVal = document.getElementById('vibeVolVal');
+
+        spotifyToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            spotifyContainer.classList.toggle('show');
+        });
+
         // YouTube Audio Integration
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
@@ -482,15 +544,42 @@ Type "catalog" or "cat" to open the live anime catalog search.
             player = new YT.Player('youtube-audio-player', {
                 height: '1', width: '1', videoId: 'JiC8lgLOdck',
                 playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'JiC8lgLOdck' },
-                events: { 'onReady': (e) => e.target.setVolume(7) }
+                events: { 
+                    'onReady': (e) => {
+                        e.target.setVolume(15); 
+                    }
+                }
             });
         }
+
+        // Vibe Play/Pause toggle
+        vibePlayBtn.addEventListener('click', () => {
+            if (!player || typeof player.getPlayerState !== 'function') return;
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+                vibePlayBtn.textContent = '▶';
+            } else {
+                player.playVideo();
+                vibePlayBtn.textContent = '❚❚';
+            }
+        });
+
+        // Vibe Volume Slider
+        vibeVolume.addEventListener('input', (e) => {
+            const vol = e.target.value;
+            vibeVolVal.textContent = `${vol}%`;
+            if (player && typeof player.setVolume === 'function') {
+                player.setVolume(vol);
+            }
+        });
 
         const overlay = document.getElementById('click-overlay');
         const mainContainer = document.getElementById('mainContainer');
         const discordInvite = document.getElementById('discordInvite');
         const expandableMenu = document.getElementById('expandableMenu');
         const topBar = document.getElementById('topBar');
+        const spotifyWidget = document.getElementById('spotifyWidget');
 
         overlay.addEventListener('click', () => {
             overlay.classList.add('fade-out');
@@ -498,7 +587,11 @@ Type "catalog" or "cat" to open the live anime catalog search.
             discordInvite.classList.add('fade-in');
             expandableMenu.classList.add('fade-in');
             topBar.classList.add('fade-in');
-            if (player && typeof player.playVideo === 'function') player.playVideo();
+            spotifyWidget.classList.add('fade-in');
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+                vibePlayBtn.textContent = '❚❚';
+            }
         });
 
         // Terminal & Page Elements
@@ -510,6 +603,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
         const catalogGrid = document.getElementById('catalogGrid');
         const catalogSearchInput = document.getElementById('catalogSearchInput');
         const closeCatalogBtn = document.getElementById('closeCatalog');
+        const genreBar = document.getElementById('genreBar');
 
         const detailsModal = document.getElementById('details-modal');
         const detailImg = document.getElementById('detailImg');
@@ -518,6 +612,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
         const detailId = document.getElementById('detailId');
         const detailDate = document.getElementById('detailDate');
         const detailAuthor = document.getElementById('detailAuthor');
+        const detailGenres = document.getElementById('detailGenres');
         const detailSynopsis = document.getElementById('detailSynopsis');
         const closeDetailsBtn = document.getElementById('closeDetails');
         const watchBtn = document.getElementById('watchBtn');
@@ -531,6 +626,10 @@ Type "catalog" or "cat" to open the live anime catalog search.
         let liveAnimeList = [];
         let activeAnime = null;
         let searchTimeout = null;
+        let currentGenre = 'all';
+
+        // LocalStorage Watchlist
+        let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
@@ -579,7 +678,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             
             const graphqlQuery = `
             query ($search: String) {
-              Page(perPage: 24) {
+              Page(perPage: 30) {
                 media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
                   id
                   idMal
@@ -601,6 +700,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
                       name
                     }
                   }
+                  genres
                   description
                 }
               }
@@ -633,14 +733,11 @@ Type "catalog" or "cat" to open the live anime catalog search.
                             image: item.coverImage?.large || '',
                             date: item.startDate?.year ? `${item.startDate.year}` : 'N/A',
                             author: item.studios?.nodes?.[0]?.name || 'N/A',
+                            genres: item.genres || [],
                             synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
                         }));
 
-                    if (liveAnimeList.length > 0) {
-                        renderCatalogCards(liveAnimeList);
-                    } else {
-                        catalogGrid.innerHTML = '<div class="catalog-loading">No results found for that title.</div>';
-                    }
+                    filterAndRenderCatalog();
                 } else {
                     catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
                 }
@@ -649,17 +746,63 @@ Type "catalog" or "cat" to open the live anime catalog search.
             }
         }
 
-        function renderCatalogCards(list) {
-            catalogGrid.innerHTML = list.map(item => `
-                <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
-                    <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="catalog-card-info">
-                        <div class="catalog-card-title">${item.title}</div>
-                        <div class="catalog-card-sub">ID: ${item.id} • ${item.type}</div>
-                    </div>
-                </div>
-            `).join('');
+        function filterAndRenderCatalog() {
+            let filtered = liveAnimeList;
+
+            if (currentGenre === 'watchlist') {
+                filtered = liveAnimeList.filter(item => watchlist.includes(item.id));
+            } else if (currentGenre !== 'all') {
+                filtered = liveAnimeList.filter(item => item.genres.includes(currentGenre));
+            }
+
+            renderCatalogCards(filtered);
         }
+
+        function renderCatalogCards(list) {
+            if (list.length === 0) {
+                catalogGrid.innerHTML = '<div class="catalog-loading">No titles found in this view.</div>';
+                return;
+            }
+
+            catalogGrid.innerHTML = list.map(item => {
+                const isSaved = watchlist.includes(item.id);
+                return `
+                    <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
+                        <button class="bookmark-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchlist(event, ${item.id})" title="${isSaved ? 'Remove from Watchlist' : 'Add to Watchlist'}">
+                            <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" style="width:16px;height:16px;"></i>
+                        </button>
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                        <div class="catalog-card-info">
+                            <div class="catalog-card-title">${item.title}</div>
+                            <div class="catalog-card-sub">ID: ${item.id} • ${item.type}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // Toggle Watchlist Handler
+        window.toggleWatchlist = function(event, id) {
+            event.stopPropagation();
+            if (watchlist.includes(id)) {
+                watchlist = watchlist.filter(itemId => itemId !== id);
+            } else {
+                watchlist.push(id);
+            }
+            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
+            filterAndRenderCatalog();
+        };
+
+        // Genre Pill Event Listeners
+        genreBar.addEventListener('click', (e) => {
+            if (e.target.classList.contains('genre-pill')) {
+                document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                currentGenre = e.target.getAttribute('data-genre');
+                filterAndRenderCatalog();
+            }
+        });
 
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
@@ -691,6 +834,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             detailId.textContent = activeAnime.id;
             detailDate.textContent = activeAnime.date;
             detailAuthor.textContent = activeAnime.author;
+            detailGenres.textContent = activeAnime.genres.join(', ') || 'N/A';
             detailSynopsis.textContent = activeAnime.synopsis;
 
             detailsModal.style.display = 'flex';
@@ -713,6 +857,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             // Pause background music if playing
             if (player && typeof player.pauseVideo === 'function') {
                 player.pauseVideo();
+                vibePlayBtn.textContent = '▶';
             }
 
             const ep = epNum.value || 1;
@@ -731,6 +876,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             // Resume background music when exiting the player
             if (player && typeof player.playVideo === 'function') {
                 player.playVideo();
+                vibePlayBtn.textContent = '❚❚';
             }
         });
     </script>
