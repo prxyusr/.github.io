@@ -235,7 +235,7 @@
         </div>
     </div>
 
-<script>
+    <script>
         let allAnime = [];
         let currentType = '';
         let searchQuery = '';
@@ -251,7 +251,7 @@
         const epInput = document.getElementById('epNumber');
         const trackSelect = document.getElementById('trackType');
 
-async function loadCatalog() {
+        async function loadCatalog() {
             try {
                 const res = await fetch('./anime.json');
                 const rawList = await res.json();
@@ -274,7 +274,7 @@ async function loadCatalog() {
             top5Grid.innerHTML = list.map((item, index) => `
                 <div class="top-card" onclick="openPlayer(${item.id})">
                     <div class="rank-badge">#${index + 1}</div>
-                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
+                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg';">
                     <div class="top-card-info">
                         <div class="top-card-title">${item.title}</div>
                     </div>
@@ -290,21 +290,10 @@ async function loadCatalog() {
 
             grid.innerHTML = list.map(item => `
                 <div class="card" onclick="openPlayer(${item.id})">
-                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
+                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg';">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
                         <div class="card-sub">${item.type}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-        function renderTop5(list) {
-            top5Grid.innerHTML = list.map((item, index) => `
-                <div class="top-card" onclick="openPlayer(${item.id})">
-                    <div class="rank-badge">#${index + 1}</div>
-                    <img data-id="${item.id}" src="${item.image || ''}" alt="${item.title}" loading="lazy">
-                    <div class="top-card-info">
-                        <div class="top-card-title">${item.title}</div>
                     </div>
                 </div>
             `).join('');
@@ -318,23 +307,6 @@ async function loadCatalog() {
             });
 
             renderCards(filtered);
-        }
-
-        function renderCards(list) {
-            if (list.length === 0) {
-                grid.innerHTML = '<div class="status-msg">No titles found.</div>';
-                return;
-            }
-
-            grid.innerHTML = list.map(item => `
-                <div class="card" onclick="openPlayer(${item.id})">
-                    <img data-id="${item.id}" src="${item.image || ''}" alt="${item.title}" loading="lazy">
-                    <div class="card-info">
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-sub">${item.type}</div>
-                    </div>
-                </div>
-            `).join('');
         }
 
         function openPlayer(id) {
