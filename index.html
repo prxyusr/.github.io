@@ -24,6 +24,9 @@
             border-bottom: 1px solid #1f2937;
             flex-wrap: wrap;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo { font-size: 1.5rem; font-weight: bold; color: #38bdf8; text-decoration: none; }
@@ -37,12 +40,13 @@
 
         .search-bar input {
             width: 100%;
-            padding: 8px 14px;
+            padding: 10px 16px;
             border-radius: 6px;
             border: 1px solid #374151;
             background: #1f2937;
             color: #fff;
             outline: none;
+            font-size: 0.95rem;
         }
 
         .controls {
@@ -63,6 +67,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             user-select: none;
+            color: #94a3b8;
         }
         .tab.active { background: #38bdf8; color: #0f172a; font-weight: bold; }
 
@@ -102,7 +107,7 @@
         .status-msg {
             grid-column: 1 / -1;
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #94a3b8;
             font-size: 1.1rem;
         }
@@ -155,13 +160,13 @@
     <header>
         <a href="#" class="logo">ProxyUser.dev</a>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search anime title...">
+            <input type="text" id="searchInput" placeholder="Search any anime title...">
         </div>
     </header>
 
     <div class="controls">
         <div class="tabs">
-            <div class="tab active" data-type="">All</div>
+            <div class="tab active" data-type="">All Popular</div>
             <div class="tab" data-type="tv">TV Series</div>
             <div class="tab" data-type="movie">Movies</div>
             <div class="tab" data-type="ova">OVAs</div>
@@ -169,9 +174,8 @@
         </div>
     </div>
 
-    <div class="grid" id="animeGrid">
-        <div class="status-msg">Loading catalog...</div>
-    </div>
+    <div class="grid" id="animeGrid"></div>
+    <div id="loadingStatus" class="status-msg">Loading catalog...</div>
 
     <!-- Modal Player -->
     <div class="modal" id="playerModal">
@@ -184,6 +188,7 @@
                     <select id="trackType" style="padding: 6px; border-radius: 4px; background: #0f172a; color: #fff; border: 1px solid #334155;">
                         <option value="sub">Sub</option>
                         <option value="dub">Dub</option>
+                        <option value="hsub">HardSub</option>
                     </select>
                 </div>
                 <button class="close-btn" id="closeModal">Close Player</button>
@@ -192,12 +197,16 @@
     </div>
 
     <script>
+        let page = 1;
+        let isLoading = false;
+        let hasMore = true;
         let currentType = '';
         let searchQuery = '';
         let currentAnimeId = null;
         let debounceTimer = null;
 
         const grid = document.getElementById('animeGrid');
+        const loadingStatus = document.getElementById('loadingStatus');
         const searchInput = document.getElementById('searchInput');
         const tabs = document.querySelectorAll('.tab');
         const modal = document.getElementById('playerModal');
@@ -205,11 +214,20 @@
         const epInput = document.getElementById('epNumber');
         const trackSelect = document.getElementById('trackType');
 
-        // Fetch Anime with Retry Logic
-        async function fetchAnime() {
-            grid.innerHTML = '<div class="status-msg">Loading titles...</div>';
+        async function fetchAnime(reset = false) {
+            if (isLoading || (!hasMore && !reset)) return;
+            isLoading = true;
 
-            let url = `https://api.jikan.moe/v4/anime?limit=24&sfw=true`;
+            if (reset) {
+                page = 1;
+                hasMore = true;
+                grid.innerHTML = '';
+            }
+
+            loadingStatus.textContent = 'Loading more titles...';
+            loadingStatus.style.display = 'block';
+
+            let url = `https://api.jikan.moe/v4/anime?page=${page}&limit=24&sfw=true`;
             if (currentType) url += `&type=${currentType}`;
             if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
             else url += `&order_by=popularity&sort=asc`;
@@ -217,57 +235,30 @@
             try {
                 const res = await fetch(url);
                 if (res.status === 429) {
-                    // Rate limited - wait 1 second and retry
-                    setTimeout(fetchAnime, 1200);
+                    setTimeout(() => fetchAnime(reset), 1200);
                     return;
                 }
                 const data = await res.json();
-                renderCards(data.data || []);
-            } catch (err) {
-                // Fallback to AniList API if Jikan fails
-                fetchAniListFallback();
-            }
-        }
-
-        // AniList Fallback
-        async function fetchAniListFallback() {
-            const query = `
-            query {
-                Page(perPage: 24) {
-                    media(type: ANIME, sort: POPULARITY_DESC) {
-                        idMal
-                        title { english romaji }
-                        coverImage { large }
-                        format
-                    }
+                
+                if (data.data && data.data.length > 0) {
+                    renderCards(data.data);
+                    hasMore = data.pagination.has_next_page;
+                    page++;
+                    loadingStatus.style.display = hasMore ? 'block' : 'none';
+                } else {
+                    if (page === 1) grid.innerHTML = '<div class="status-msg">No anime found matching your query.</div>';
+                    hasMore = false;
+                    loadingStatus.style.display = 'none';
                 }
-            }`;
-            try {
-                const res = await fetch('https://graphql.anilist.co', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query })
-                });
-                const data = await res.json();
-                const list = data.data.Page.media.map(item => ({
-                    mal_id: item.idMal,
-                    title: item.title.english || item.title.romaji,
-                    images: { jpg: { image_url: item.coverImage.large } },
-                    type: item.format
-                }));
-                renderCards(list);
-            } catch (e) {
-                grid.innerHTML = '<div class="status-msg">Error loading content. Please refresh.</div>';
+            } catch (err) {
+                loadingStatus.textContent = 'Error loading titles. Scroll down to retry.';
+            } finally {
+                isLoading = false;
             }
         }
 
         function renderCards(list) {
-            if (!list || list.length === 0) {
-                grid.innerHTML = '<div class="status-msg">No anime found.</div>';
-                return;
-            }
-
-            grid.innerHTML = list.map(item => `
+            const html = list.map(item => `
                 <div class="card" onclick="openPlayer(${item.mal_id})">
                     <img src="${item.images?.jpg?.image_url || ''}" alt="${item.title}" loading="lazy">
                     <div class="card-info">
@@ -276,6 +267,7 @@
                     </div>
                 </div>
             `).join('');
+            grid.insertAdjacentHTML('beforeend', html);
         }
 
         function openPlayer(id) {
@@ -289,25 +281,31 @@
             const ep = epInput.value || 1;
             const track = trackSelect.value || 'sub';
             videoWrapper.innerHTML = `
-                <iframe src="https://zokoanime.video/stream/mal/${currentAnimeId}/${ep}/${track}" allowfullscreen></iframe>
+                <iframe src="https://zokoanime.video/stream/mal/${currentAnimeId}/${ep}/${track}?color=38bdf8" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             `;
         }
 
-        // Event Listeners
+        // Infinite Scroll
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                fetchAnime();
+            }
+        });
+
+        // Tabs & Search
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentType = tab.dataset.type;
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(fetchAnime, 400);
+                fetchAnime(true);
             });
         });
 
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(fetchAnime, 500);
+            debounceTimer = setTimeout(() => fetchAnime(true), 500);
         });
 
         epInput.addEventListener('change', updateEmbed);
