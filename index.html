@@ -256,17 +256,15 @@
                 const res = await fetch('./anime.json');
                 const rawList = await res.json();
 
-                // Automatically map and ensure valid images using Jikan image structure
+                // Map items and ensure they have a resilient image source using Jikan's ID structure
                 allAnime = rawList.map(item => ({
                     id: item.id,
                     title: item.title,
-                    type: item.type,
-                    image: `https://cdn.myanimelist.net/images/anime/${item.id}` // Fallback or direct fetch if needed
+                    type: item.type || 'TV',
+                    // Use provided image or fallback directly to Jikan's official image endpoint pattern
+                    image: item.image || `https://cdn.myanimelist.net/images/anime/${Math.floor(item.id / 1000)}/${item.id}.jpg`
                 }));
 
-                // Alternatively, let's fetch valid images dynamically via Jikan's batch or individual fallback to guarantee 100% load success:
-                allAnime = rawList; // keep original, but let's fix image error handling in HTML rendering below:
-                
                 renderTop5(allAnime.slice(0, 5));
                 applyFilters();
             } catch (err) {
@@ -278,7 +276,7 @@
             top5Grid.innerHTML = list.map((item, index) => `
                 <div class="top-card" onclick="openPlayer(${item.id})">
                     <div class="rank-badge">#${index + 1}</div>
-                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-fYr83VvX7ZzQ.jpg'">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
                     <div class="top-card-info">
                         <div class="top-card-title">${item.title}</div>
                     </div>
@@ -304,7 +302,7 @@
 
             grid.innerHTML = list.map(item => `
                 <div class="card" onclick="openPlayer(${item.id})">
-                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-fYr83VvX7ZzQ.jpg'">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
                         <div class="card-sub">${item.type}</div>
