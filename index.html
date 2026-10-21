@@ -309,7 +309,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
     <div id="catalog-page">
         <div class="catalog-header">
             <h2 style="color: #38bdf8;">ProxyUser.dev // Anime Catalog</h2>
-            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime name and press Enter...">
+            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title (e.g. cyberpunk)...">
             <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
         </div>
         <div class="catalog-grid" id="catalogGrid">
@@ -511,7 +511,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             }
         });
 
-        // Live API Catalog Logic
+        // Live API Catalog Logic with Rate-Limit Backoff
         function openCatalogUI() {
             catalogPage.style.display = 'flex';
             if (liveAnimeList.length === 0) {
@@ -519,18 +519,22 @@ Type "catalog" or "cat" to open the live anime catalog search.
             }
         }
 
-        async function fetchAnimeData(query) {
-            catalogGrid.innerHTML = '<div class="catalog-loading">Fetching from database...</div>';
-            try {
-                const url = query 
-                    ? `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=24`
-                    : `https://api.jikan.moe/v4/top/anime?limit=24`;
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second max network timeout
+        async function fetchAnimeData(query, retries = 2) {
+            catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
+            
+            const primaryUrl = query 
+                ? `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=24`
+                : `https://api.jikan.moe/v4/top/anime?limit=24`;
 
-                const res = await fetch(url, { signal: controller.signal });
-                clearTimeout(timeoutId);
+            try {
+                const res = await fetch(primaryUrl);
+                
+                // Handle Jikan Rate Limiting (HTTP 429) automatically
+                if (res.status === 429 && retries > 0) {
+                    catalogGrid.innerHTML = '<div class="catalog-loading">Server busy, retrying in 1s...</div>';
+                    await new Promise(r => setTimeout(r, 1200));
+                    return fetchAnimeData(query, retries - 1);
+                }
 
                 const data = await res.json();
                 
@@ -546,10 +550,10 @@ Type "catalog" or "cat" to open the live anime catalog search.
                     }));
                     renderCatalogCards(liveAnimeList);
                 } else {
-                    catalogGrid.innerHTML = '<div class="catalog-loading">No results found for that search.</div>';
+                    catalogGrid.innerHTML = '<div class="catalog-loading">No results found for that search term.</div>';
                 }
             } catch (err) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">API rate limited or offline. Press Enter to try again.</div>';
+                catalogGrid.innerHTML = '<div class="catalog-loading">Network delay. Press Enter to retry search.</div>';
             }
         }
 
@@ -565,13 +569,13 @@ Type "catalog" or "cat" to open the live anime catalog search.
             `).join('');
         }
 
-        // Fast responsive search (400ms delay after typing)
+        // Smooth search trigger with 500ms debounce
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 fetchAnimeData(query);
-            }, 400);
+            }, 500);
         });
 
         catalogSearchInput.addEventListener('keypress', (e) => {
