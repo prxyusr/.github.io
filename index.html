@@ -274,7 +274,7 @@
             top5Grid.innerHTML = list.map((item, index) => `
                 <div class="top-card" onclick="openPlayer(${item.id})">
                     <div class="rank-badge">#${index + 1}</div>
-                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg';">
+                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.style.opacity='0.3';">
                     <div class="top-card-info">
                         <div class="top-card-title">${item.title}</div>
                     </div>
@@ -290,7 +290,7 @@
 
             grid.innerHTML = list.map(item => `
                 <div class="card" onclick="openPlayer(${item.id})">
-                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg';">
+                    <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.style.opacity='0.3';">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
                         <div class="card-sub">${item.type}</div>
