@@ -187,7 +187,7 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI (Strict Vertical Flow - Zero Clipping) */
+        /* Fullscreen Catalog Page UI */
         #catalog-page {
             display: none;
             position: fixed;
@@ -232,7 +232,6 @@
         .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
         .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
 
-        /* Completely Unclipped Banner & Genre Bar in Normal Flow */
         .catalog-disclaimer {
             background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
             border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
@@ -261,6 +260,24 @@
         }
         .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
         .genre-pill.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+
+        /* Continue Watching Section */
+        .continue-section {
+            max-width: 1300px; margin: 30px auto 0 auto; padding: 0 40px; width: 100%;
+            display: none; flex-direction: column; gap: 15px; flex-shrink: 0;
+        }
+        .continue-section h3 { font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .continue-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
+        .continue-card {
+            background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 8px; padding: 10px; display: flex; gap: 15px; align-items: center;
+            min-width: 280px; cursor: pointer; transition: transform 0.2s, background 0.2s; flex-shrink: 0;
+        }
+        .continue-card:hover { transform: translateY(-3px); background: rgba(30, 41, 59, 1); border-color: #38bdf8; }
+        .continue-card img { width: 60px; height: 80px; object-fit: cover; border-radius: 4px; }
+        .continue-info { display: flex; flex-direction: column; gap: 4px; }
+        .continue-title { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
+        .continue-ep { font-size: 0.75rem; color: #38bdf8; font-weight: bold; }
 
         .catalog-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -422,6 +439,12 @@ Type "help" for commands.
             <button class="genre-pill" data-genre="Fantasy">Fantasy</button>
             <button class="genre-pill" data-genre="Comedy">Comedy</button>
             <button class="genre-pill" data-genre="Drama">Drama</button>
+        </div>
+
+        <!-- Continue Watching Shelf -->
+        <div class="continue-section" id="continueSection">
+            <h3><i data-lucide="play-circle" style="width:20px;height:20px;"></i> Continue Watching</h3>
+            <div class="continue-row" id="continueRow"></div>
         </div>
 
         <div class="catalog-grid" id="catalogGrid">
@@ -629,6 +652,8 @@ Type "help" for commands.
         const epNum = document.getElementById('epNum');
         const trackSel = document.getElementById('trackSel');
         const closePlayerBtn = document.getElementById('closePlayer');
+        const continueSection = document.getElementById('continueSection');
+        const continueRow = document.getElementById('continueRow');
 
         let liveAnimeList = [];
         let activeAnime = null;
@@ -639,8 +664,9 @@ Type "help" for commands.
         let isLoadingMore = false;
         let currentSearchQuery = '';
 
-        // LocalStorage Watchlist
+        // LocalStorage Watchlist & History
         let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
+        let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
@@ -678,6 +704,7 @@ Type "help" for commands.
 
         function openCatalogUI() {
             catalogPage.style.display = 'flex';
+            renderContinueWatching();
             if (liveAnimeList.length === 0) {
                 fetchAnimeData('', 1, false);
             }
@@ -814,6 +841,33 @@ Type "help" for commands.
             lucide.createIcons();
         }
 
+        function renderContinueWatching() {
+            if (historyList.length === 0) {
+                continueSection.style.display = 'none';
+                return;
+            }
+            continueSection.style.display = 'flex';
+            continueRow.innerHTML = historyList.map(item => `
+                <div class="continue-card" onclick="resumeHistory(${item.id}, ${item.ep}, '${item.track}')">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    <div class="continue-info">
+                        <div class="continue-title">${item.title}</div>
+                        <div class="continue-ep">Episode ${item.ep} (${item.track.toUpperCase()})</div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        window.resumeHistory = function(id, ep, track) {
+            activeAnime = liveAnimeList.find(i => i.id === id) || historyList.find(i => i.id === id);
+            if (!activeAnime) return;
+            epNum.value = ep;
+            trackSel.value = track;
+            catalogPage.style.display = 'none';
+            openPlayerStream();
+        };
+
         // Infinite Scroll Listener on Catalog Page
         catalogPage.addEventListener('scroll', () => {
             if (currentGenre !== 'all' && currentGenre !== 'watchlist') return; 
@@ -872,17 +926,17 @@ Type "help" for commands.
 
         // Details Modal Logic
         window.showAnimeDetails = function(id) {
-            activeAnime = liveAnimeList.find(i => i.id === id);
+            activeAnime = liveAnimeList.find(i => i.id === id) || historyList.find(i => i.id === id);
             if (!activeAnime) return;
 
             detailImg.src = activeAnime.image;
-            detailType.textContent = activeAnime.type;
+            detailType.textContent = activeAnime.type || 'TV';
             detailTitle.textContent = activeAnime.title;
             detailId.textContent = activeAnime.id;
-            detailDate.textContent = activeAnime.date;
-            detailAuthor.textContent = activeAnime.author;
-            detailGenres.textContent = activeAnime.genres.join(', ') || 'N/A';
-            detailSynopsis.textContent = activeAnime.synopsis;
+            detailDate.textContent = activeAnime.date || 'N/A';
+            detailAuthor.textContent = activeAnime.author || 'N/A';
+            detailGenres.textContent = (activeAnime.genres || []).join(', ') || 'N/A';
+            detailSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
 
             detailsModal.style.display = 'flex';
         };
@@ -897,7 +951,7 @@ Type "help" for commands.
             openPlayerStream();
         });
 
-        // Player Logic with Background Audio Pause/Resume
+        // Player Logic with Background Audio Pause/Resume & History Tracking
         function openPlayerStream() {
             if (!activeAnime) return;
 
@@ -908,6 +962,24 @@ Type "help" for commands.
 
             const ep = epNum.value || 1;
             const track = trackSel.value || 'sub';
+
+            // Save to Continue Watching History
+            historyList = historyList.filter(item => item.id !== activeAnime.id);
+            historyList.unshift({
+                id: activeAnime.id,
+                title: activeAnime.title,
+                image: activeAnime.image,
+                ep: ep,
+                track: track,
+                type: activeAnime.type || 'TV',
+                date: activeAnime.date || 'N/A',
+                author: activeAnime.author || 'N/A',
+                genres: activeAnime.genres || [],
+                synopsis: activeAnime.synopsis || ''
+            });
+            if (historyList.length > 10) historyList.pop(); // Keep last 10
+            localStorage.setItem('proxy_history', JSON.stringify(historyList));
+
             videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
             playerView.style.display = 'flex';
         }
