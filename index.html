@@ -180,6 +180,15 @@
             border-radius: 6px; border: 1px solid #374151;
             background: #1f2937; color: #fff; font-size: 0.95rem; outline: none;
         }
+        .catalog-disclaimer {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px 24px;
+            font-size: 0.85rem;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+        }
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -311,6 +320,9 @@ Type "catalog" or "cat" to open the live anime catalog search.
             <h2 style="color: #38bdf8;">ProxyUser.dev // Anime Catalog</h2>
             <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title (e.g. cyberpunk)...">
             <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
+        </div>
+        <div class="catalog-disclaimer">
+            ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this site. Please browse and watch with caution.
         </div>
         <div class="catalog-grid" id="catalogGrid">
             <div class="catalog-loading">Loading popular titles...</div>
