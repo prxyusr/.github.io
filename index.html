@@ -570,7 +570,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
                 
                 if (data && data.data && data.data.Page && data.data.Page.media) {
                     liveAnimeList = data.data.Page.media
-                        .filter(item => item.idMal !== null) // Ensure MyAnimeList ID exists
+                        .filter(item => item.idMal !== null)
                         .map(item => ({
                             id: item.idMal,
                             title: item.title.english || item.title.romaji,
@@ -606,7 +606,6 @@ Type "catalog" or "cat" to open the live anime catalog search.
             `).join('');
         }
 
-        // Fast response trigger
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             clearTimeout(searchTimeout);
@@ -652,9 +651,15 @@ Type "catalog" or "cat" to open the live anime catalog search.
             openPlayerStream();
         });
 
-        // Player Logic
+        // Player Logic with Background Audio Pause/Resume
         function openPlayerStream() {
             if (!activeAnime) return;
+
+            // Pause background music if playing
+            if (player && typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
+            }
+
             const ep = epNum.value || 1;
             const track = trackSel.value || 'sub';
             videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
@@ -667,6 +672,11 @@ Type "catalog" or "cat" to open the live anime catalog search.
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
             videoWrapper.innerHTML = '';
+
+            // Resume background music when exiting the player
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+            }
         });
     </script>
 </body>
