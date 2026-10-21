@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProxyUser - Anime Directory</title>
+    <title>ProxyUser.dev - Anime Portal</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -15,6 +15,7 @@
             flex-direction: column;
         }
 
+        /* Navigation Bar */
         header {
             background: #111827;
             padding: 15px 30px;
@@ -22,14 +23,14 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #1f2937;
-            flex-wrap: wrap;
-            gap: 15px;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .logo { font-size: 1.5rem; font-weight: bold; color: #38bdf8; text-decoration: none; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #38bdf8; text-decoration: none; cursor: pointer; }
 
         .search-bar {
             display: flex;
@@ -49,6 +50,112 @@
             font-size: 0.95rem;
         }
 
+        /* Hero / Landing Section */
+        .hero {
+            background: linear-gradient(180deg, #111827 0%, #0b0f19 100%);
+            padding: 50px 30px;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .cta-btn:hover {
+            background: #0284c7;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Top 5 Section */
+        .top5-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top5-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .top-card {
+            position: relative;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .top-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .top-card img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: 900;
+            font-size: 1rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .top-card-info {
+            padding: 12px;
+        }
+
+        .top-card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Main Catalog View */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -84,32 +191,21 @@
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
             display: flex;
             flex-direction: column;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
-
-        .card img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-        }
-
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 230px; object-fit: cover; }
         .card-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-size: 0.9rem; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
-        .card-sub { font-size: 0.75rem; color: #94a3b8; }
 
         .status-msg {
             grid-column: 1 / -1;
             text-align: center;
             padding: 40px 20px;
             color: #94a3b8;
-            font-size: 1.1rem;
         }
 
         /* Modal Player */
@@ -130,26 +226,10 @@
             max-width: 900px;
             border-radius: 12px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
-        .video-container {
-            position: relative;
-            padding-top: 56.25%;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%; border: none;
-        }
-        .modal-body {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+        .video-container { position: relative; padding-top: 56.25%; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .modal-body { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .ep-controls { display: flex; gap: 10px; align-items: center; }
         .ep-controls input { width: 70px; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff; }
         .close-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
@@ -158,26 +238,45 @@
 <body>
 
     <header>
-        <a href="#" class="logo">ProxyUser.dev</a>
+        <a class="logo" id="homeLogo">ProxyUser.dev</a>
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search any anime title...">
         </div>
     </header>
 
-    <div class="controls">
-        <div class="tabs">
-            <div class="tab active" data-type="">All Popular</div>
-            <div class="tab" data-type="tv">TV Series</div>
-            <div class="tab" data-type="movie">Movies</div>
-            <div class="tab" data-type="ova">OVAs</div>
-            <div class="tab" data-type="special">Specials</div>
+    <!-- Homepage Front View -->
+    <div id="frontSection">
+        <section class="hero">
+            <h1>Welcome to ProxyUser.dev</h1>
+            <p>Stream top trending anime TV shows, movies, and specials instantly.</p>
+            <button class="cta-btn" id="exploreBtn">Explore All Anime</button>
+        </section>
+
+        <div class="top5-container">
+            <div class="section-title">🔥 Top 5 Anime Right Now</div>
+            <div class="top5-grid" id="top5Grid">
+                <div class="status-msg">Loading top picks...</div>
+            </div>
         </div>
     </div>
 
-    <div class="grid" id="animeGrid"></div>
-    <div id="loadingStatus" class="status-msg">Loading catalog...</div>
+    <!-- Main Catalog View -->
+    <div id="catalogSection">
+        <div class="controls">
+            <div class="tabs">
+                <div class="tab active" data-type="">All Popular</div>
+                <div class="tab" data-type="tv">TV Series</div>
+                <div class="tab" data-type="movie">Movies</div>
+                <div class="tab" data-type="ova">OVAs</div>
+                <div class="tab" data-type="special">Specials</div>
+            </div>
+        </div>
 
-    <!-- Modal Player -->
+        <div class="grid" id="animeGrid"></div>
+        <div id="loadingStatus" class="status-msg">Loading directory...</div>
+    </div>
+
+    <!-- Player Modal -->
     <div class="modal" id="playerModal">
         <div class="modal-content">
             <div class="video-container" id="videoWrapper"></div>
@@ -188,7 +287,6 @@
                     <select id="trackType" style="padding: 6px; border-radius: 4px; background: #0f172a; color: #fff; border: 1px solid #334155;">
                         <option value="sub">Sub</option>
                         <option value="dub">Dub</option>
-                        <option value="hsub">HardSub</option>
                     </select>
                 </div>
                 <button class="close-btn" id="closeModal">Close Player</button>
@@ -205,6 +303,9 @@
         let currentAnimeId = null;
         let debounceTimer = null;
 
+        const frontSection = document.getElementById('frontSection');
+        const catalogSection = document.getElementById('catalogSection');
+        const top5Grid = document.getElementById('top5Grid');
         const grid = document.getElementById('animeGrid');
         const loadingStatus = document.getElementById('loadingStatus');
         const searchInput = document.getElementById('searchInput');
@@ -214,6 +315,40 @@
         const epInput = document.getElementById('epNumber');
         const trackSelect = document.getElementById('trackType');
 
+        // Load Top 5 Trending Anime
+        async function fetchTop5() {
+            const cacheKey = 'top5_cache';
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                renderTop5(JSON.parse(cached));
+                return;
+            }
+
+            try {
+                const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=5');
+                const data = await res.json();
+                if (data.data) {
+                    localStorage.setItem(cacheKey, JSON.stringify(data.data));
+                    renderTop5(data.data);
+                }
+            } catch (e) {
+                top5Grid.innerHTML = '<div class="status-msg">Failed to load top titles.</div>';
+            }
+        }
+
+        function renderTop5(list) {
+            top5Grid.innerHTML = list.map((item, index) => `
+                <div class="top-card" onclick="openPlayer(${item.mal_id})">
+                    <div class="rank-badge">#${index + 1}</div>
+                    <img src="${item.images?.jpg?.image_url}" alt="${item.title}">
+                    <div class="top-card-info">
+                        <div class="top-card-title">${item.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Fetch Main Catalog Data
         async function fetchAnime(reset = false) {
             if (isLoading || (!hasMore && !reset)) return;
             isLoading = true;
@@ -224,7 +359,6 @@
                 grid.innerHTML = '';
             }
 
-            loadingStatus.textContent = 'Loading more titles...';
             loadingStatus.style.display = 'block';
 
             let url = `https://api.jikan.moe/v4/anime?page=${page}&limit=24&sfw=true`;
@@ -239,20 +373,18 @@
                     return;
                 }
                 const data = await res.json();
-                
                 if (data.data && data.data.length > 0) {
                     renderCards(data.data);
                     hasMore = data.pagination.has_next_page;
                     page++;
-                    loadingStatus.style.display = hasMore ? 'block' : 'none';
                 } else {
-                    if (page === 1) grid.innerHTML = '<div class="status-msg">No anime found matching your query.</div>';
+                    if (page === 1) grid.innerHTML = '<div class="status-msg">No results found.</div>';
                     hasMore = false;
-                    loadingStatus.style.display = 'none';
                 }
             } catch (err) {
-                loadingStatus.textContent = 'Error loading titles. Scroll down to retry.';
+                loadingStatus.textContent = 'Error loading. Scroll down to retry.';
             } finally {
+                loadingStatus.style.display = 'none';
                 isLoading = false;
             }
         }
@@ -260,10 +392,9 @@
         function renderCards(list) {
             const html = list.map(item => `
                 <div class="card" onclick="openPlayer(${item.mal_id})">
-                    <img src="${item.images?.jpg?.image_url || ''}" alt="${item.title}" loading="lazy">
+                    <img src="${item.images?.jpg?.image_url}" alt="${item.title}" loading="lazy">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
-                        <div class="card-sub">${item.type || 'Anime'}</div>
                     </div>
                 </div>
             `).join('');
@@ -271,7 +402,6 @@
         }
 
         function openPlayer(id) {
-            if (!id) return;
             currentAnimeId = id;
             updateEmbed();
             modal.classList.add('open');
@@ -281,18 +411,30 @@
             const ep = epInput.value || 1;
             const track = trackSelect.value || 'sub';
             videoWrapper.innerHTML = `
-                <iframe src="https://zokoanime.video/stream/mal/${currentAnimeId}/${ep}/${track}?color=38bdf8" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                <iframe src="https://zokoanime.video/stream/mal/${currentAnimeId}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>
             `;
         }
 
-        // Infinite Scroll
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                fetchAnime();
-            }
+        // View Switchers
+        function showCatalog() {
+            catalogSection.scrollIntoView({ behavior: 'smooth' });
+            if (grid.children.length === 0) fetchAnime(true);
+        }
+
+        document.getElementById('exploreBtn').addEventListener('click', showCatalog);
+        document.getElementById('homeLogo').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Tabs & Search
+        // Search Behavior (Switches view immediately if typing)
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            if (searchQuery.length > 0) showCatalog();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchAnime(true), 500);
+        });
+
+        // Event Listeners
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
@@ -302,10 +444,10 @@
             });
         });
 
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim();
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => fetchAnime(true), 500);
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                fetchAnime();
+            }
         });
 
         epInput.addEventListener('change', updateEmbed);
@@ -315,7 +457,8 @@
             videoWrapper.innerHTML = '';
         });
 
-        // Initial Load
+        // Init
+        fetchTop5();
         fetchAnime();
     </script>
 </body>
