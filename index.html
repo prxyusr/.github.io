@@ -308,8 +308,8 @@ Type "catalog" or "cat" to open the live anime catalog search.
     <!-- Fullscreen Catalog Page -->
     <div id="catalog-page">
         <div class="catalog-header">
-            <h2 style="color: #38bdf8;">ProxyUser.dev // Live Anime Database</h2>
-            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Search any anime... (searches after 10s pause)">
+            <h2 style="color: #38bdf8;">ProxyUser.dev // Anime Catalog</h2>
+            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime name and press Enter...">
             <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
         </div>
         <div class="catalog-grid" id="catalogGrid">
@@ -497,7 +497,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
                 const action = parts[0].toLowerCase();
 
                 if (action === 'help') {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nAvailable commands:\n  catalog (or cat) - Opens live anime database search\n  clear            - Clears the terminal screen\n`;
+                    terminalOutput.innerHTML += `\n> ${cmd}\nAvailable commands:\n  catalog (or cat) - Opens live anime catalog search\n  clear            - Clears the terminal screen\n`;
                 } else if (action === 'clear') {
                     terminalOutput.innerHTML = '';
                 } else if (action === 'catalog' || action === 'cat') {
@@ -520,16 +520,21 @@ Type "catalog" or "cat" to open the live anime catalog search.
         }
 
         async function fetchAnimeData(query) {
-            catalogGrid.innerHTML = '<div class="catalog-loading">Searching database...</div>';
+            catalogGrid.innerHTML = '<div class="catalog-loading">Fetching from database...</div>';
             try {
                 const url = query 
                     ? `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=24`
                     : `https://api.jikan.moe/v4/top/anime?limit=24`;
                 
-                const res = await fetch(url);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second max network timeout
+
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 const data = await res.json();
                 
-                if (data && data.data) {
+                if (data && data.data && data.data.length > 0) {
                     liveAnimeList = data.data.map(item => ({
                         id: item.mal_id,
                         title: item.title,
@@ -541,18 +546,14 @@ Type "catalog" or "cat" to open the live anime catalog search.
                     }));
                     renderCatalogCards(liveAnimeList);
                 } else {
-                    catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
+                    catalogGrid.innerHTML = '<div class="catalog-loading">No results found for that search.</div>';
                 }
             } catch (err) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">Failed to fetch anime catalog. Try again later.</div>';
+                catalogGrid.innerHTML = '<div class="catalog-loading">API rate limited or offline. Press Enter to try again.</div>';
             }
         }
 
         function renderCatalogCards(list) {
-            if (list.length === 0) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">No matching titles found.</div>';
-                return;
-            }
             catalogGrid.innerHTML = list.map(item => `
                 <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
@@ -564,21 +565,15 @@ Type "catalog" or "cat" to open the live anime catalog search.
             `).join('');
         }
 
-        // 10-second debounce pause timer
+        // Fast responsive search (400ms delay after typing)
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             clearTimeout(searchTimeout);
-            
-            if (query.length > 0) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">Waiting 10s after typing before executing search...</div>';
-            }
-
             searchTimeout = setTimeout(() => {
                 fetchAnimeData(query);
-            }, 10000); // 10000ms = 10 second pause delay
+            }, 400);
         });
 
-        // Pressing Enter executes the search immediately without waiting 10 seconds
         catalogSearchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 clearTimeout(searchTimeout);
