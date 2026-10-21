@@ -15,7 +15,6 @@
             flex-direction: column;
         }
 
-        /* Navigation Bar */
         header {
             background: #111827;
             padding: 15px 30px;
@@ -50,7 +49,6 @@
             font-size: 0.95rem;
         }
 
-        /* Hero / Landing Section */
         .hero {
             background: linear-gradient(180deg, #111827 0%, #0b0f19 100%);
             padding: 50px 30px;
@@ -58,17 +56,8 @@
             border-bottom: 1px solid #1f2937;
         }
 
-        .hero h1 {
-            font-size: 2.5rem;
-            color: #f8fafc;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            color: #94a3b8;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
+        .hero h1 { font-size: 2.5rem; color: #f8fafc; margin-bottom: 10px; }
+        .hero p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px; }
 
         .cta-btn {
             background: #38bdf8;
@@ -82,28 +71,10 @@
             transition: transform 0.2s, background 0.2s;
         }
 
-        .cta-btn:hover {
-            background: #0284c7;
-            color: #fff;
-            transform: translateY(-2px);
-        }
+        .cta-btn:hover { background: #0284c7; color: #fff; transform: translateY(-2px); }
 
-        /* Top 5 Section */
-        .top5-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 30px;
-        }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .top5-container { max-width: 1200px; margin: 0 auto; padding: 40px 30px; width: 100%; }
+        .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; color: #e2e8f0; }
 
         .top5-grid {
             display: grid;
@@ -120,15 +91,8 @@
             transition: transform 0.2s;
         }
 
-        .top-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .top-card img {
-            width: 100%;
-            height: 260px;
-            object-fit: cover;
-        }
+        .top-card:hover { transform: translateY(-5px); }
+        .top-card img { width: 100%; height: 260px; object-fit: cover; }
 
         .rank-badge {
             position: absolute;
@@ -143,19 +107,9 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        .top-card-info {
-            padding: 12px;
-        }
+        .top-card-info { padding: 12px; }
+        .top-card-title { font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .top-card-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Main Catalog View */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -200,13 +154,9 @@
         .card img { width: 100%; height: 230px; object-fit: cover; }
         .card-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-size: 0.9rem; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
+        .card-sub { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
 
-        .status-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px 20px;
-            color: #94a3b8;
-        }
+        .status-msg { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #94a3b8; }
 
         /* Modal Player */
         .modal {
@@ -220,13 +170,7 @@
             padding: 20px;
         }
         .modal.open { display: flex; }
-        .modal-content {
-            background: #1e293b;
-            width: 100%;
-            max-width: 900px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
+        .modal-content { background: #1e293b; width: 100%; max-width: 900px; border-radius: 12px; overflow: hidden; }
         .video-container { position: relative; padding-top: 56.25%; background: #000; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .modal-body { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
@@ -244,7 +188,6 @@
         </div>
     </header>
 
-    <!-- Homepage Front View -->
     <div id="frontSection">
         <section class="hero">
             <h1>Welcome to ProxyUser.dev</h1>
@@ -260,7 +203,6 @@
         </div>
     </div>
 
-    <!-- Main Catalog View -->
     <div id="catalogSection">
         <div class="controls">
             <div class="tabs">
@@ -273,10 +215,9 @@
         </div>
 
         <div class="grid" id="animeGrid"></div>
-        <div id="loadingStatus" class="status-msg">Loading directory...</div>
+        <div id="loadingStatus" class="status-msg" style="display:none;"></div>
     </div>
 
-    <!-- Player Modal -->
     <div class="modal" id="playerModal">
         <div class="modal-content">
             <div class="video-container" id="videoWrapper"></div>
@@ -296,16 +237,13 @@
 
     <script>
         let allAnime = [];
-        let filteredAnime = [];
         let currentType = '';
         let searchQuery = '';
         let currentAnimeId = null;
 
-        const frontSection = document.getElementById('frontSection');
         const catalogSection = document.getElementById('catalogSection');
         const top5Grid = document.getElementById('top5Grid');
         const grid = document.getElementById('animeGrid');
-        const loadingStatus = document.getElementById('loadingStatus');
         const searchInput = document.getElementById('searchInput');
         const tabs = document.querySelectorAll('.tab');
         const modal = document.getElementById('playerModal');
@@ -313,41 +251,16 @@
         const epInput = document.getElementById('epNumber');
         const trackSelect = document.getElementById('trackType');
 
-        // Load Local Static Catalog
         async function loadCatalog() {
-            loadingStatus.style.display = 'block';
-            loadingStatus.textContent = 'Loading instant catalog...';
-
             try {
                 const res = await fetch('./anime.json');
                 allAnime = await res.json();
+                
+                // Top 5 uses the first 5 entries of your JSON file automatically
                 renderTop5(allAnime.slice(0, 5));
                 applyFilters();
             } catch (err) {
-                // Fallback to API if anime.json isn't present yet
-                fetchFromAPI();
-            } finally {
-                loadingStatus.style.display = 'none';
-            }
-        }
-
-        // Fallback API loader in case anime.json is missing
-        async function fetchFromAPI() {
-            try {
-                const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=24');
-                const data = await res.json();
-                if (data.data) {
-                    allAnime = data.data.map(item => ({
-                        id: item.mal_id,
-                        title: item.title,
-                        type: item.type ? item.type.toLowerCase() : 'tv',
-                        image: item.images?.jpg?.image_url
-                    }));
-                    renderTop5(allAnime.slice(0, 5));
-                    applyFilters();
-                }
-            } catch (e) {
-                grid.innerHTML = '<div class="status-msg">Failed to load content.</div>';
+                grid.innerHTML = '<div class="status-msg">Failed to load anime.json catalog.</div>';
             }
         }
 
@@ -355,7 +268,7 @@
             top5Grid.innerHTML = list.map((item, index) => `
                 <div class="top-card" onclick="openPlayer(${item.id})">
                     <div class="rank-badge">#${index + 1}</div>
-                    <img src="${item.image}" alt="${item.title}">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="top-card-info">
                         <div class="top-card-title">${item.title}</div>
                     </div>
@@ -364,13 +277,13 @@
         }
 
         function applyFilters() {
-            filteredAnime = allAnime.filter(item => {
+            const filtered = allAnime.filter(item => {
                 const matchesType = !currentType || item.type.toLowerCase() === currentType.toLowerCase();
                 const matchesSearch = !searchQuery || item.title.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesType && matchesSearch;
             });
 
-            renderCards(filteredAnime);
+            renderCards(filtered);
         }
 
         function renderCards(list) {
@@ -384,6 +297,7 @@
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
+                        <div class="card-sub">${item.type}</div>
                     </div>
                 </div>
             `).join('');
@@ -403,20 +317,17 @@
             `;
         }
 
-        // Navigation Switchers
-        function showCatalog() {
+        document.getElementById('exploreBtn').addEventListener('click', () => {
             catalogSection.scrollIntoView({ behavior: 'smooth' });
-        }
+        });
 
-        document.getElementById('exploreBtn').addEventListener('click', showCatalog);
         document.getElementById('homeLogo').addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Search & Filter Events
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
-            if (searchQuery.length > 0) showCatalog();
+            if (searchQuery.length > 0) catalogSection.scrollIntoView({ behavior: 'smooth' });
             applyFilters();
         });
 
@@ -436,7 +347,6 @@
             videoWrapper.innerHTML = '';
         });
 
-        // Initialize
         loadCatalog();
     </script>
 </body>
