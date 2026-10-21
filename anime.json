@@ -1,1 +1,12 @@
-./anime.json
+[
+  { "id": 21, "title": "One Piece", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/6/73245.jpg" },
+  { "id": 16498, "title": "Attack on Titan", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/10/47347.jpg" },
+  { "id": 38000, "title": "Demon Slayer: Kimetsu no Yaiba", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg" },
+  { "id": 40748, "title": "Jujutsu Kaisen", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg" },
+  { "id": 1535, "title": "Death Note", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/9/9444.jpg" },
+  { "id": 31964, "title": "My Hero Academia", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/10/78745.jpg" },
+  { "id": 11061, "title": "Hunter x Hunter (2011)", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/13/33465.jpg" },
+  { "id": 30276, "title": "One-Punch Man", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/12/76049.jpg" },
+  { "id": 22319, "title": "Tokyo Ghoul", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/5/64449.jpg" },
+  { "id": 5114, "title": "Fullmetal Alchemist: Brotherhood", "type": "TV", "image": "https://cdn.myanimelist.net/images/anime/1221/91668.jpg" }
+]
