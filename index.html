@@ -78,9 +78,10 @@
             letter-spacing: 2px;
         }
 
+        /* Global Canvas for Main Screen */
         canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 85; /* Increased so it floats above the catalog */
+            pointer-events: none; z-index: 50;
         }
 
         .main-container, .discord-invite, .expandable-menu, .top-bar {
@@ -155,7 +156,7 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI with Transparent Background */
+        /* Fullscreen Catalog Page UI */
         #catalog-page {
             display: none;
             position: fixed;
@@ -166,6 +167,16 @@
             flex-direction: column;
             overflow-y: auto;
         }
+
+        /* Catalog Snowfall Canvas Layer (Behind Content) */
+        .catalog-snow-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .catalog-header {
             background: rgba(17, 24, 39, 0.85);
             backdrop-filter: blur(10px);
@@ -174,7 +185,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            position: sticky; top: 0; z-index: 10;
+            position: sticky; top: 0; z-index: 2;
         }
         .catalog-search {
             width: 100%; max-width: 400px;
@@ -191,6 +202,7 @@
             font-size: 0.85rem;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative; z-index: 2;
         }
         .catalog-grid {
             display: grid;
@@ -200,6 +212,7 @@
             max-width: 1300px;
             margin: 0 auto;
             width: 100%;
+            position: relative; z-index: 2;
         }
         .catalog-card {
             background: rgba(30, 41, 59, 0.85);
@@ -321,6 +334,9 @@ Type "catalog" or "cat" to open the live anime catalog search.
 
     <!-- Fullscreen Catalog Page -->
     <div id="catalog-page">
+        <!-- Snow canvas is nested here so it falls behind the cards and headers -->
+        <canvas class="catalog-snow-canvas" id="catalogSnowCanvas"></canvas>
+
         <div class="catalog-header">
             <h2 style="color: #ffffff;">ProxyUser.dev // Anime Catalog</h2>
             <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title (e.g. cyberpunk)...">
@@ -391,19 +407,33 @@ Type "catalog" or "cat" to open the live anime catalog search.
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
-        // Snowfall Animation
+        // Main Snowfall Animation
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
+        // Catalog Snowfall Animation
+        const catalogCanvas = document.getElementById('catalogSnowCanvas');
+        const catalogCtx = catalogCanvas.getContext('2d');
+        let catalogWidth = catalogCanvas.width = window.innerWidth;
+        let catalogHeight = catalogCanvas.height = window.innerHeight;
+
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
+            catalogWidth = catalogCanvas.width = window.innerWidth;
+            catalogHeight = catalogCanvas.height = window.innerHeight;
         });
 
         const flakes = Array.from({ length: 100 }, () => ({
             x: Math.random() * width, y: Math.random() * height,
+            radius: Math.random() * 3 + 1, speedY: Math.random() * 1 + 0.5,
+            speedX: Math.random() * 0.5 - 0.25, opacity: Math.random() * 0.7 + 0.3
+        }));
+
+        const catalogFlakes = Array.from({ length: 80 }, () => ({
+            x: Math.random() * catalogWidth, y: Math.random() * catalogHeight,
             radius: Math.random() * 3 + 1, speedY: Math.random() * 1 + 0.5,
             speedX: Math.random() * 0.5 - 0.25, opacity: Math.random() * 0.7 + 0.3
         }));
@@ -419,6 +449,18 @@ Type "catalog" or "cat" to open the live anime catalog search.
                 if (f.y > height) { f.y = -f.radius; f.x = Math.random() * width; }
                 if (f.x > width) f.x = 0; if (f.x < 0) f.x = width;
             });
+
+            catalogCtx.clearRect(0, 0, catalogWidth, catalogHeight);
+            catalogFlakes.forEach(f => {
+                catalogCtx.beginPath();
+                catalogCtx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                catalogCtx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+                catalogCtx.fill();
+                f.y += f.speedY; f.x += f.speedX;
+                if (f.y > catalogHeight) { f.y = -f.radius; f.x = Math.random() * catalogWidth; }
+                if (f.x > catalogWidth) f.x = 0; if (f.x < 0) f.x = catalogWidth;
+            });
+
             requestAnimationFrame(drawSnow);
         }
         drawSnow();
