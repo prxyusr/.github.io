@@ -295,13 +295,11 @@
     </div>
 
     <script>
-        let page = 1;
-        let isLoading = false;
-        let hasMore = true;
+        let allAnime = [];
+        let filteredAnime = [];
         let currentType = '';
         let searchQuery = '';
         let currentAnimeId = null;
-        let debounceTimer = null;
 
         const frontSection = document.getElementById('frontSection');
         const catalogSection = document.getElementById('catalogSection');
@@ -315,32 +313,49 @@
         const epInput = document.getElementById('epNumber');
         const trackSelect = document.getElementById('trackType');
 
-        // Load Top 5 Trending Anime
-        async function fetchTop5() {
-            const cacheKey = 'top5_cache';
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-                renderTop5(JSON.parse(cached));
-                return;
-            }
+        // Load Local Static Catalog
+        async function loadCatalog() {
+            loadingStatus.style.display = 'block';
+            loadingStatus.textContent = 'Loading instant catalog...';
 
             try {
-                const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=5');
+                const res = await fetch('./anime.json');
+                allAnime = await res.json();
+                renderTop5(allAnime.slice(0, 5));
+                applyFilters();
+            } catch (err) {
+                // Fallback to API if anime.json isn't present yet
+                fetchFromAPI();
+            } finally {
+                loadingStatus.style.display = 'none';
+            }
+        }
+
+        // Fallback API loader in case anime.json is missing
+        async function fetchFromAPI() {
+            try {
+                const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=24');
                 const data = await res.json();
                 if (data.data) {
-                    localStorage.setItem(cacheKey, JSON.stringify(data.data));
-                    renderTop5(data.data);
+                    allAnime = data.data.map(item => ({
+                        id: item.mal_id,
+                        title: item.title,
+                        type: item.type ? item.type.toLowerCase() : 'tv',
+                        image: item.images?.jpg?.image_url
+                    }));
+                    renderTop5(allAnime.slice(0, 5));
+                    applyFilters();
                 }
             } catch (e) {
-                top5Grid.innerHTML = '<div class="status-msg">Failed to load top titles.</div>';
+                grid.innerHTML = '<div class="status-msg">Failed to load content.</div>';
             }
         }
 
         function renderTop5(list) {
             top5Grid.innerHTML = list.map((item, index) => `
-                <div class="top-card" onclick="openPlayer(${item.mal_id})">
+                <div class="top-card" onclick="openPlayer(${item.id})">
                     <div class="rank-badge">#${index + 1}</div>
-                    <img src="${item.images?.jpg?.image_url}" alt="${item.title}">
+                    <img src="${item.image}" alt="${item.title}">
                     <div class="top-card-info">
                         <div class="top-card-title">${item.title}</div>
                     </div>
@@ -348,57 +363,30 @@
             `).join('');
         }
 
-        // Fetch Main Catalog Data
-        async function fetchAnime(reset = false) {
-            if (isLoading || (!hasMore && !reset)) return;
-            isLoading = true;
+        function applyFilters() {
+            filteredAnime = allAnime.filter(item => {
+                const matchesType = !currentType || item.type.toLowerCase() === currentType.toLowerCase();
+                const matchesSearch = !searchQuery || item.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesType && matchesSearch;
+            });
 
-            if (reset) {
-                page = 1;
-                hasMore = true;
-                grid.innerHTML = '';
-            }
-
-            loadingStatus.style.display = 'block';
-
-            let url = `https://api.jikan.moe/v4/anime?page=${page}&limit=24&sfw=true`;
-            if (currentType) url += `&type=${currentType}`;
-            if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
-            else url += `&order_by=popularity&sort=asc`;
-
-            try {
-                const res = await fetch(url);
-                if (res.status === 429) {
-                    setTimeout(() => fetchAnime(reset), 1200);
-                    return;
-                }
-                const data = await res.json();
-                if (data.data && data.data.length > 0) {
-                    renderCards(data.data);
-                    hasMore = data.pagination.has_next_page;
-                    page++;
-                } else {
-                    if (page === 1) grid.innerHTML = '<div class="status-msg">No results found.</div>';
-                    hasMore = false;
-                }
-            } catch (err) {
-                loadingStatus.textContent = 'Error loading. Scroll down to retry.';
-            } finally {
-                loadingStatus.style.display = 'none';
-                isLoading = false;
-            }
+            renderCards(filteredAnime);
         }
 
         function renderCards(list) {
-            const html = list.map(item => `
-                <div class="card" onclick="openPlayer(${item.mal_id})">
-                    <img src="${item.images?.jpg?.image_url}" alt="${item.title}" loading="lazy">
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="status-msg">No titles found.</div>';
+                return;
+            }
+
+            grid.innerHTML = list.map(item => `
+                <div class="card" onclick="openPlayer(${item.id})">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
                     </div>
                 </div>
             `).join('');
-            grid.insertAdjacentHTML('beforeend', html);
         }
 
         function openPlayer(id) {
@@ -415,10 +403,9 @@
             `;
         }
 
-        // View Switchers
+        // Navigation Switchers
         function showCatalog() {
             catalogSection.scrollIntoView({ behavior: 'smooth' });
-            if (grid.children.length === 0) fetchAnime(true);
         }
 
         document.getElementById('exploreBtn').addEventListener('click', showCatalog);
@@ -426,28 +413,20 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Search Behavior (Switches view immediately if typing)
+        // Search & Filter Events
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             if (searchQuery.length > 0) showCatalog();
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => fetchAnime(true), 500);
+            applyFilters();
         });
 
-        // Event Listeners
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentType = tab.dataset.type;
-                fetchAnime(true);
+                applyFilters();
             });
-        });
-
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                fetchAnime();
-            }
         });
 
         epInput.addEventListener('change', updateEmbed);
@@ -457,9 +436,8 @@
             videoWrapper.innerHTML = '';
         });
 
-        // Init
-        fetchTop5();
-        fetchAnime();
+        // Initialize
+        loadCatalog();
     </script>
 </body>
 </html>
