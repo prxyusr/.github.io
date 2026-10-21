@@ -187,19 +187,20 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI */
+        /* Fullscreen Catalog Page UI (Strict Vertical Flow - Zero Clipping) */
         #catalog-page {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(11, 15, 25, 0.75);
+            background: rgba(11, 15, 25, 0.95);
             backdrop-filter: blur(8px);
             z-index: 80;
             flex-direction: column;
             overflow-y: auto;
         }
+
         .catalog-header {
-            background: rgba(17, 24, 39, 0.95);
+            background: rgba(17, 24, 39, 0.98);
             backdrop-filter: blur(10px);
             padding: 20px 40px;
             display: grid;
@@ -207,9 +208,10 @@
             align-items: center;
             gap: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            position: sticky; top: 0; z-index: 20;
+            flex-shrink: 0;
+            width: 100%;
         }
-        .catalog-header h2 { justify-self: start; }
+        .catalog-header h2 { justify-self: start; color: #ffffff; }
         .catalog-search {
             width: 100%; max-width: 400px;
             padding: 10px 16px;
@@ -228,28 +230,34 @@
         .catalog-social-btn svg { width: 22px; height: 22px; fill: currentColor; }
         .catalog-social-btn.discord:hover { color: #5865F2; transform: scale(1.1); }
         .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
-
         .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
 
-        /* Clean Flow Stack for Disclaimer & Genre Bar (No Clipping) */
+        /* Completely Unclipped Banner & Genre Bar in Normal Flow */
         .catalog-disclaimer {
             background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
             border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
             font-size: 0.85rem; text-align: center;
-            position: relative; z-index: 15;
+            flex-shrink: 0; width: 100%;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .genre-bar {
-            background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(6px);
-            padding: 12px 40px; display: flex; gap: 10px; overflow-x: auto;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-            position: relative; z-index: 15;
+            background: rgba(11, 15, 25, 0.98); backdrop-filter: blur(6px);
+            padding: 14px 40px; display: flex; gap: 10px; 
+            overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+            flex-shrink: 0; width: 100%;
         }
+        .genre-bar::-webkit-scrollbar { height: 6px; }
+        .genre-bar::-webkit-scrollbar-track { background: transparent; }
+        .genre-bar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
+
         .genre-pill {
-            background: rgba(30, 41, 59, 0.7); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
-            transition: all 0.2s ease;
+            background: rgba(30, 41, 59, 0.8); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+            transition: all 0.2s ease; flex-shrink: 0;
         }
         .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
         .genre-pill.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
@@ -257,13 +265,13 @@
         .catalog-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px; padding: 40px; max-width: 1300px; margin: 0 auto; width: 100%;
-            position: relative; z-index: 1;
+            flex-grow: 1;
         }
         .catalog-card {
             background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(5px);
             border-radius: 8px; overflow: hidden; cursor: pointer;
             transition: transform 0.2s, background 0.2s; display: flex; flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05); position: relative; height: fit-content;
         }
         .catalog-card:hover { transform: translateY(-5px); background: rgba(30, 41, 59, 0.95); }
         .catalog-card img { width: 100%; height: 240px; object-fit: cover; }
@@ -387,7 +395,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
     <!-- Fullscreen Catalog Page -->
     <div id="catalog-page">
         <div class="catalog-header">
-            <h2 style="color: #ffffff;">ProxyUser.dev // Anime Catalog</h2>
+            <h2>ProxyUser.dev // Anime Catalog</h2>
             <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title...">
             <div class="catalog-socials-group">
                 <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="catalog-social-btn discord" title="Join Discord">
@@ -404,7 +412,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
             ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain. Please browse and watch with caution.
         </div>
 
-        <!-- Genre Filtering Bar (In Normal Flow to Prevent Overlap) -->
+        <!-- Fully Unclipped & Scrollable Genre Bar -->
         <div class="genre-bar" id="genreBar">
             <button class="genre-pill active" data-genre="all">All Popular</button>
             <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
@@ -603,7 +611,6 @@ Type "catalog" or "cat" to open the live anime catalog search.
         const catalogGrid = document.getElementById('catalogGrid');
         const catalogSearchInput = document.getElementById('catalogSearchInput');
         const closeCatalogBtn = document.getElementById('closeCatalog');
-        const genreBar = document.getElementById('genreBar');
 
         const detailsModal = document.getElementById('details-modal');
         const detailImg = document.getElementById('detailImg');
@@ -627,6 +634,10 @@ Type "catalog" or "cat" to open the live anime catalog search.
         let activeAnime = null;
         let searchTimeout = null;
         let currentGenre = 'all';
+        let currentPage = 1;
+        let hasNextPage = true;
+        let isLoadingMore = false;
+        let currentSearchQuery = '';
 
         // LocalStorage Watchlist
         let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
@@ -665,20 +676,27 @@ Type "catalog" or "cat" to open the live anime catalog search.
             }
         });
 
-        // Fast & Reliable GraphQL AniList Search Engine
         function openCatalogUI() {
             catalogPage.style.display = 'flex';
             if (liveAnimeList.length === 0) {
-                fetchAnimeData('');
+                fetchAnimeData('', 1, false);
             }
         }
 
-        async function fetchAnimeData(query) {
-            catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
+        async function fetchAnimeData(query, page = 1, append = false) {
+            if (isLoadingMore) return;
+            isLoadingMore = true;
+
+            if (!append) {
+                catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
+            }
             
             const graphqlQuery = `
-            query ($search: String) {
-              Page(perPage: 30) {
+            query ($search: String, $page: Int) {
+              Page(page: $page, perPage: 24) {
+                pageInfo {
+                  hasNextPage
+                }
                 media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
                   id
                   idMal
@@ -706,7 +724,8 @@ Type "catalog" or "cat" to open the live anime catalog search.
               }
             }`;
 
-            const variables = query ? { search: query } : {};
+            const variables = { page: page };
+            if (query) variables.search = query;
 
             try {
                 const res = await fetch('https://graphql.anilist.co', {
@@ -723,8 +742,12 @@ Type "catalog" or "cat" to open the live anime catalog search.
 
                 const data = await res.json();
                 
-                if (data && data.data && data.data.Page && data.data.Page.media) {
-                    liveAnimeList = data.data.Page.media
+                if (data && data.data && data.data.Page) {
+                    const pageData = data.data.Page;
+                    hasNextPage = pageData.pageInfo.hasNextPage;
+                    currentPage = page;
+
+                    const newItems = pageData.media
                         .filter(item => item.idMal !== null)
                         .map(item => ({
                             id: item.idMal,
@@ -737,13 +760,20 @@ Type "catalog" or "cat" to open the live anime catalog search.
                             synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
                         }));
 
+                    if (append) {
+                        liveAnimeList = liveAnimeList.concat(newItems);
+                    } else {
+                        liveAnimeList = newItems;
+                    }
+
                     filterAndRenderCatalog();
                 } else {
-                    catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
+                    if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
                 }
             } catch (err) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please check connection and try again.</div>';
+                if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please check connection and try again.</div>';
             }
+            isLoadingMore = false;
         }
 
         function filterAndRenderCatalog() {
@@ -782,6 +812,16 @@ Type "catalog" or "cat" to open the live anime catalog search.
             lucide.createIcons();
         }
 
+        // Infinite Scroll Listener on Catalog Page
+        catalogPage.addEventListener('scroll', () => {
+            if (currentGenre !== 'all' && currentGenre !== 'watchlist') return; // Infinite scroll works best on global/search feeds
+            if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 200) {
+                if (hasNextPage && !isLoadingMore) {
+                    fetchAnimeData(currentSearchQuery, currentPage + 1, true);
+                }
+            }
+        });
+
         // Toggle Watchlist Handler
         window.toggleWatchlist = function(event, id) {
             event.stopPropagation();
@@ -795,6 +835,7 @@ Type "catalog" or "cat" to open the live anime catalog search.
         };
 
         // Genre Pill Event Listeners
+        const genreBar = document.getElementById('genreBar');
         genreBar.addEventListener('click', (e) => {
             if (e.target.classList.contains('genre-pill')) {
                 document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
@@ -806,16 +847,20 @@ Type "catalog" or "cat" to open the live anime catalog search.
 
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
+            currentSearchQuery = query;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                fetchAnimeData(query);
+                currentPage = 1;
+                fetchAnimeData(query, 1, false);
             }, 300);
         });
 
         catalogSearchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 clearTimeout(searchTimeout);
-                fetchAnimeData(catalogSearchInput.value.trim());
+                currentPage = 1;
+                currentSearchQuery = catalogSearchInput.value.trim();
+                fetchAnimeData(currentSearchQuery, 1, false);
             }
         });
 
@@ -854,7 +899,6 @@ Type "catalog" or "cat" to open the live anime catalog search.
         function openPlayerStream() {
             if (!activeAnime) return;
 
-            // Pause background music if playing
             if (player && typeof player.pauseVideo === 'function') {
                 player.pauseVideo();
                 vibePlayBtn.textContent = '▶';
@@ -873,7 +917,6 @@ Type "catalog" or "cat" to open the live anime catalog search.
             playerView.style.display = 'none';
             videoWrapper.innerHTML = '';
 
-            // Resume background music when exiting the player
             if (player && typeof player.playVideo === 'function') {
                 player.playVideo();
                 vibePlayBtn.textContent = '❚❚';
