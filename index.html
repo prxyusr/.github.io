@@ -884,7 +884,7 @@ Type "help" for commands.
                             date: item.startDate?.year ? `${item.startDate.year}` : 'N/A',
                             author: item.studios?.nodes?.[0]?.name || 'N/A',
                             genres: item.genres || [],
-                            episodesCount: item.episodes || 12,
+                            episodesCount: item.episodes || null,
                             synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
                         }));
 
@@ -1040,7 +1040,7 @@ Type "help" for commands.
             detailDate.textContent = activeAnime.date || 'N/A';
             detailAuthor.textContent = activeAnime.author || 'N/A';
             detailGenres.textContent = (activeAnime.genres || []).join(', ') || 'N/A';
-            detailEpisodes.textContent = activeAnime.episodesCount ? `${activeAnime.episodesCount} Episodes` : 'Unknown';
+            detailEpisodes.textContent = activeAnime.episodesCount ? `${activeAnime.episodesCount} Episodes` : 'Ongoing / 1200+';
             detailSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
 
             updateWatchedButtonState();
@@ -1129,7 +1129,7 @@ Type "help" for commands.
             lucide.createIcons();
         }
 
-        // Reliable Episode Generator using AniList Count (with Jikan API fallback)
+        // Robust Episode Fetcher with Smart Long-Runner Fallback
         async function fetchAndRenderEpisodes(anime) {
             episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
             
@@ -1143,11 +1143,22 @@ Type "help" for commands.
                     return;
                 }
             } catch (err) {
-                // Ignore network/rate limit error and fall back to generator
+                // Rate-limited or offline, fallback to generator
             }
 
-            // Fallback: Generate list from known total episode count
-            const total = anime.episodesCount || 24;
+            // Fallback: If episodesCount is unknown or null, assign safe defaults for long series (like One Piece)
+            let total = anime.episodesCount;
+            if (!total) {
+                const titleLower = anime.title.toLowerCase();
+                if (titleLower.includes('one piece')) total = 1150;
+                else if (titleLower.includes('naruto')) total = 220;
+                else if (titleLower.includes('bleach')) total = 366;
+                else if (titleLower.includes('detective conan')) total = 1150;
+                else if (titleLower.includes('black clover')) total = 170;
+                else if (titleLower.includes('boruto')) total = 293;
+                else total = 24; // Default standard anime length
+            }
+
             fetchedEpisodesCache = Array.from({ length: total }, (_, i) => ({
                 mal_id: i + 1,
                 title: `Episode ${i + 1}`
@@ -1223,7 +1234,7 @@ Type "help" for commands.
                 date: activeAnime.date || 'N/A',
                 author: activeAnime.author || 'N/A',
                 genres: activeAnime.genres || [],
-                episodesCount: activeAnime.episodesCount || 12,
+                episodesCount: activeAnime.episodesCount || null,
                 synopsis: activeAnime.synopsis || ''
             });
             if (historyList.length > 10) historyList.pop();
