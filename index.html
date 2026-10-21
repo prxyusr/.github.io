@@ -306,6 +306,14 @@
         .bookmark-btn:hover { transform: scale(1.1); color: #fff; }
         .bookmark-btn.saved { color: #f59e0b; background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); }
 
+        .watched-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(34, 197, 94, 0.85); backdrop-filter: blur(5px);
+            color: #fff; border-radius: 50%; width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center; z-index: 3;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
         .catalog-loading { grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 40px; font-size: 1.1rem; }
 
         /* Details Modal */
@@ -332,20 +340,46 @@
             display: flex; justify-content: space-between; align-items: center;
             border-top: 1px solid #334155;
         }
+        .details-left-actions { display: flex; gap: 10px; align-items: center; }
         .btn-primary { background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; }
         .btn-primary:hover { background: #0284c7; color: #fff; }
         .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .btn-watched { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
+        .btn-watched.watched { background: #22c55e; color: #0f172a; }
 
-        /* Zokoanime Player Overlay */
+        /* Zokoanime Player View with Automated Episode Sidebar */
         #player-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(11, 12, 16, 0.95); z-index: 100;
-            flex-direction: column; justify-content: center; align-items: center; padding: 20px;
+            justify-content: center; align-items: center; padding: 30px; gap: 20px;
         }
-        .player-box { width: 100%; max-width: 900px; background: #1e293b; border-radius: 12px; overflow: hidden; }
-        .video-container { position: relative; padding-top: 56.25%; background: #000; }
+        .player-main-col { display: flex; flex-direction: column; width: 100%; max-width: 900px; height: 85vh; background: #1e293b; border-radius: 12px; overflow: hidden; }
+        .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; }
+        .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; flex-shrink: 0; }
+        
+        /* Episode Sidebar UI */
+        .episodes-sidebar {
+            width: 340px; height: 85vh; background: #111827; border: 1px solid #334155;
+            border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .episodes-header { padding: 15px 20px; background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
+        .episodes-title-row { display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #f8fafc; font-size: 0.95rem; }
+        .episodes-search {
+            width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 6px; color: #fff; font-size: 0.85rem; outline: none;
+        }
+        .episodes-list { flex-grow: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; scrollbar-width: thin; }
+        .ep-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 6px;
+            background: rgba(30, 41, 59, 0.4); cursor: pointer; transition: all 0.2s; color: #cbd5e1; font-size: 0.85rem;
+        }
+        .ep-item:hover { background: rgba(56, 189, 248, 0.15); color: #fff; }
+        .ep-item.active { background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.4); color: #f43f5e; font-weight: bold; }
+        .ep-num { font-weight: bold; min-width: 24px; color: #94a3b8; }
+        .ep-item.active .ep-num { color: #f43f5e; }
+        .ep-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
     </style>
 </head>
 <body>
@@ -433,6 +467,9 @@ Type "help" for commands.
         <div class="genre-bar" id="genreBar">
             <button class="genre-pill active" data-genre="all">All Popular</button>
             <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
+            <button class="genre-pill" data-genre="watched">✓ Watched</button>
+            <button class="genre-pill" data-genre="TV">📺 TV Series</button>
+            <button class="genre-pill" data-genre="MOVIE">🎬 Movies</button>
             <button class="genre-pill" data-genre="Action">Action</button>
             <button class="genre-pill" data-genre="Sci-Fi">Sci-Fi</button>
             <button class="genre-pill" data-genre="Romance">Romance</button>
@@ -470,15 +507,18 @@ Type "help" for commands.
                 </div>
             </div>
             <div class="details-footer">
-                <button class="btn-secondary" id="closeDetails">Back to Catalog</button>
+                <div class="details-left-actions">
+                    <button class="btn-secondary" id="closeDetails">Back</button>
+                    <button class="btn-watched" id="toggleWatchedBtn">✓ Mark Watched</button>
+                </div>
                 <button class="btn-primary" id="watchBtn">Watch Stream</button>
             </div>
         </div>
     </div>
 
-    <!-- Zokoanime Player Overlay -->
+    <!-- Zokoanime Player View with Automated Episode Sidebar -->
     <div id="player-view">
-        <div class="player-box">
+        <div class="player-main-col">
             <div class="video-container" id="videoWrapper"></div>
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;">
@@ -489,6 +529,17 @@ Type "help" for commands.
                     </select>
                 </div>
                 <button class="btn-secondary" id="closePlayer" style="background:#ef4444;">Exit Player</button>
+            </div>
+        </div>
+        <div class="episodes-sidebar">
+            <div class="episodes-header">
+                <div class="episodes-title-row">
+                    <span>List of episodes:</span>
+                </div>
+                <input type="text" id="epSearchInput" class="episodes-search" placeholder="Number of Ep">
+            </div>
+            <div class="episodes-list" id="episodesListContainer">
+                <div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>
             </div>
         </div>
     </div>
@@ -645,6 +696,7 @@ Type "help" for commands.
         const detailGenres = document.getElementById('detailGenres');
         const detailSynopsis = document.getElementById('detailSynopsis');
         const closeDetailsBtn = document.getElementById('closeDetails');
+        const toggleWatchedBtn = document.getElementById('toggleWatchedBtn');
         const watchBtn = document.getElementById('watchBtn');
 
         const playerView = document.getElementById('player-view');
@@ -654,6 +706,8 @@ Type "help" for commands.
         const closePlayerBtn = document.getElementById('closePlayer');
         const continueSection = document.getElementById('continueSection');
         const continueRow = document.getElementById('continueRow');
+        const episodesListContainer = document.getElementById('episodesListContainer');
+        const epSearchInput = document.getElementById('epSearchInput');
 
         let liveAnimeList = [];
         let activeAnime = null;
@@ -663,10 +717,12 @@ Type "help" for commands.
         let hasNextPage = true;
         let isLoadingMore = false;
         let currentSearchQuery = '';
+        let fetchedEpisodesCache = [];
 
-        // LocalStorage Watchlist & History
+        // LocalStorage Watchlist, History & Watched Trackers
         let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
         let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
+        let watchedList = JSON.parse(localStorage.getItem('proxy_watched') || '[]');
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
@@ -810,6 +866,10 @@ Type "help" for commands.
 
             if (currentGenre === 'watchlist') {
                 filtered = liveAnimeList.filter(item => watchlist.includes(item.id));
+            } else if (currentGenre === 'watched') {
+                filtered = liveAnimeList.filter(item => watchedList.includes(item.id));
+            } else if (currentGenre === 'TV' || currentGenre === 'MOVIE') {
+                filtered = liveAnimeList.filter(item => item.type === currentGenre);
             } else if (currentGenre !== 'all') {
                 filtered = liveAnimeList.filter(item => item.genres.includes(currentGenre));
             }
@@ -825,8 +885,10 @@ Type "help" for commands.
 
             catalogGrid.innerHTML = list.map(item => {
                 const isSaved = watchlist.includes(item.id);
+                const isWatched = watchedList.includes(item.id);
                 return `
                     <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
+                        ${isWatched ? '<div class="watched-badge" title="Watched"><i data-lucide="check" style="width:16px;height:16px;"></i></div>' : ''}
                         <button class="bookmark-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchlist(event, ${item.id})" title="${isSaved ? 'Remove from Watchlist' : 'Add to Watchlist'}">
                             <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" style="width:16px;height:16px;"></i>
                         </button>
@@ -868,9 +930,8 @@ Type "help" for commands.
             openPlayerStream();
         };
 
-        // Infinite Scroll Listener on Catalog Page
         catalogPage.addEventListener('scroll', () => {
-            if (currentGenre !== 'all' && currentGenre !== 'watchlist') return; 
+            if (currentGenre !== 'all' && currentGenre !== 'TV' && currentGenre !== 'MOVIE') return; 
             if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 300) {
                 if (hasNextPage && !isLoadingMore) {
                     fetchAnimeData(currentSearchQuery, currentPage + 1, true);
@@ -878,7 +939,6 @@ Type "help" for commands.
             }
         });
 
-        // Toggle Watchlist Handler
         window.toggleWatchlist = function(event, id) {
             event.stopPropagation();
             if (watchlist.includes(id)) {
@@ -890,7 +950,6 @@ Type "help" for commands.
             filterAndRenderCatalog();
         };
 
-        // Genre Pill Event Listeners
         const genreBar = document.getElementById('genreBar');
         genreBar.addEventListener('click', (e) => {
             if (e.target.classList.contains('genre-pill')) {
@@ -924,7 +983,6 @@ Type "help" for commands.
             catalogPage.style.display = 'none';
         });
 
-        // Details Modal Logic
         window.showAnimeDetails = function(id) {
             activeAnime = liveAnimeList.find(i => i.id === id) || historyList.find(i => i.id === id);
             if (!activeAnime) return;
@@ -938,8 +996,32 @@ Type "help" for commands.
             detailGenres.textContent = (activeAnime.genres || []).join(', ') || 'N/A';
             detailSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
 
+            updateWatchedButtonState();
             detailsModal.style.display = 'flex';
         };
+
+        function updateWatchedButtonState() {
+            if (!activeAnime) return;
+            if (watchedList.includes(activeAnime.id)) {
+                toggleWatchedBtn.textContent = '✓ Watched';
+                toggleWatchedBtn.classList.add('watched');
+            } else {
+                toggleWatchedBtn.textContent = '✓ Mark Watched';
+                toggleWatchedBtn.classList.remove('watched');
+            }
+        }
+
+        toggleWatchedBtn.addEventListener('click', () => {
+            if (!activeAnime) return;
+            if (watchedList.includes(activeAnime.id)) {
+                watchedList = watchedList.filter(id => id !== activeAnime.id);
+            } else {
+                watchedList.push(activeAnime.id);
+            }
+            localStorage.setItem('proxy_watched', JSON.stringify(watchedList));
+            updateWatchedButtonState();
+            filterAndRenderCatalog();
+        });
 
         closeDetailsBtn.addEventListener('click', () => {
             detailsModal.style.display = 'none';
@@ -951,7 +1033,59 @@ Type "help" for commands.
             openPlayerStream();
         });
 
-        // Player Logic with Background Audio Pause/Resume & History Tracking
+        // Fetch automated episode list from Jikan API
+        async function fetchAndRenderEpisodes(malId) {
+            episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
+            try {
+                const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}/episodes`);
+                const data = await res.json();
+                if (data && data.data && data.data.length > 0) {
+                    fetchedEpisodesCache = data.data;
+                    renderFilteredEpisodes(fetchedEpisodesCache, '');
+                } else {
+                    episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Episode list unavailable.</div>';
+                }
+            } catch (err) {
+                episodesListContainer.innerHTML = '<div style="padding: 20px; color: #ef4444; text-align: center;">Failed to load episodes.</div>';
+            }
+        }
+
+        function renderFilteredEpisodes(episodes, filterVal) {
+            const currentEp = parseInt(epNum.value) || 1;
+            const filtered = episodes.filter(ep => {
+                const query = filterVal.toLowerCase();
+                return ep.mal_id.toString().includes(query) || (ep.title && ep.title.toLowerCase().includes(query));
+            });
+
+            if (filtered.length === 0) {
+                episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">No matching episodes.</div>';
+                return;
+            }
+
+            episodesListContainer.innerHTML = filtered.map(ep => {
+                const isActive = ep.mal_id === currentEp;
+                const epTitle = ep.title ? ep.title : `Episode ${ep.mal_id}`;
+                return `
+                    <div class="ep-item ${isActive ? 'active' : ''}" onclick="selectEpisode(${ep.mal_id})">
+                        <span class="ep-num">${ep.mal_id}</span>
+                        <span class="ep-name">${epTitle}</span>
+                        ${isActive ? '<i data-lucide="play-circle" style="width:16px;height:16px;color:#f43f5e;flex-shrink:0;"></i>' : ''}
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        window.selectEpisode = function(num) {
+            epNum.value = num;
+            openPlayerStream();
+        };
+
+        epSearchInput.addEventListener('input', (e) => {
+            renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
+        });
+
+        // Player Logic with Automated Episodes Fetch
         function openPlayerStream() {
             if (!activeAnime) return;
 
@@ -977,11 +1111,17 @@ Type "help" for commands.
                 genres: activeAnime.genres || [],
                 synopsis: activeAnime.synopsis || ''
             });
-            if (historyList.length > 10) historyList.pop(); // Keep last 10
+            if (historyList.length > 10) historyList.pop();
             localStorage.setItem('proxy_history', JSON.stringify(historyList));
 
             videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
-            playerView.style.display = 'flex';
+            
+            if (playerView.style.display !== 'flex') {
+                playerView.style.display = 'flex';
+                fetchAndRenderEpisodes(activeAnime.id);
+            } else {
+                renderFilteredEpisodes(fetchedEpisodesCache, epSearchInput.value.trim());
+            }
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
@@ -990,6 +1130,7 @@ Type "help" for commands.
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
             videoWrapper.innerHTML = '';
+            epSearchInput.value = '';
 
             if (player && typeof player.playVideo === 'function') {
                 player.playVideo();
