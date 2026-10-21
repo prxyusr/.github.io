@@ -142,7 +142,7 @@
         .terminal-header {
             background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
-            font-family: monospace; font-size: 0.8rem; color: rgba(255, 255, 255, 0.4);
+            font-family: monospace; font-size: 0.80rem; color: rgba(255, 255, 255, 0.4);
         }
 
         .terminal-body {
@@ -155,39 +155,42 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI */
+        /* Fullscreen Catalog Page UI with Transparent Background */
         #catalog-page {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0b0f19;
+            background: rgba(11, 15, 25, 0.75);
+            backdrop-filter: blur(8px);
             z-index: 80;
             flex-direction: column;
             overflow-y: auto;
         }
         .catalog-header {
-            background: #111827;
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(10px);
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #1f2937;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             position: sticky; top: 0; z-index: 10;
         }
         .catalog-search {
             width: 100%; max-width: 400px;
             padding: 10px 16px;
-            border-radius: 6px; border: 1px solid #374151;
-            background: #1f2937; color: #fff; font-size: 0.95rem; outline: none;
+            border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(31, 41, 55, 0.8); color: #fff; font-size: 0.95rem; outline: none;
         }
         .catalog-disclaimer {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
+            backdrop-filter: blur(5px);
             border-left: 4px solid #ef4444;
             color: #fca5a5;
             padding: 12px 24px;
             font-size: 0.85rem;
             text-align: center;
-            border-bottom: 1px solid #1f2937;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .catalog-grid {
             display: grid;
@@ -199,14 +202,16 @@
             width: 100%;
         }
         .catalog-card {
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(5px);
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background 0.2s;
             display: flex; flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .catalog-card:hover { transform: translateY(-5px); }
+        .catalog-card:hover { transform: translateY(-5px); background: rgba(30, 41, 59, 0.95); }
         .catalog-card img { width: 100%; height: 240px; object-fit: cover; }
         .catalog-card-info { padding: 12px; }
         .catalog-card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
