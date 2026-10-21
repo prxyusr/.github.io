@@ -260,7 +260,7 @@ async function loadCatalog() {
                     id: item.id,
                     title: item.title,
                     type: item.type || 'TV',
-                    image: item.image // Pulls the clean link straight from your static JSON
+                    image: item.image
                 }));
 
                 renderTop5(allAnime.slice(0, 5));
@@ -270,27 +270,34 @@ async function loadCatalog() {
             }
         }
 
-        async function loadRealImages(list) {
-            for (let item of list) {
-                try {
-                    const res = await fetch(`https://api.jikan.moe/v4/anime/${item.id}`);
-                    const data = await res.json();
-                    if (data.data && data.data.images?.jpg?.image_url) {
-                        const imgUrl = data.data.images.jpg.image_url;
-                        
-                        // Update DOM image src for this specific anime
-                        document.querySelectorAll(`img[data-id="${item.id}"]`).forEach(img => {
-                            img.src = imgUrl;
-                        });
-                    }
-                    // Small delay to respect API limits
-                    await new Promise(r => setTimeout(r, 350));
-                } catch (e) {
-                    console.log(`Could not load poster for ID ${item.id}`);
-                }
-            }
+        function renderTop5(list) {
+            top5Grid.innerHTML = list.map((item, index) => `
+                <div class="top-card" onclick="openPlayer(${item.id})">
+                    <div class="rank-badge">#${index + 1}</div>
+                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
+                    <div class="top-card-info">
+                        <div class="top-card-title">${item.title}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
+        function renderCards(list) {
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="status-msg">No titles found.</div>';
+                return;
+            }
+
+            grid.innerHTML = list.map(item => `
+                <div class="card" onclick="openPlayer(${item.id})">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://cdn.myanimelist.net/images/anime/1286/99889.jpg'">
+                    <div class="card-info">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-sub">${item.type}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
         function renderTop5(list) {
             top5Grid.innerHTML = list.map((item, index) => `
                 <div class="top-card" onclick="openPlayer(${item.id})">
