@@ -771,7 +771,9 @@ Type "help" for commands.
                     if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
                 }
             } catch (err) {
-                if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please check connection and try again.</div>';
+                if (!append) {
+                    catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please check connection and try again.</div>';
+                }
             }
             isLoadingMore = false;
         }
@@ -814,8 +816,8 @@ Type "help" for commands.
 
         // Infinite Scroll Listener on Catalog Page
         catalogPage.addEventListener('scroll', () => {
-            if (currentGenre !== 'all' && currentGenre !== 'watchlist') return; // Infinite scroll works best on global/search feeds
-            if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 200) {
+            if (currentGenre !== 'all' && currentGenre !== 'watchlist') return; 
+            if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 300) {
                 if (hasNextPage && !isLoadingMore) {
                     fetchAnimeData(currentSearchQuery, currentPage + 1, true);
                 }
