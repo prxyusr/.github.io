@@ -78,9 +78,10 @@
             letter-spacing: 2px;
         }
 
-        canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 85;
+        #snowCanvas {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 103;
+            contain: strict;
         }
 
         .main-container, .discord-invite, .expandable-menu, .top-bar, .spotify-widget {
@@ -275,19 +276,20 @@
         .genre-bar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
 
         .genre-pill {
-            background: rgba(30, 41, 59, 0.8); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 41, 59, 0.8); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
             transition: all 0.2s ease; flex-shrink: 0;
         }
         .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
-        .genre-pill.active { background: #38bdf8; color: #0f172a; font-weight: bold; border-color: #38bdf8; }
+        .genre-pill, .genre-pill:visited, .genre-pill.active { color: #ffffff; }
+        .genre-pill.active { background: #38bdf8; color: #ffffff; font-weight: bold; border-color: #38bdf8; }
 
         /* Continue Watching Section */
         .continue-section {
             max-width: 1300px; margin: 30px auto 0 auto; padding: 0 40px; width: 100%;
             display: none; flex-direction: column; gap: 15px; flex-shrink: 0;
         }
-        .continue-section h3 { font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .continue-section h3 { font-size: 1.2rem; color: #ffffff; display: flex; align-items: center; gap: 8px; }
         .continue-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
         .continue-card {
             background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
@@ -421,20 +423,52 @@
         .ep-num { font-weight: bold; min-width: 24px; color: #94a3b8; }
         .ep-item.active .ep-num { color: #f43f5e; }
         .ep-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
-    
-        /* Changelog release layout */
-        .changelog-release { margin-bottom: 16px; }
-        .changelog-version-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .changelog-version-row h3 { margin-bottom: 0; }
-        .changelog-tag { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; color: #86efac; background: rgba(34,197,94,.13); border: 1px solid rgba(34,197,94,.3); }
-        .changelog-category { margin-top: 16px; }
-        .changelog-category h4 { margin: 0 0 8px; font-size: 13px; color: #a5b4fc; letter-spacing: .03em; text-transform: uppercase; }
-        .changelog-category ul { margin: 0; padding-left: 20px; }
-        .changelog-category li { margin: 5px 0; line-height: 1.5; }
-        .changelog-category p { margin: 0; line-height: 1.6; }
-        .changelog-inline code { padding: 2px 6px; border-radius: 5px; background: rgba(148,163,184,.12); color: #e2e8f0; }
 
-</style>
+        /* Player refresh: cleaner streaming workspace */
+        .home-version { margin-top: 12px; color: #8b95a7; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; }
+        .home-version span { display: inline-block; padding: 5px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; background: rgba(255,255,255,.035); }
+        #player-view { padding: clamp(12px, 2vw, 28px); gap: 18px; align-items: stretch; background: radial-gradient(ellipse at top left, rgba(56,189,248,.09), transparent 40%), rgba(5,8,14,.97); }
+        .player-main-col { width: auto; max-width: none; min-width: 0; flex: 1 1 auto; height: min(92vh, 980px); background: #0d1421; border: 1px solid rgba(148,163,184,.18); border-radius: 16px; box-shadow: 0 24px 80px rgba(0,0,0,.38); }
+        .video-container { padding-top: 0; aspect-ratio: 16 / 9; height: auto; flex: 0 0 auto; overflow: hidden; background: radial-gradient(circle, #172235 0, #05070b 70%); }
+        .video-container::before { content: 'PROXY PLAYER'; position: absolute; top: 14px; left: 16px; z-index: 1; padding: 6px 9px; border-radius: 6px; background: rgba(5,8,14,.7); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.75); font-size: .65rem; letter-spacing: .16em; pointer-events: none; }
+        .video-container iframe { position: absolute; inset: 0; }
+        .player-controls { padding: 12px 18px; gap: 12px; flex-wrap: wrap; background: #101a2a; border-bottom: 1px solid rgba(148,163,184,.12); }
+        .player-controls label { color: #aebbd0; font-size: .8rem; }
+        #epNum, #trackSel { min-height: 34px; padding: 6px 9px !important; border: 1px solid #34445c !important; border-radius: 8px !important; }
+        #closePlayer { padding: 9px 14px; border-radius: 8px; font-weight: 650; background: rgba(248,113,113,.13) !important; color: #fca5a5; border: 1px solid rgba(248,113,113,.28); }
+        #closePlayer:hover { background: rgba(248,113,113,.24) !important; }
+        .player-info-panel { background: linear-gradient(180deg,#0e1726,#0b111d); padding: 22px clamp(16px,2.2vw,30px); gap: 13px; border-top: 1px solid rgba(148,163,184,.12); }
+        .player-anime-title { font-size: clamp(1.15rem, 2vw, 1.65rem); letter-spacing: -.025em; }
+        .player-badge { background: rgba(56,189,248,.09); border-color: rgba(56,189,248,.22); border-radius: 999px; padding: 5px 9px; }
+        .player-synopsis { max-width: 850px; font-size: .9rem; color: #a6b3c7; line-height: 1.7; }
+        .player-actions-row { margin-top: 5px; flex-wrap: wrap; }
+        .player-action-btn { padding: 9px 12px; border-radius: 9px; background: rgba(255,255,255,.035); }
+        .episodes-sidebar { width: clamp(270px, 25vw, 350px); flex: 0 0 clamp(270px, 25vw, 350px); height: min(92vh, 980px); background: #0d1421; border: 1px solid rgba(148,163,184,.18); border-radius: 16px; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
+        /* Keep snowfall visible in the player workspace gaps, but behind all player panels. */
+        #player-view .player-main-col,
+        #player-view .episodes-sidebar { position: relative; z-index: 102; }
+        .episodes-header { padding: 20px 18px 16px; background: linear-gradient(180deg,#162236,#101827); border-bottom: 1px solid rgba(148,163,184,.14); }
+        .episodes-title-row { font-size: 1rem; letter-spacing: -.01em; }
+        .episodes-title-row::after { content: 'Choose an episode'; display: block; font-size: .72rem; color: #8493aa; font-weight: 400; margin-top: 5px; letter-spacing: 0; }
+        .episodes-search { padding: 11px 12px; border-radius: 9px; background: #0a111d; border-color: #2b3a50; }
+        .episodes-search:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,.1); }
+        .episodes-list { padding: 10px; gap: 5px; }
+        .ep-item { min-height: 44px; padding: 10px 12px; border: 1px solid transparent; border-radius: 9px; background: rgba(255,255,255,.025); }
+        .ep-item.active { background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.35); color: #7dd3fc; }
+        .ep-item.active .ep-num { color: #7dd3fc; }
+        @media (max-width: 1100px) {
+            #player-view { overflow-y: auto; align-items: flex-start; flex-direction: column; }
+            .player-main-col { width: 100%; height: auto; min-height: 0; flex: 0 0 auto; }
+            .episodes-sidebar { width: 100%; flex: 0 0 auto; height: 38vh; min-height: 220px; }
+            .player-info-panel { overflow: visible; }
+        }
+        @media (max-width: 600px) {
+            #player-view { padding: 8px; gap: 10px; }
+            .player-controls { padding: 10px; }
+            .player-info-top { align-items: flex-start; flex-direction: column; gap: 10px; }
+            .player-anime-badges { flex-wrap: wrap; }
+        }
+    </style>
 </head>
 <body>
 
@@ -458,6 +492,7 @@
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
+        <div class="home-version"><span>Update 1.0.2</span></div>
     </div>
 
     <!-- Spotify-Themed Custom YouTube Audio Controller -->
@@ -487,7 +522,7 @@
                 <div>press [TAB] to close</div>
             </div>
             <div class="terminal-body" id="terminalBody">
-                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.1]
+                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.2]
 Type "help" for commands.
 
 </div>
@@ -624,45 +659,8 @@ Type "help" for commands.
             <button class="btn-secondary info-page-close" type="button" data-close-info>← Back to Home</button>
             <h2 id="changelogTitle">Changelog</h2>
             <p class="info-page-subtitle">A record of updates to ProxyUser.dev.</p>
-            <div class="info-page-card changelog-release">
-                <div class="changelog-version-row"><h3>Update 1.0.2</h3><span class="changelog-tag">Latest</span></div>
-                <div class="changelog-category"><h4>Homescreen</h4><ul>
-                    <li>Updated mobile controls</li>
-                    <li>Added Changelog</li>
-                    <li>Added Status Page</li>
-                    <li>Added GitHub / Discord links</li>
-                </ul></div>
-                <div class="changelog-category"><h4>Anime Catalog</h4><ul>
-                    <li>Added Discord prompt</li>
-                    <li>Added disclaimer</li>
-                    <li>Optimized backend</li>
-                </ul></div>
-            </div>
-            <div class="info-page-card changelog-release">
-                <h3>Update 1.0.1</h3>
-                <div class="changelog-category"><h4>Homescreen</h4><ul><li>Added Spotify volume slider</li></ul></div>
-                <div class="changelog-category"><h4>Anime Catalog</h4><ul>
-                    <li>Added infinite scroll</li><li>Added favoriting</li><li>Added subcategories</li>
-                </ul></div>
-                <div class="changelog-category"><h4>Optimization</h4><ul>
-                    <li>Removed unnecessary extra sublayers</li>
-                    <li>Optimized the snow effect across all screens</li>
-                    <li>Optimized anime card loading</li>
-                    <li>Reduced background site usage, especially during fullscreen anime playback</li>
-                </ul></div>
-            </div>
-            <div class="info-page-card changelog-release">
-                <h3>Update 1.0.0</h3>
-                <div class="changelog-category"><h4>Homescreen</h4><ul>
-                    <li>Added Discord invite</li><li>Added GitHub username</li><li>Added Discord username</li><li>Added view count</li>
-                </ul></div>
-                <div class="changelog-category"><h4>Terminal</h4><p class="changelog-inline">Commands: <code>help</code>, <code>cat</code>/<code>catalog</code>, <code>clear</code></p></div>
-                <div class="changelog-category"><h4>Anime Catalog</h4><ul>
-                    <li>Added fully functional anime browsing</li>
-                    <li>Bug-free guarantee coding</li>
-                    <li>Added a warning disclaimer about pop-ups and ads (pop-ups may be unavoidable)</li>
-                </ul></div>
-            </div>
+            <div class="info-page-card"><h3>Latest updates</h3><p>• Added an Anime Catalog entry to the homepage menu.<br>• Added dedicated Changelog and Status pages.<br>• Added a Discord updates banner to the anime catalog.</p></div>
+            <div class="info-page-card"><h3>Coming next</h3><p>More refinements and quality-of-life improvements. Check back for future updates.</p></div>
         </div>
     </section>
 
@@ -700,37 +698,79 @@ Type "help" for commands.
 
 
     <script>
-        // Snowfall Animation
+        // Optimized, time-based snowfall. Motion is based on elapsed time rather
+        // than frame count, so opening heavier screens won't make flakes crawl.
         const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+        let lastFrame = 0;
+        const flakes = [];
+        const FLAKE_COUNT = 90;
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
+        function resizeSnowCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+            canvas.width = Math.round(width * pixelRatio);
+            canvas.height = Math.round(height * pixelRatio);
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            if (!flakes.length) {
+                for (let i = 0; i < FLAKE_COUNT; i++) flakes.push({
+                    x: Math.random() * width, y: Math.random() * height,
+                    radius: Math.random() * 2.2 + 0.8,
+                    speedY: 30 + Math.random() * 35,
+                    speedX: (Math.random() - 0.5) * 16,
+                    opacity: Math.random() * 0.55 + 0.25
+                });
+            } else {
+                flakes.forEach(f => { f.x = Math.min(f.x, width); f.y = Math.min(f.y, height); });
+            }
+        }
+        window.addEventListener('resize', resizeSnowCanvas, { passive: true });
+        resizeSnowCanvas();
 
-        const flakes = Array.from({ length: 100 }, () => ({
-            x: Math.random() * width, y: Math.random() * height,
-            radius: Math.random() * 3 + 1, speedY: Math.random() * 1 + 0.5,
-            speedX: Math.random() * 0.5 - 0.25, opacity: Math.random() * 0.7 + 0.3
-        }));
-
-        function drawSnow() {
+        function drawSnow(timestamp) {
+            if (document.hidden) { lastFrame = 0; requestAnimationFrame(drawSnow); return; }
+            const dt = lastFrame ? Math.min((timestamp - lastFrame) / 1000, 0.05) : 0;
+            lastFrame = timestamp;
             ctx.clearRect(0, 0, width, height);
-            flakes.forEach(f => {
+            ctx.fillStyle = '#fff';
+            for (const f of flakes) {
+                ctx.globalAlpha = f.opacity;
                 ctx.beginPath();
                 ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
                 ctx.fill();
-                f.y += f.speedY; f.x += f.speedX;
-                if (f.y > height) { f.y = -f.radius; f.x = Math.random() * width; }
-                if (f.x > width) f.x = 0; if (f.x < 0) f.x = width;
-            });
+                f.y += f.speedY * dt;
+                f.x += f.speedX * dt;
+                if (f.y > height + f.radius) { f.y = -f.radius; f.x = Math.random() * width; }
+                if (f.x > width + f.radius) f.x = -f.radius;
+                else if (f.x < -f.radius) f.x = width + f.radius;
+            }
+            ctx.globalAlpha = 1;
+
+            // Let snow fall visibly over the Episode List and Anime Info panels,
+            // while clearing only the video rectangle so flakes never cover playback.
+            const playerView = document.getElementById('player-view');
+            if (playerView && getComputedStyle(playerView).display !== 'none') {
+                const videoArea = document.getElementById('videoWrapper');
+                if (videoArea) {
+                    const r = videoArea.getBoundingClientRect();
+                    const left = Math.max(0, r.left);
+                    const top = Math.max(0, r.top);
+                    const right = Math.min(width, r.right);
+                    const bottom = Math.min(height, r.bottom);
+                    if (right > left && bottom > top) {
+                        ctx.clearRect(left, top, right - left, bottom - top);
+                    }
+                }
+            }
             requestAnimationFrame(drawSnow);
         }
-        drawSnow();
+        requestAnimationFrame(drawSnow);
 
         lucide.createIcons();
 
@@ -1387,9 +1427,13 @@ Type "help" for commands.
             videoWrapper.innerHTML = '';
             epSearchInput.value = '';
 
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-                vibePlayBtn.textContent = '❚❚';
+            // Return to the Anime Catalog instead of leaving the user on the homepage.
+            catalogPage.style.display = 'flex';
+            renderContinueWatching();
+
+            if (player && typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
+                vibePlayBtn.textContent = '▶';
             }
         });
     </script>
