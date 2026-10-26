@@ -78,6 +78,11 @@
             letter-spacing: 2px;
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.98); }
+        }
+
         canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 85;
@@ -123,7 +128,7 @@
             padding: 0 20px; border-radius: 8px; border: 1px solid transparent;
         }
         .menu-items.show { max-height: 200px; opacity: 1; padding: 20px; border-color: var(--accent-border); }
-        .menu-item { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); text-decoration: none; }
+        .menu-item { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); text-decoration: none; cursor: pointer; }
         .menu-item:hover { color: #fff; }
 
         /* Spotify-themed Vibe Widget */
@@ -185,7 +190,7 @@
         .terminal-output { white-space: pre-wrap; line-height: 1.4; }
         .terminal-input-row { display: flex; align-items: center; gap: 8px; }
         .terminal-prompt { font-weight: bold; }
-        .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
+        .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: 1; }
 
         /* Fullscreen Catalog Page UI */
         #catalog-page {
@@ -344,6 +349,7 @@
         .btn-primary { background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; }
         .btn-primary:hover { background: #0284c7; color: #fff; }
         .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .btn-secondary:hover { background: #475569; }
         .btn-watched { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
         .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
         .btn-watched.watched { background: #22c55e; color: #0f172a; }
@@ -411,7 +417,7 @@
 
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
+        <span>views: <span id="busuanzi_value_site_pv">1,024</span></span>
     </div>
 
     <div id="click-overlay">
@@ -443,6 +449,19 @@
         </div>
     </div>
 
+    <!-- Expandable Navigation Menu -->
+    <div class="expandable-menu" id="expandableMenu">
+        <button class="menu-toggle" id="menuToggle"><i data-lucide="chevron-up"></i></button>
+        <div class="menu-items" id="menuItems">
+            <span class="menu-item" id="openCatalogBtn">Anime Catalog</span>
+            <span class="menu-item" id="openTerminalBtn">Terminal</span>
+        </div>
+    </div>
+
+    <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="discord-invite" id="discordInvite">
+        <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+    </a>
+
     <!-- Terminal Overlay -->
     <div id="terminal-overlay">
         <div class="terminal-window">
@@ -457,7 +476,7 @@ Type "help" for commands.
 </div>
                 <div class="terminal-input-row">
                     <span class="terminal-prompt">></span>
-                    <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false" autofocus>
+                    <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false">
                 </div>
             </div>
         </div>
@@ -549,720 +568,228 @@ Type "help" for commands.
                         <option value="dub">Dub</option>
                     </select>
                 </div>
-                <button class="btn-secondary" id="closePlayer" style="background:#ef4444;">Exit Player</button>
+                <button class="btn-secondary" id="closePlayerBtn">Close Player</button>
             </div>
-            <!-- Fully Scrollable Info Panel -->
-            <div class="player-info-panel" id="playerInfoPanel">
+            <div class="player-info-panel">
                 <div class="player-info-top">
-                    <div class="player-anime-title" id="playerAnimeTitle">Anime Title</div>
-                    <div class="player-anime-badges" id="playerAnimeBadges">
-                        <span class="player-badge">TV</span>
+                    <span class="player-anime-title" id="playerTitle">Anime Title</span>
+                    <div class="player-anime-badges">
+                        <span class="player-badge" id="playerTypeBadge">TV</span>
                     </div>
                 </div>
-                <div class="player-synopsis" id="playerAnimeSynopsis">Synopsis loading...</div>
+                <p class="player-synopsis" id="playerSynopsisText">Loading description...</p>
                 <div class="player-actions-row">
-                    <button class="player-action-btn" id="playerWatchlistBtn"><i data-lucide="bookmark" style="width:14px;height:14px;"></i> Add to Watchlist</button>
-                    <button class="player-action-btn" id="playerWatchedBtn"><i data-lucide="check" style="width:14px;height:14px;"></i> Mark Watched</button>
+                    <button class="player-action-btn" id="playerBookmarkBtn">★ Bookmark</button>
+                    <button class="player-action-btn" id="playerWatchedBtn">✓ Mark Watched</button>
                 </div>
             </div>
         </div>
         <div class="episodes-sidebar">
             <div class="episodes-header">
                 <div class="episodes-title-row">
-                    <span>List of episodes:</span>
+                    <span>Episodes</span>
+                    <span id="epCountText" style="font-size: 0.8rem; color: #94a3b8;">0 Total</span>
                 </div>
-                <input type="text" id="epSearchInput" class="episodes-search" placeholder="Number of Ep">
+                <input type="text" id="epSearchInput" class="episodes-search" placeholder="Filter episode #...">
             </div>
-            <div class="episodes-list" id="episodesListContainer">
-                <div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>
-            </div>
+            <div class="episodes-list" id="episodesList"></div>
         </div>
     </div>
-
-    <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="discord-invite" id="discordInvite" title="Join Discord">
-        <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-    </a>
-
-    <div class="expandable-menu" id="expandableMenu">
-        <button class="menu-toggle" id="menuToggle"><i data-lucide="chevron-up"></i></button>
-        <div class="menu-items" id="menuItems">
-            <div class="menu-item">Discord: @d3adawak3</div>
-            <a href="https://github.com/prxyusr" target="_blank" class="menu-item">GitHub: @prxyusr</a>
-        </div>
-    </div>
-
-    <div id="youtube-audio-player"></div>
-
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
     <script>
-        // Snowfall Animation
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-
-        const flakes = Array.from({ length: 100 }, () => ({
-            x: Math.random() * width, y: Math.random() * height,
-            radius: Math.random() * 3 + 1, speedY: Math.random() * 1 + 0.5,
-            speedX: Math.random() * 0.5 - 0.25, opacity: Math.random() * 0.7 + 0.3
-        }));
-
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            flakes.forEach(f => {
-                ctx.beginPath();
-                ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
-                ctx.fill();
-                f.y += f.speedY; f.x += f.speedX;
-                if (f.y > height) { f.y = -f.radius; f.x = Math.random() * width; }
-                if (f.x > width) f.x = 0; if (f.x < 0) f.x = width;
-            });
-            requestAnimationFrame(drawSnow);
-        }
-        drawSnow();
-
         lucide.createIcons();
 
-        // Menu Toggle
+        // Canvas Snow Effect
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        let flakes = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createFlakes() {
+            flakes = [];
+            for (let i = 0; i < 60; i++) {
+                flakes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    speed: Math.random() * 1 + 0.5,
+                    opacity: Math.random() * 0.5 + 0.3
+                });
+            }
+        }
+
+        function drawFlakes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            flakes.forEach(flake => {
+                ctx.globalAlpha = flake.opacity;
+                ctx.beginPath();
+                ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                ctx.fill();
+                flake.y += flake.speed;
+                if (flake.y > canvas.height) flake.y = 0;
+            });
+            requestAnimationFrame(drawFlakes);
+        }
+        createFlakes();
+        drawFlakes();
+
+        // UI Interactions
+        const clickOverlay = document.getElementById('click-overlay');
+        const mainContainer = document.getElementById('mainContainer');
+        const topBar = document.getElementById('topBar');
+        const spotifyWidget = document.getElementById('spotifyWidget');
+        const expandableMenu = document.getElementById('expandableMenu');
+        const discordInvite = document.getElementById('discordInvite');
+
+        clickOverlay.addEventListener('click', () => {
+            clickOverlay.classList.add('fade-out');
+            mainContainer.classList.add('fade-in');
+            topBar.classList.add('fade-in');
+            spotifyWidget.classList.add('fade-in');
+            expandableMenu.classList.add('fade-in');
+            discordInvite.classList.add('fade-in');
+        });
+
+        // Toggle Expandable Menu
         const menuToggle = document.getElementById('menuToggle');
         const menuItems = document.getElementById('menuItems');
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
+        menuToggle.addEventListener('click', () => {
             menuToggle.classList.toggle('active');
             menuItems.classList.toggle('show');
         });
 
-        // Spotify-Themed Widget Toggle & Controls Logic
+        // Toggle Spotify Container
         const spotifyToggle = document.getElementById('spotifyToggle');
         const spotifyContainer = document.getElementById('spotifyContainer');
-        const vibePlayBtn = document.getElementById('vibePlayBtn');
-        const vibeVolume = document.getElementById('vibeVolume');
-        const vibeVolVal = document.getElementById('vibeVolVal');
-
-        spotifyToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
+        spotifyToggle.addEventListener('click', () => {
             spotifyContainer.classList.toggle('show');
         });
 
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio-player', {
-                height: '1', width: '1', videoId: 'JiC8lgLOdck',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'JiC8lgLOdck' },
-                events: { 
-                    'onReady': (e) => {
-                        e.target.setVolume(15); 
-                    }
-                }
-            });
-        }
-
-        // Vibe Play/Pause toggle
-        vibePlayBtn.addEventListener('click', () => {
-            if (!player || typeof player.getPlayerState !== 'function') return;
-            const state = player.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-                vibePlayBtn.textContent = '▶';
-            } else {
-                player.playVideo();
-                vibePlayBtn.textContent = '❚❚';
-            }
-        });
-
-        // Vibe Volume Slider
-        vibeVolume.addEventListener('input', (e) => {
-            const vol = e.target.value;
-            vibeVolVal.textContent = `${vol}%`;
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(vol);
-            }
-        });
-
-        const overlay = document.getElementById('click-overlay');
-        const mainContainer = document.getElementById('mainContainer');
-        const discordInvite = document.getElementById('discordInvite');
-        const expandableMenu = document.getElementById('expandableMenu');
-        const topBar = document.getElementById('topBar');
-        const spotifyWidget = document.getElementById('spotifyWidget');
-
-        overlay.addEventListener('click', () => {
-            overlay.classList.add('fade-out');
-            mainContainer.classList.add('fade-in');
-            discordInvite.classList.add('fade-in');
-            expandableMenu.classList.add('fade-in');
-            topBar.classList.add('fade-in');
-            spotifyWidget.classList.add('fade-in');
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-                vibePlayBtn.textContent = '❚❚';
-            }
-        });
-
-        // Terminal & Page Elements
+        // Terminal Toggle via TAB key
         const terminalOverlay = document.getElementById('terminal-overlay');
+        const openTerminalBtn = document.getElementById('openTerminalBtn');
         const terminalInput = document.getElementById('terminalInput');
         const terminalOutput = document.getElementById('terminalOutput');
-        
-        const catalogPage = document.getElementById('catalog-page');
-        const catalogGrid = document.getElementById('catalogGrid');
-        const catalogSearchInput = document.getElementById('catalogSearchInput');
-        const closeCatalogBtn = document.getElementById('closeCatalog');
 
-        const detailsModal = document.getElementById('details-modal');
-        const detailImg = document.getElementById('detailImg');
-        const detailType = document.getElementById('detailType');
-        const detailTitle = document.getElementById('detailTitle');
-        const detailId = document.getElementById('detailId');
-        const detailDate = document.getElementById('detailDate');
-        const detailAuthor = document.getElementById('detailAuthor');
-        const detailGenres = document.getElementById('detailGenres');
-        const detailEpisodes = document.getElementById('detailEpisodes');
-        const detailSynopsis = document.getElementById('detailSynopsis');
-        const closeDetailsBtn = document.getElementById('closeDetails');
-        const toggleWatchedBtn = document.getElementById('toggleWatchedBtn');
-        const watchBtn = document.getElementById('watchBtn');
+        function toggleTerminal() {
+            terminalOverlay.classList.toggle('active');
+            if (terminalOverlay.classList.contains('active')) {
+                terminalInput.focus();
+            }
+        }
 
-        const playerView = document.getElementById('player-view');
-        const videoWrapper = document.getElementById('videoWrapper');
-        const epNum = document.getElementById('epNum');
-        const trackSel = document.getElementById('trackSel');
-        const closePlayerBtn = document.getElementById('closePlayer');
-        const continueSection = document.getElementById('continueSection');
-        const continueRow = document.getElementById('continueRow');
-        const episodesListContainer = document.getElementById('episodesListContainer');
-        const epSearchInput = document.getElementById('epSearchInput');
-
-        // Player Info Panel Elements
-        const playerAnimeTitle = document.getElementById('playerAnimeTitle');
-        const playerAnimeBadges = document.getElementById('playerAnimeBadges');
-        const playerAnimeSynopsis = document.getElementById('playerAnimeSynopsis');
-        const playerWatchlistBtn = document.getElementById('playerWatchlistBtn');
-        const playerWatchedBtn = document.getElementById('playerWatchedBtn');
-
-        let liveAnimeList = [];
-        let activeAnime = null;
-        let searchTimeout = null;
-        let currentGenre = 'all';
-        let currentPage = 1;
-        let hasNextPage = true;
-        let isLoadingMore = false;
-        let currentSearchQuery = '';
-        let fetchedEpisodesCache = [];
-
-        // LocalStorage Watchlist, History & Watched Trackers
-        let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
-        let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
-        let watchedList = JSON.parse(localStorage.getItem('proxy_watched') || '[]');
-
+        openTerminalBtn.addEventListener('click', toggleTerminal);
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
                 e.preventDefault();
-                terminalOverlay.classList.toggle('active');
-                if (terminalOverlay.classList.contains('active')) {
-                    terminalInput.focus();
-                }
+                toggleTerminal();
             }
         });
 
-        terminalInput.addEventListener('keypress', (e) => {
+        // Terminal Input Logic
+        terminalInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const cmd = terminalInput.value.trim();
+                terminalOutput.textContent += `> ${cmd}\n`;
+                if (cmd === 'help') {
+                    terminalOutput.textContent += `Available commands: help, clear, catalog, exit\n`;
+                } else if (cmd === 'clear') {
+                    terminalOutput.textContent = '';
+                } else if (cmd === 'catalog') {
+                    document.getElementById('catalog-page').style.display = 'flex';
+                    toggleTerminal();
+                } else if (cmd === 'exit') {
+                    toggleTerminal();
+                } else if (cmd !== '') {
+                    terminalOutput.textContent += `Command not recognized: ${cmd}\n`;
+                }
                 terminalInput.value = '';
-                if (!cmd) return;
-
-                const parts = cmd.split(' ');
-                const action = parts[0].toLowerCase();
-
-                if (action === 'help') {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nAvailable commands:\n  catalog (or cat) - Opens live anime catalog search\n  clear            - Clears the terminal screen\n`;
-                } else if (action === 'clear') {
-                    terminalOutput.innerHTML = '';
-                } else if (action === 'catalog' || action === 'cat') {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nConnecting to live database...\n`;
-                    terminalOverlay.classList.remove('active');
-                    openCatalogUI();
-                } else {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nCommand not recognized. Type "help" for options.\n`;
-                }
-                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                document.getElementById('terminalBody').scrollTop = document.getElementById('terminalBody').scrollHeight;
             }
         });
 
-        function openCatalogUI() {
+        // Catalog UI Handler
+        const openCatalogBtn = document.getElementById('openCatalogBtn');
+        const catalogPage = document.getElementById('catalog-page');
+        const closeCatalog = document.getElementById('closeCatalog');
+
+        openCatalogBtn.addEventListener('click', () => {
             catalogPage.style.display = 'flex';
-            renderContinueWatching();
-            if (liveAnimeList.length === 0) {
-                fetchAnimeData('', 1, false);
-            }
-        }
-
-        async function fetchAnimeData(query, page = 1, append = false) {
-            if (isLoadingMore) return;
-            isLoadingMore = true;
-
-            if (!append) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
-            }
-            
-            const graphqlQuery = `
-            query ($search: String, $page: Int) {
-              Page(page: $page, perPage: 24) {
-                pageInfo {
-                  hasNextPage
-                }
-                media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
-                  id
-                  idMal
-                  title {
-                    romaji
-                    english
-                  }
-                  type
-                  coverImage {
-                    large
-                  }
-                  startDate {
-                    year
-                    month
-                    day
-                  }
-                  studios(isMain: true) {
-                    nodes {
-                      name
-                    }
-                  }
-                  genres
-                  episodes
-                  description
-                }
-              }
-            }`;
-
-            const variables = { page: page };
-            if (query) variables.search = query;
-
-            try {
-                const res = await fetch('https://graphql.anilist.co', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        query: graphqlQuery,
-                        variables: variables
-                    })
-                });
-
-                const data = await res.json();
-                
-                if (data && data.data && data.data.Page) {
-                    const pageData = data.data.Page;
-                    hasNextPage = pageData.pageInfo.hasNextPage;
-                    currentPage = page;
-
-                    const newItems = pageData.media
-                        .filter(item => item.idMal !== null)
-                        .map(item => ({
-                            id: item.idMal,
-                            title: item.title.english || item.title.romaji,
-                            type: item.type || 'TV',
-                            image: item.coverImage?.large || '',
-                            date: item.startDate?.year ? `${item.startDate.year}` : 'N/A',
-                            author: item.studios?.nodes?.[0]?.name || 'N/A',
-                            genres: item.genres || [],
-                            episodesCount: item.episodes || null,
-                            synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
-                        }));
-
-                    if (append) {
-                        liveAnimeList = liveAnimeList.concat(newItems);
-                    } else {
-                        liveAnimeList = newItems;
-                    }
-
-                    filterAndRenderCatalog();
-                } else {
-                    if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
-                }
-            } catch (err) {
-                if (!append) {
-                    catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please check connection and try again.</div>';
-                }
-            }
-            isLoadingMore = false;
-        }
-
-        function filterAndRenderCatalog() {
-            let filtered = liveAnimeList;
-
-            if (currentGenre === 'watchlist') {
-                filtered = liveAnimeList.filter(item => watchlist.includes(item.id));
-            } else if (currentGenre === 'watched') {
-                filtered = liveAnimeList.filter(item => watchedList.includes(item.id));
-            } else if (currentGenre === 'TV' || currentGenre === 'MOVIE') {
-                filtered = liveAnimeList.filter(item => item.type === currentGenre);
-            } else if (currentGenre !== 'all') {
-                filtered = liveAnimeList.filter(item => item.genres.includes(currentGenre));
-            }
-
-            renderCatalogCards(filtered);
-        }
-
-        function renderCatalogCards(list) {
-            if (list.length === 0) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">No titles found in this view.</div>';
-                return;
-            }
-
-            catalogGrid.innerHTML = list.map(item => {
-                const isSaved = watchlist.includes(item.id);
-                const isWatched = watchedList.includes(item.id);
-                return `
-                    <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
-                        ${isWatched ? '<div class="watched-badge" title="Watched"><i data-lucide="check" style="width:16px;height:16px;"></i></div>' : ''}
-                        <button class="bookmark-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchlist(event, ${item.id})" title="${isSaved ? 'Remove from Watchlist' : 'Add to Watchlist'}">
-                            <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" style="width:16px;height:16px;"></i>
-                        </button>
-                        <img src="${item.image}" alt="${item.title}" loading="lazy">
-                        <div class="catalog-card-info">
-                            <div class="catalog-card-title">${item.title}</div>
-                            <div class="catalog-card-sub">ID: ${item.id} • ${item.type}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        function renderContinueWatching() {
-            if (historyList.length === 0) {
-                continueSection.style.display = 'none';
-                return;
-            }
-            continueSection.style.display = 'flex';
-            continueRow.innerHTML = historyList.map(item => `
-                <div class="continue-card" onclick="resumeHistory(${item.id}, ${item.ep}, '${item.track}')">
-                    <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="continue-info">
-                        <div class="continue-title">${item.title}</div>
-                        <div class="continue-ep">Episode ${item.ep} (${item.track.toUpperCase()})</div>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        window.resumeHistory = function(id, ep, track) {
-            activeAnime = liveAnimeList.find(i => i.id === id) || historyList.find(i => i.id === id);
-            if (!activeAnime) return;
-            epNum.value = ep;
-            trackSel.value = track;
-            catalogPage.style.display = 'none';
-            openPlayerStream();
-        };
-
-        catalogPage.addEventListener('scroll', () => {
-            if (currentGenre !== 'all' && currentGenre !== 'TV' && currentGenre !== 'MOVIE') return; 
-            if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 300) {
-                if (hasNextPage && !isLoadingMore) {
-                    fetchAnimeData(currentSearchQuery, currentPage + 1, true);
-                }
-            }
+            loadPopularAnime();
         });
 
-        window.toggleWatchlist = function(event, id) {
-            event.stopPropagation();
-            if (watchlist.includes(id)) {
-                watchlist = watchlist.filter(itemId => itemId !== id);
-            } else {
-                watchlist.push(id);
-            }
-            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
-            filterAndRenderCatalog();
-            updatePlayerActionStates();
-        };
-
-        const genreBar = document.getElementById('genreBar');
-        genreBar.addEventListener('click', (e) => {
-            if (e.target.classList.contains('genre-pill')) {
-                document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
-                e.target.classList.add('active');
-                currentGenre = e.target.getAttribute('data-genre');
-                filterAndRenderCatalog();
-            }
-        });
-
-        catalogSearchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            currentSearchQuery = query;
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                currentPage = 1;
-                fetchAnimeData(query, 1, false);
-            }, 300);
-        });
-
-        catalogSearchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                clearTimeout(searchTimeout);
-                currentPage = 1;
-                currentSearchQuery = catalogSearchInput.value.trim();
-                fetchAnimeData(currentSearchQuery, 1, false);
-            }
-        });
-
-        closeCatalogBtn.addEventListener('click', () => {
+        closeCatalog.addEventListener('click', () => {
             catalogPage.style.display = 'none';
         });
 
-        window.showAnimeDetails = function(id) {
-            activeAnime = liveAnimeList.find(i => i.id === id) || historyList.find(i => i.id === id);
-            if (!activeAnime) return;
-
-            detailImg.src = activeAnime.image;
-            detailType.textContent = activeAnime.type || 'TV';
-            detailTitle.textContent = activeAnime.title;
-            detailId.textContent = activeAnime.id;
-            detailDate.textContent = activeAnime.date || 'N/A';
-            detailAuthor.textContent = activeAnime.author || 'N/A';
-            detailGenres.textContent = (activeAnime.genres || []).join(', ') || 'N/A';
-            detailEpisodes.textContent = activeAnime.episodesCount ? `${activeAnime.episodesCount} Episodes` : 'Ongoing / 1200+';
-            detailSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
-
-            updateWatchedButtonState();
-            detailsModal.style.display = 'flex';
-        };
-
-        function updateWatchedButtonState() {
-            if (!activeAnime) return;
-            if (watchedList.includes(activeAnime.id)) {
-                toggleWatchedBtn.textContent = '✓ Watched';
-                toggleWatchedBtn.classList.add('watched');
-            } else {
-                toggleWatchedBtn.textContent = '✓ Mark Watched';
-                toggleWatchedBtn.classList.remove('watched');
-            }
-        }
-
-        toggleWatchedBtn.addEventListener('click', () => {
-            if (!activeAnime) return;
-            if (watchedList.includes(activeAnime.id)) {
-                watchedList = watchedList.filter(id => id !== activeAnime.id);
-            } else {
-                watchedList.push(activeAnime.id);
-            }
-            localStorage.setItem('proxy_watched', JSON.stringify(watchedList));
-            updateWatchedButtonState();
-            filterAndRenderCatalog();
-            updatePlayerActionStates();
-        });
-
-        closeDetailsBtn.addEventListener('click', () => {
-            detailsModal.style.display = 'none';
-        });
-
-        watchBtn.addEventListener('click', () => {
-            detailsModal.style.display = 'none';
-            catalogPage.style.display = 'none';
-            openPlayerStream();
-        });
-
-        // Player Info Panel Action Handlers
-        playerWatchlistBtn.addEventListener('click', () => {
-            if (!activeAnime) return;
-            if (watchlist.includes(activeAnime.id)) {
-                watchlist = watchlist.filter(id => id !== activeAnime.id);
-            } else {
-                watchlist.push(activeAnime.id);
-            }
-            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
-            updatePlayerActionStates();
-            filterAndRenderCatalog();
-        });
-
-        playerWatchedBtn.addEventListener('click', () => {
-            if (!activeAnime) return;
-            if (watchedList.includes(activeAnime.id)) {
-                watchedList = watchedList.filter(id => id !== activeAnime.id);
-            } else {
-                watchedList.push(activeAnime.id);
-            }
-            localStorage.setItem('proxy_watched', JSON.stringify(watchedList));
-            updatePlayerActionStates();
-            filterAndRenderCatalog();
-        });
-
-        function updatePlayerActionStates() {
-            if (!activeAnime) return;
-            
-            const isSaved = watchlist.includes(activeAnime.id);
-            if (isSaved) {
-                playerWatchlistBtn.innerHTML = `<i data-lucide="bookmark-check" style="width:14px;height:14px;"></i> In Watchlist`;
-                playerWatchlistBtn.classList.add('saved');
-            } else {
-                playerWatchlistBtn.innerHTML = `<i data-lucide="bookmark" style="width:14px;height:14px;"></i> Add to Watchlist`;
-                playerWatchlistBtn.classList.remove('saved');
-            }
-
-            const isWatched = watchedList.includes(activeAnime.id);
-            if (isWatched) {
-                playerWatchedBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;"></i> Watched`;
-                playerWatchedBtn.classList.add('watched');
-            } else {
-                playerWatchedBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;"></i> Mark Watched`;
-                playerWatchedBtn.classList.remove('watched');
-            }
-            lucide.createIcons();
-        }
-
-        // Robust Episode Fetcher with Smart Long-Runner Fallback
-        async function fetchAndRenderEpisodes(anime) {
-            episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
-            
-            // Try fetching from Jikan first
-            try {
-                const res = await fetch(`https://api.jikan.moe/v4/anime/${anime.id}/episodes`);
-                const data = await res.json();
-                if (data && data.data && data.data.length > 0) {
-                    fetchedEpisodesCache = data.data.map(ep => ({ mal_id: ep.mal_id, title: ep.title || `Episode ${ep.mal_id}` }));
-                    renderFilteredEpisodes(fetchedEpisodesCache, '');
-                    return;
-                }
-            } catch (err) {
-                // Rate-limited or offline, fallback to generator
-            }
-
-            // Fallback: If episodesCount is unknown or null, assign safe defaults for long series (like One Piece)
-            let total = anime.episodesCount;
-            if (!total) {
-                const titleLower = anime.title.toLowerCase();
-                if (titleLower.includes('one piece')) total = 1150;
-                else if (titleLower.includes('naruto')) total = 220;
-                else if (titleLower.includes('bleach')) total = 366;
-                else if (titleLower.includes('detective conan')) total = 1150;
-                else if (titleLower.includes('black clover')) total = 170;
-                else if (titleLower.includes('boruto')) total = 293;
-                else total = 24; // Default standard anime length
-            }
-
-            fetchedEpisodesCache = Array.from({ length: total }, (_, i) => ({
-                mal_id: i + 1,
-                title: `Episode ${i + 1}`
-            }));
-            renderFilteredEpisodes(fetchedEpisodesCache, '');
-        }
-
-        function renderFilteredEpisodes(episodes, filterVal) {
-            const currentEp = parseInt(epNum.value) || 1;
-            const filtered = episodes.filter(ep => {
-                const query = filterVal.toLowerCase();
-                return ep.mal_id.toString().includes(query) || (ep.title && ep.title.toLowerCase().includes(query));
-            });
-
-            if (filtered.length === 0) {
-                episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">No matching episodes.</div>';
-                return;
-            }
-
-            episodesListContainer.innerHTML = filtered.map(ep => {
-                const isActive = ep.mal_id === currentEp;
-                return `
-                    <div class="ep-item ${isActive ? 'active' : ''}" onclick="selectEpisode(${ep.mal_id})">
-                        <span class="ep-num">${ep.mal_id}</span>
-                        <span class="ep-name">${ep.title}</span>
-                        ${isActive ? '<i data-lucide="play-circle" style="width:16px;height:16px;color:#f43f5e;flex-shrink:0;"></i>' : ''}
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        window.selectEpisode = function(num) {
-            epNum.value = num;
-            openPlayerStream();
-        };
-
-        epSearchInput.addEventListener('input', (e) => {
-            renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
-        });
-
-        // Player Logic with Automated Episodes Fetch & Info Panel Update
-        function openPlayerStream() {
-            if (!activeAnime) return;
-
-            if (player && typeof player.pauseVideo === 'function') {
-                player.pauseVideo();
-                vibePlayBtn.textContent = '▶';
-            }
-
-            const ep = epNum.value || 1;
-            const track = trackSel.value || 'sub';
-
-            // Populate Info Panel
-            playerAnimeTitle.textContent = activeAnime.title;
-            playerAnimeBadges.innerHTML = `
-                <span class="player-badge">MAL: ${activeAnime.id}</span>
-                <span class="player-badge">${activeAnime.type || 'TV'}</span>
-                <span class="player-badge">${activeAnime.date || 'N/A'}</span>
-            `;
-            playerAnimeSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
-            updatePlayerActionStates();
-
-            // Save to Continue Watching History
-            historyList = historyList.filter(item => item.id !== activeAnime.id);
-            historyList.unshift({
-                id: activeAnime.id,
-                title: activeAnime.title,
-                image: activeAnime.image,
-                ep: ep,
-                track: track,
-                type: activeAnime.type || 'TV',
-                date: activeAnime.date || 'N/A',
-                author: activeAnime.author || 'N/A',
-                genres: activeAnime.genres || [],
-                episodesCount: activeAnime.episodesCount || null,
-                synopsis: activeAnime.synopsis || ''
-            });
-            if (historyList.length > 10) historyList.pop();
-            localStorage.setItem('proxy_history', JSON.stringify(historyList));
-
-            videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
-            
-            if (playerView.style.display !== 'flex') {
-                playerView.style.display = 'flex';
-                fetchAndRenderEpisodes(activeAnime);
-            } else {
-                renderFilteredEpisodes(fetchedEpisodesCache, epSearchInput.value.trim());
-            }
-        }
-
-        epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
-        trackSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
-
+        // Player UI Controls
+        const closePlayerBtn = document.getElementById('closePlayerBtn');
+        const playerView = document.getElementById('player-view');
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
-            videoWrapper.innerHTML = '';
-            epSearchInput.value = '';
-
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
-                vibePlayBtn.textContent = '❚❚';
-            }
+            document.getElementById('videoWrapper').innerHTML = '';
         });
+
+        // Placeholder Anime Fetch
+        async function loadPopularAnime() {
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '<div class="catalog-loading">Loading popular titles...</div>';
+            try {
+                const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=12');
+                const data = await res.json();
+                grid.innerHTML = '';
+                data.data.forEach(anime => {
+                    const card = document.createElement('div');
+                    card.className = 'catalog-card';
+                    card.innerHTML = `
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+                        <div class="catalog-card-info">
+                            <div class="catalog-card-title">${anime.title}</div>
+                            <div class="catalog-card-sub">${anime.type || 'TV'} • ${anime.score || 'N/A'} ★</div>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => openDetails(anime));
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                grid.innerHTML = '<div class="catalog-loading">Failed to load catalog items.</div>';
+            }
+        }
+
+        function openDetails(anime) {
+            document.getElementById('detailImg').src = anime.images.jpg.image_url;
+            document.getElementById('detailTitle').textContent = anime.title;
+            document.getElementById('detailType').textContent = anime.type || 'TV';
+            document.getElementById('detailId').textContent = anime.mal_id;
+            document.getElementById('detailDate').textContent = anime.aired ? anime.aired.string : 'N/A';
+            document.getElementById('detailEpisodes').textContent = anime.episodes || 'N/A';
+            document.getElementById('detailSynopsis').textContent = anime.synopsis || 'No description provided.';
+            document.getElementById('details-modal').style.display = 'flex';
+
+            document.getElementById('watchBtn').onclick = () => {
+                document.getElementById('details-modal').style.display = 'none';
+                openPlayer(anime);
+            };
+        }
+
+        document.getElementById('closeDetails').addEventListener('click', () => {
+            document.getElementById('details-modal').style.display = 'none';
+        });
+
+        function openPlayer(anime) {
+            document.getElementById('playerTitle').textContent = anime.title;
+            document.getElementById('playerSynopsisText').textContent = anime.synopsis || 'No description provided.';
+            document.getElementById('playerTypeBadge').textContent = anime.type || 'TV';
+            document.getElementById('videoWrapper').innerHTML = `<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>`;
+            document.getElementById('player-view').style.display = 'flex';
+        }
     </script>
 </body>
 </html>
