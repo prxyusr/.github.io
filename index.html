@@ -1257,7 +1257,7 @@ Type "help" for commands.
 
             // Load Embed Source
             const embedPlayer = document.getElementById('animeEmbedPlayer');
-            embedPlayer.src = `https://iframe.embed-player-url.com/v1/embed/${activeAnime.id}/${ep}?type=${track}`;
+            embedPlayer.src = `https://vidsrc.to/embed/anime/${activeAnime.id}/${ep}`;
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
