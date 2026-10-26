@@ -34,21 +34,6 @@
 
         #mobile-blocker { display: none; }
 
-        @media (max-width: 992px) {
-            .main-container, .top-bar, .discord-invite, .expandable-menu, .spotify-widget, #click-overlay, #terminal-overlay, #catalog-page {
-                display: none !important;
-            }
-            #mobile-blocker {
-                display: flex !important;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                background-color: #0b0c10; color: #ffffff; text-align: center; padding: 20px; z-index: 10;
-            }
-        }
-
         .top-bar {
             position: absolute;
             top: 25px; left: 50%;
@@ -468,16 +453,135 @@
             .player-info-top { align-items: flex-start; flex-direction: column; gap: 10px; }
             .player-anime-badges { flex-wrap: wrap; }
         }
-    </style>
+    
+
+        /* Ensure the anime title, synopsis, badges and action buttons remain visible
+           beneath the video in stacked tablet/mobile layouts. */
+        .player-info-panel {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            flex: 0 0 auto;
+            min-height: 150px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 103;
+        }
+        .player-main-col { min-height: 0; }
+        @media (max-width: 1100px) {
+            .player-main-col { height: auto !important; overflow: visible; }
+            .player-info-panel { flex-shrink: 0; }
+        }
+
+        /* Responsive viewing modes: one page, tailored layouts for desktop, tablet and mobile. */
+        html { -webkit-text-size-adjust: 100%; }
+        button, input, select, a { touch-action: manipulation; }
+        button, .genre-pill, .catalog-card, .continue-card, .ep-item { -webkit-tap-highlight-color: transparent; }
+
+        /* Tablet: more compact navigation and a balanced two-column catalog. */
+        @media (min-width: 601px) and (max-width: 992px) {
+            body { overflow: hidden; }
+            .top-bar { top: 14px; font-size: .78rem; }
+            .main-container { max-width: 92vw; padding: 0 18px; }
+            .main-container h1, .main-container h2 { font-size: clamp(2.2rem, 6vw, 3.2rem); }
+            .expandable-menu { max-width: calc(100vw - 36px); }
+            #catalog-page { height: 100dvh; }
+            .catalog-header { grid-template-columns: auto minmax(160px, 1fr) auto; padding: 14px 20px; gap: 14px; }
+            .catalog-header h2 { font-size: 1.35rem; }
+            .catalog-search { grid-column: 2; max-width: none; }
+            .catalog-socials-group { grid-column: 3; gap: 10px; }
+            .catalog-header button#closeCatalog { grid-column: 3; grid-row: 2; justify-self: end; }
+            .catalog-header { grid-template-rows: auto auto; }
+            .genre-bar { padding: 12px 20px; }
+            .continue-section { padding: 0 20px; margin-top: 20px; }
+            .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; padding: 24px 20px; }
+            .catalog-card img { height: 205px; }
+            #player-view { padding: 16px; gap: 14px; }
+            .player-main-col { width: 100%; }
+            .episodes-sidebar { height: 34vh; min-height: 210px; }
+            .details-content { padding: 22px; }
+        }
+
+        /* Mobile: touch-first home, catalog and stacked watch screen. */
+        @media (max-width: 600px) {
+            body { min-height: 100dvh; height: 100dvh; overflow: hidden; }
+            #snowCanvas { opacity: .78; }
+            .top-bar { top: 10px; padding: 5px 10px; font-size: .72rem; }
+            .main-container { width: calc(100vw - 28px); padding: 0 8px; }
+            .main-container h1 { font-size: clamp(2rem, 10vw, 3rem); overflow-wrap: anywhere; }
+            .click-text { font-size: clamp(1.35rem, 7vw, 2rem); letter-spacing: 1px; text-align: center; padding: 0 16px; }
+            .discord-invite { bottom: max(18px, env(safe-area-inset-bottom)); }
+            .expandable-menu { width: calc(100vw - 28px); max-width: 420px; }
+            .spotify-widget { max-width: calc(100vw - 24px); }
+
+            #catalog-page { width: 100vw; height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
+            .catalog-header { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; padding: 12px 14px; gap: 11px; }
+            .catalog-header h2 { grid-column: 1; grid-row: 1; font-size: 1.2rem; }
+            .catalog-search { grid-column: 1 / -1; grid-row: 2; max-width: none; min-width: 0; padding: 11px 12px; font-size: 16px; }
+            .catalog-socials-group { grid-column: 1; grid-row: 3; justify-self: start; gap: 14px; }
+            .catalog-header button#closeCatalog { grid-column: 2; grid-row: 3; justify-self: end; }
+            .catalog-discord-banner, .catalog-disclaimer { padding: 10px 12px; font-size: .75rem; line-height: 1.45; }
+            .genre-bar { padding: 10px 12px; gap: 8px; }
+            .genre-pill { padding: 8px 12px; font-size: .8rem; }
+            .continue-section { margin-top: 16px; padding: 0 12px; gap: 10px; }
+            .continue-section h3 { font-size: 1rem; }
+            .continue-row { gap: 10px; }
+            .continue-card { min-width: 235px; padding: 8px; gap: 10px; }
+            .continue-card img { width: 48px; height: 64px; }
+            .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 18px 12px 28px; }
+            .catalog-card { min-width: 0; }
+            .catalog-card img { height: auto; aspect-ratio: 3 / 4; }
+            .catalog-card-info { padding: 9px; }
+            .catalog-card-title { font-size: .83rem; }
+            .catalog-card-sub { font-size: .7rem; }
+            .bookmark-btn { width: 34px; height: 34px; top: 7px; right: 7px; }
+
+            #player-view { width: 100vw; height: 100dvh; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); gap: 10px; overflow-x: hidden; overflow-y: auto; align-items: stretch; }
+            .player-main-col { width: 100%; max-width: none; height: auto; min-height: 0; border-radius: 12px; }
+            .video-container { width: 100%; aspect-ratio: 16 / 9; }
+            .video-container::before { top: 7px; left: 8px; font-size: .55rem; padding: 4px 6px; }
+            .player-controls { padding: 9px; gap: 8px; }
+            .player-controls > div { flex-wrap: wrap; gap: 7px !important; }
+            .player-controls label { font-size: .75rem; }
+            #epNum { width: 54px !important; font-size: 16px; }
+            #trackSel { font-size: 16px; }
+            #closePlayer { padding: 9px 10px; font-size: .78rem; }
+            .player-info-panel { padding: 14px; gap: 10px; overflow: visible; }
+            .player-info-top { align-items: flex-start; flex-direction: column; gap: 8px; }
+            .player-anime-title { font-size: 1.15rem; overflow-wrap: anywhere; }
+            .player-anime-badges { flex-wrap: wrap; }
+            .player-synopsis { font-size: .82rem; line-height: 1.55; }
+            .player-actions-row { margin-top: 3px; gap: 8px; }
+            .player-action-btn { padding: 9px 10px; font-size: .75rem; }
+            .episodes-sidebar { width: 100%; flex: 0 0 auto; height: 38vh; min-height: 220px; max-height: 360px; border-radius: 12px; }
+            .episodes-header { padding: 12px; gap: 9px; }
+            .episodes-title-row { font-size: .9rem; }
+            .episodes-title-row::after { font-size: .68rem; }
+            .episodes-search { font-size: 16px; padding: 10px; }
+            .episodes-list { padding: 8px; }
+            .ep-item { min-height: 44px; padding: 10px; }
+
+            #details-modal { padding: 10px; overflow-y: auto; align-items: flex-start; }
+            .details-box { margin: auto 0; max-height: calc(100dvh - 20px); overflow-y: auto; }
+            .details-content { flex-direction: column; gap: 14px; padding: 16px; }
+            .details-content img { width: 105px; height: 145px; }
+            .details-info h2 { font-size: 1.25rem; }
+            .details-meta { font-size: .82rem; }
+            .details-footer { padding: 12px; gap: 8px; flex-wrap: wrap; }
+            .details-left-actions { flex-wrap: wrap; }
+            .btn-primary, .btn-secondary, .btn-watched { padding: 9px 12px; font-size: .82rem; }
+            .info-page { padding: 18px 12px; overflow-y: auto; }
+            .info-page-inner { width: 100%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #snowCanvas { opacity: .35; }
+            *, *::before, *::after { scroll-behavior: auto !important; }
+        }
+</style>
 </head>
 <body>
-
-    <div id="mobile-blocker">
-        <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <p>This website is inaccessible on mobile devices. Please switch to desktop.</p>
-    </div>
-
-
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
         <span>views: <span id="busuanzi_value_site_pv">Loading...</span></span>
