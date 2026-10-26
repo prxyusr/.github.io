@@ -54,15 +54,15 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: message }]
     });
 
-    // Call Gemini 2.5 Flash API via REST
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents })
-      }
-    );
+ // In server.js:
+const geminiRes = await fetch(
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents })
+  }
+);
 
     const data = await geminiRes.json();
 
