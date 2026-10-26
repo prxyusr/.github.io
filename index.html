@@ -233,8 +233,8 @@
         .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
 
         .catalog-disclaimer {
-            background: rgba(34, 197, 94, 0.15); backdrop-filter: blur(5px);
-            border-left: 4px solid #22c55e; color: #86efac; padding: 12px 24px;
+            background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
+            border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
             font-size: 0.85rem; text-align: center;
             flex-shrink: 0; width: 100%;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -348,7 +348,7 @@
         .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
         .btn-watched.watched { background: #22c55e; color: #0f172a; }
 
-        /* Direct Embed Player View */
+        /* Zokoanime Player View */
         #player-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(11, 12, 16, 0.95); z-index: 100;
@@ -356,14 +356,10 @@
         }
         .player-main-col { display: flex; flex-direction: column; width: 100%; max-width: 900px; height: 90vh; background: #1e293b; border-radius: 12px; overflow: hidden; }
         .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
-        .player-status-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 12px; color: #38bdf8;
-            font-size: 1rem; z-index: 5;
-        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; flex-shrink: 0; }
         
+        /* Fully Scrollable Info Panel */
         .player-info-panel {
             flex-grow: 1; background: #111827; padding: 18px 24px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-top: 1px solid #334155;
             scrollbar-width: thin;
@@ -484,7 +480,7 @@ Type "help" for commands.
         </div>
 
         <div class="catalog-disclaimer">
-             <strong>Join the Discord for updates and downtime</strong>
+            ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain. Please browse and watch with caution.
         </div>
 
         <!-- Fully Unclipped & Scrollable Genre Bar -->
@@ -541,16 +537,10 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- Custom Embed Player View -->
+    <!-- Zokoanime Player View -->
     <div id="player-view">
         <div class="player-main-col">
-            <div class="video-container" id="videoWrapper">
-                <div id="playerOverlay" class="player-status-overlay" style="display: none;">
-                    <span>Loading player...</span>
-                </div>
-                <!-- Secure Embed Frame -->
-                <iframe id="animeEmbedPlayer" src="" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
-            </div>
+            <div class="video-container" id="videoWrapper"></div>
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;">
                     <label>Ep: <input type="number" id="epNum" value="1" min="1" style="width:60px; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;"></label>
@@ -561,7 +551,7 @@ Type "help" for commands.
                 </div>
                 <button class="btn-secondary" id="closePlayer" style="background:#ef4444;">Exit Player</button>
             </div>
-            <!-- Scrollable Info Panel -->
+            <!-- Fully Scrollable Info Panel -->
             <div class="player-info-panel" id="playerInfoPanel">
                 <div class="player-info-top">
                     <div class="player-anime-title" id="playerAnimeTitle">Anime Title</div>
@@ -746,7 +736,7 @@ Type "help" for commands.
         const watchBtn = document.getElementById('watchBtn');
 
         const playerView = document.getElementById('player-view');
-        const playerOverlay = document.getElementById('playerOverlay');
+        const videoWrapper = document.getElementById('videoWrapper');
         const epNum = document.getElementById('epNum');
         const trackSel = document.getElementById('trackSel');
         const closePlayerBtn = document.getElementById('closePlayer');
@@ -1143,6 +1133,7 @@ Type "help" for commands.
         async function fetchAndRenderEpisodes(anime) {
             episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
             
+            // Try fetching from Jikan first
             try {
                 const res = await fetch(`https://api.jikan.moe/v4/anime/${anime.id}/episodes`);
                 const data = await res.json();
@@ -1152,9 +1143,10 @@ Type "help" for commands.
                     return;
                 }
             } catch (err) {
-                // Fallback generator
+                // Rate-limited or offline, fallback to generator
             }
 
+            // Fallback: If episodesCount is unknown or null, assign safe defaults for long series (like One Piece)
             let total = anime.episodesCount;
             if (!total) {
                 const titleLower = anime.title.toLowerCase();
@@ -1164,7 +1156,7 @@ Type "help" for commands.
                 else if (titleLower.includes('detective conan')) total = 1150;
                 else if (titleLower.includes('black clover')) total = 170;
                 else if (titleLower.includes('boruto')) total = 293;
-                else total = 24;
+                else total = 24; // Default standard anime length
             }
 
             fetchedEpisodesCache = Array.from({ length: total }, (_, i) => ({
@@ -1208,7 +1200,7 @@ Type "help" for commands.
             renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
         });
 
-        // Embed Player Handler
+        // Player Logic with Automated Episodes Fetch & Info Panel Update
         function openPlayerStream() {
             if (!activeAnime) return;
 
@@ -1230,7 +1222,7 @@ Type "help" for commands.
             playerAnimeSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
             updatePlayerActionStates();
 
-            // Save History
+            // Save to Continue Watching History
             historyList = historyList.filter(item => item.id !== activeAnime.id);
             historyList.unshift({
                 id: activeAnime.id,
@@ -1248,16 +1240,14 @@ Type "help" for commands.
             if (historyList.length > 10) historyList.pop();
             localStorage.setItem('proxy_history', JSON.stringify(historyList));
 
+            videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
+            
             if (playerView.style.display !== 'flex') {
                 playerView.style.display = 'flex';
                 fetchAndRenderEpisodes(activeAnime);
             } else {
                 renderFilteredEpisodes(fetchedEpisodesCache, epSearchInput.value.trim());
             }
-
-            // Load Embed Source
-            const embedPlayer = document.getElementById('animeEmbedPlayer');
-            embedPlayer.src = `https://vidsrc.xyz/embed/anime?mal=${activeAnime.id}&ep=${ep}`;
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
@@ -1265,8 +1255,7 @@ Type "help" for commands.
 
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
-            const embedPlayer = document.getElementById('animeEmbedPlayer');
-            embedPlayer.src = '';
+            videoWrapper.innerHTML = '';
             epSearchInput.value = '';
 
             if (player && typeof player.playVideo === 'function') {
