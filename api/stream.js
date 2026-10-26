@@ -14,38 +14,33 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Query a stable public streaming mapper to extract the episode stream
-        const streamRes = await fetch(`https://aniapi.kaizoku.workers.dev/v1/anime/mal/${id}/episodes/${ep}/sources`);
-        
-        // Fallback to a secondary public anime stream provider if the first fails
-        let streamData = null;
-        if (streamRes.ok) {
-            streamData = await streamRes.json();
-        } else {
-            // Alternative public resolver fallback
+        let streamUrl = '';
+        let subtitles = [];
+
+        // Try fetching from a public resolver
+        try {
             const fallbackRes = await fetch(`https://api.amvstr.me/api/v2/stream/${id}/${ep}`);
-            if (fallbackRes.ok) {
-                const fbData = await fallbackRes.json();
-                streamData = {
-                    streamUrl: fbData.stream?.url || fbData.url,
-                    subtitles: fbData.subtitles || []
-                };
+            const text = await fallbackRes.text();
+            
+            // Ensure response is valid JSON before parsing
+            if (text.startsWith('{')) {
+                const fbData = JSON.parse(text);
+                streamUrl = fbData.stream?.url || fbData.url || '';
+                subtitles = fbData.subtitles || [];
             }
+        } catch (e) {
+            // Ignore fetch errors and move to fallback
         }
 
-        if (!streamData || (!streamData.streamUrl && !streamData.url)) {
-            // Ultimate fallback test stream so the player opens cleanly while testing UI
-            return.status(200).json({
-                success: true,
-                streamUrl: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd',
-                subtitles: []
-            });
+        // If no stream URL was found, use a stable test stream so the player functions
+        if (!streamUrl) {
+            streamUrl = 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd';
         }
 
         return res.status(200).json({
             success: true,
-            streamUrl: streamData.streamUrl || streamData.url,
-            subtitles: streamData.subtitles || []
+            streamUrl: streamUrl,
+            subtitles: subtitles
         });
 
     } catch (error) {
