@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Anime - ProxyUser</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -39,13 +40,14 @@
             background-color: #000;
         }
 
-        .video-wrapper iframe {
+        .video-wrapper video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             border: none;
+            outline: none;
         }
 
         .info-panel {
@@ -64,7 +66,9 @@
 <body>
 
     <div class="player-container">
-        <div class="video-wrapper" id="player-wrapper"></div>
+        <div class="video-wrapper">
+            <video id="videoPlayer" controls crossorigin="anonymous" playsinline></video>
+        </div>
         <div class="info-panel">
             <h1 id="player-title">Loading Stream...</h1>
         </div>
@@ -74,26 +78,43 @@
         const params = new URLSearchParams(window.location.search);
         const animeId = params.get('id');
         const episode = params.get('ep') || '1';
-        const type = params.get('type') || 'mal';
         const track = params.get('track') || 'sub';
 
-        const wrapper = document.getElementById('player-wrapper');
+        const video = document.getElementById('videoPlayer');
         const title = document.getElementById('player-title');
 
-        if (animeId) {
-            const embedUrl = `https://zokoanime.video/stream/${type}/${animeId}/${episode}/${track}`;
+        async function initStandalonePlayer() {
+            if (!animeId) {
+                title.innerHTML = '<span style="color: #ef4444;">Error: No Anime ID specified.</span>';
+                return;
+            }
 
-            const iframe = document.createElement('iframe');
-            iframe.src = embedUrl;
-            iframe.allowFullscreen = true;
-            iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+            try {
+                const response = await fetch(`/api/stream?id=${animeId}&ep=${episode}&track=${track}`);
+                const data = await response.json();
 
-            wrapper.appendChild(iframe);
-            title.textContent = `Episode ${episode} (${track.toUpperCase()})`;
-        } else {
-            wrapper.style.display = 'none';
-            title.innerHTML = '<span style="color: #ef4444;">Error: No Anime ID specified.</span>';
+                if (!response.ok || !data.streamUrl) {
+                    throw new Error(data.error || 'Unable to fetch stream URL.');
+                }
+
+                title.textContent = `Episode ${episode} (${track.toUpperCase()})`;
+
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(data.streamUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = data.streamUrl;
+                    video.play();
+                }
+
+            } catch (err) {
+                title.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            }
         }
+
+        initStandalonePlayer();
     </script>
 </body>
 </html>
