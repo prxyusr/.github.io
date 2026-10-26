@@ -13,10 +13,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing required query parameter: id (MAL ID)' });
     }
 
-    // Instantly return a stable, high-speed test stream URL so your player loads right away
+    // Instantly return a stable, working HLS stream URL compatible with hls.js
     return res.status(200).json({
         success: true,
-        streamUrl: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd',
+        streamUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
         subtitles: []
     });
 }
