@@ -5,7 +5,7 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Enable CORS for your frontend domain and local testing
+// Enable CORS for frontend and local testing
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -36,7 +36,7 @@ app.post("/api/chat", async (req, res) => {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "GEMINI_API_KEY is not configured on the Render backend." });
+      return res.status(500).json({ error: "GEMINI_API_KEY is not configured on the backend server." });
     }
 
     // Build conversation contents array for Gemini API
@@ -54,7 +54,7 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: message }]
     });
 
-    // Call Gemini 1.5 Flash API via REST
+    // Call Gemini 2.5 Flash API via REST
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
