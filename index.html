@@ -596,7 +596,7 @@
         <div class="home-version"><span>Update 1.0.3</span></div>
     </div>
 
-    <!-- Spotify-Themed Custom YouTube Audio Controller -->
+    <!-- Spotify-Themed Custom Audio Controller (HTML5 audio for mobile volume slider compatibility) -->
     <div class="spotify-widget" id="spotifyWidget">
         <button class="spotify-toggle" id="spotifyToggle">
             <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.599-.12-.42.18-.78.6-.9 4.56-1.021 8.52-.6 11.64 1.32.36.18.48.66.24 1.08zm1.44-3.84c-.301.48-.901.66-1.381.36-3.24-1.98-8.16-2.58-11.94-1.38-.54.18-1.14-.12-1.32-.66-.18-.54.12-1.14.66-1.32 4.38-1.38 9.84-.72 13.62 1.56.48.3.66.9.36 1.38zm.12-4.08C13.5 7.32 7.8 7.14 4.62 8.1c-.66.18-1.38-.18-1.56-.84-.18-.66.18-1.38.84-1.56 3.78-1.14 10.2-.9 14.76 1.86.6.36.78 1.14.42 1.74-.36.6-1.14.78-1.74.42z"/></svg>
@@ -840,9 +840,9 @@ Type "help" for commands.
         </div>
     </div>
 
-    <div id="youtube-audio-player"></div>
+    <!-- HTML5 Audio Element for Cross-Platform Volume Control Support -->
+    <audio id="vibeAudio" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=lofi-study-112191.mp3" preload="auto" loop></audio>
 
-    
     <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
 
 
@@ -957,56 +957,39 @@ Type "help" for commands.
             button.addEventListener('click', closeInfoPages);
         });
 
-        // Spotify-Themed Widget Toggle & Controls Logic
+        // Spotify-Themed Widget Toggle & HTML5 Audio Controls Logic
         const spotifyToggle = document.getElementById('spotifyToggle');
         const spotifyContainer = document.getElementById('spotifyContainer');
         const vibePlayBtn = document.getElementById('vibePlayBtn');
         const vibeVolume = document.getElementById('vibeVolume');
         const vibeVolVal = document.getElementById('vibeVolVal');
+        const vibeAudio = document.getElementById('vibeAudio');
+
+        // Set default initial volume (15%)
+        vibeAudio.volume = 0.15;
 
         spotifyToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             spotifyContainer.classList.toggle('show');
         });
 
-        // YouTube Audio Integration
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-audio-player', {
-                height: '1', width: '1', videoId: 'JiC8lgLOdck',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'JiC8lgLOdck' },
-                events: { 
-                    'onReady': (e) => {
-                        e.target.setVolume(15); 
-                    }
-                }
-            });
-        }
-
         // Vibe Play/Pause toggle
         vibePlayBtn.addEventListener('click', () => {
-            if (!player || typeof player.getPlayerState !== 'function') return;
-            const state = player.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-                vibePlayBtn.textContent = '▶';
+            if (vibeAudio.paused) {
+                vibeAudio.play().then(() => {
+                    vibePlayBtn.textContent = '❚❚';
+                }).catch(err => console.log("Playback prevented:", err));
             } else {
-                player.playVideo();
-                vibePlayBtn.textContent = '❚❚';
+                vibeAudio.pause();
+                vibePlayBtn.textContent = '▶';
             }
         });
 
-        // Vibe Volume Slider
+        // Vibe Volume Slider (Fully responsive on mobile & PC)
         vibeVolume.addEventListener('input', (e) => {
             const vol = e.target.value;
             vibeVolVal.textContent = `${vol}%`;
-            if (player && typeof player.setVolume === 'function') {
-                player.setVolume(vol);
-            }
+            vibeAudio.volume = vol / 100;
         });
 
         const overlay = document.getElementById('click-overlay');
@@ -1023,10 +1006,11 @@ Type "help" for commands.
             expandableMenu.classList.add('fade-in');
             topBar.classList.add('fade-in');
             spotifyWidget.classList.add('fade-in');
-            if (player && typeof player.playVideo === 'function') {
-                player.playVideo();
+            
+            // Auto-start ambient vibe audio on first interaction
+            vibeAudio.play().then(() => {
                 vibePlayBtn.textContent = '❚❚';
-            }
+            }).catch(err => console.log("Auto-play prevented:", err));
         });
 
         // Terminal & Page Elements
@@ -1522,8 +1506,8 @@ Type "help" for commands.
         function openPlayerStream() {
             if (!activeAnime) return;
 
-            if (player && typeof player.pauseVideo === 'function') {
-                player.pauseVideo();
+            if (!vibeAudio.paused) {
+                vibeAudio.pause();
                 vibePlayBtn.textContent = '▶';
             }
 
@@ -1580,8 +1564,8 @@ Type "help" for commands.
             catalogPage.style.display = 'flex';
             renderContinueWatching();
 
-            if (player && typeof player.pauseVideo === 'function') {
-                player.pauseVideo();
+            if (!vibeAudio.paused) {
+                vibeAudio.pause();
                 vibePlayBtn.textContent = '▶';
             }
         });
