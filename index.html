@@ -549,6 +549,8 @@
         });
 
         /* Proxy AI Script Logic */
+        const GEMINI_BACKEND_URL = "https://github-io-1-3i4t.onrender.com";
+
         const aiForm = document.getElementById('aiForm');
         const aiPrompt = document.getElementById('aiPrompt');
         const aiMessages = document.getElementById('aiMessages');
@@ -597,11 +599,17 @@
             const assistantMsgDiv = appendAssistantMessage("Thinking...");
 
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch(`${GEMINI_BACKEND_URL}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text, history: aiHistory })
                 });
+
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const rawText = await response.text();
+                    throw new Error(`Server returned non-JSON response (${response.status}): ${rawText.substring(0, 60)}...`);
+                }
 
                 const data = await response.json();
 
