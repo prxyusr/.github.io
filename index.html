@@ -232,6 +232,14 @@
         .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
         .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
 
+        .catalog-discord-banner {
+            background: rgba(34, 197, 94, 0.15); backdrop-filter: blur(5px);
+            border-left: 4px solid #22c55e; color: #86efac; padding: 12px 24px;
+            font-size: 0.85rem; font-weight: 700; text-align: center;
+            flex-shrink: 0; width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         .catalog-disclaimer {
             background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
             border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
@@ -412,7 +420,7 @@
 
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">error404...</span></span>
+        <span>views: <span id="busuanzi_value_site_pv">Loading...</span></span>
     </div>
 
 
@@ -479,6 +487,10 @@ Type "help" for commands.
                 </a>
             </div>
             <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
+        </div>
+
+        <div class="catalog-discord-banner">
+            Join the Discord for updates
         </div>
 
         <div class="catalog-disclaimer">
