@@ -411,7 +411,7 @@
 
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
+        <span>views: <span id="busuanzi_site_pv">Loading...</span></span>
     </div>
 
     <div id="click-overlay">
@@ -594,9 +594,9 @@ Type "help" for commands.
     <div id="youtube-audio-player"></div>
 
     <script
-        async
-        src="https://busuanzi.icodeq.com/busuanzi.pure.mini.js"
-        onerror="document.getElementById('busuanzi_value_site_pv').textContent = 'Unavailable';"
+        defer
+        src="https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js"
+        onerror="document.getElementById('busuanzi_site_pv').textContent = 'Unavailable';"
     ></script>
 
     <script>
