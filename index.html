@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProxyUser.dev</title>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             margin: 0;
@@ -233,8 +234,8 @@
         .catalog-header button#closeCatalog { justify-self: end; grid-column: 4; }
 
         .catalog-disclaimer {
-            background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(5px);
-            border-left: 4px solid #ef4444; color: #fca5a5; padding: 12px 24px;
+            background: rgba(34, 197, 94, 0.15); backdrop-filter: blur(5px);
+            border-left: 4px solid #22c55e; color: #86efac; padding: 12px 24px;
             font-size: 0.85rem; text-align: center;
             flex-shrink: 0; width: 100%;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -348,7 +349,7 @@
         .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
         .btn-watched.watched { background: #22c55e; color: #0f172a; }
 
-        /* Zokoanime Player View */
+        /* Direct Native Player View */
         #player-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(11, 12, 16, 0.95); z-index: 100;
@@ -356,10 +357,15 @@
         }
         .player-main-col { display: flex; flex-direction: column; width: 100%; max-width: 900px; height: 90vh; background: #1e293b; border-radius: 12px; overflow: hidden; }
         .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; outline: none; }
+        .player-status-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 12px; color: #38bdf8;
+            font-size: 1rem; z-index: 5;
+        }
         .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; flex-shrink: 0; }
         
-        /* Fully Scrollable Info Panel */
         .player-info-panel {
             flex-grow: 1; background: #111827; padding: 18px 24px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-top: 1px solid #334155;
             scrollbar-width: thin;
@@ -480,7 +486,7 @@ Type "help" for commands.
         </div>
 
         <div class="catalog-disclaimer">
-            ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain. Please browse and watch with caution.
+            ✨ <strong>Ad-Free Streaming Active:</strong> Streams are served directly through your custom serverless proxy without embedded third-party ads or popups.
         </div>
 
         <!-- Fully Unclipped & Scrollable Genre Bar -->
@@ -537,10 +543,16 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- Zokoanime Player View -->
+    <!-- Custom Direct Native Video Player View -->
     <div id="player-view">
         <div class="player-main-col">
-            <div class="video-container" id="videoWrapper"></div>
+            <div class="video-container" id="videoWrapper">
+                <div id="playerOverlay" class="player-status-overlay">
+                    <i data-lucide="loader" class="animate-spin" style="width: 32px; height: 32px;"></i>
+                    <span id="playerOverlayMsg">Fetching ad-free stream...</span>
+                </div>
+                <video id="nativeVideoPlayer" controls crossorigin="anonymous" playsinline></video>
+            </div>
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;">
                     <label>Ep: <input type="number" id="epNum" value="1" min="1" style="width:60px; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;"></label>
@@ -551,7 +563,7 @@ Type "help" for commands.
                 </div>
                 <button class="btn-secondary" id="closePlayer" style="background:#ef4444;">Exit Player</button>
             </div>
-            <!-- Fully Scrollable Info Panel -->
+            <!-- Scrollable Info Panel -->
             <div class="player-info-panel" id="playerInfoPanel">
                 <div class="player-info-top">
                     <div class="player-anime-title" id="playerAnimeTitle">Anime Title</div>
@@ -736,7 +748,9 @@ Type "help" for commands.
         const watchBtn = document.getElementById('watchBtn');
 
         const playerView = document.getElementById('player-view');
-        const videoWrapper = document.getElementById('videoWrapper');
+        const nativeVideoPlayer = document.getElementById('nativeVideoPlayer');
+        const playerOverlay = document.getElementById('playerOverlay');
+        const playerOverlayMsg = document.getElementById('playerOverlayMsg');
         const epNum = document.getElementById('epNum');
         const trackSel = document.getElementById('trackSel');
         const closePlayerBtn = document.getElementById('closePlayer');
@@ -752,6 +766,7 @@ Type "help" for commands.
         const playerWatchlistBtn = document.getElementById('playerWatchlistBtn');
         const playerWatchedBtn = document.getElementById('playerWatchedBtn');
 
+        let hlsInstance = null;
         let liveAnimeList = [];
         let activeAnime = null;
         let searchTimeout = null;
@@ -1133,7 +1148,6 @@ Type "help" for commands.
         async function fetchAndRenderEpisodes(anime) {
             episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
             
-            // Try fetching from Jikan first
             try {
                 const res = await fetch(`https://api.jikan.moe/v4/anime/${anime.id}/episodes`);
                 const data = await res.json();
@@ -1143,10 +1157,9 @@ Type "help" for commands.
                     return;
                 }
             } catch (err) {
-                // Rate-limited or offline, fallback to generator
+                // Fallback generator
             }
 
-            // Fallback: If episodesCount is unknown or null, assign safe defaults for long series (like One Piece)
             let total = anime.episodesCount;
             if (!total) {
                 const titleLower = anime.title.toLowerCase();
@@ -1156,7 +1169,7 @@ Type "help" for commands.
                 else if (titleLower.includes('detective conan')) total = 1150;
                 else if (titleLower.includes('black clover')) total = 170;
                 else if (titleLower.includes('boruto')) total = 293;
-                else total = 24; // Default standard anime length
+                else total = 24;
             }
 
             fetchedEpisodesCache = Array.from({ length: total }, (_, i) => ({
@@ -1200,8 +1213,8 @@ Type "help" for commands.
             renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
         });
 
-        // Player Logic with Automated Episodes Fetch & Info Panel Update
-        function openPlayerStream() {
+        // Direct Native Player Handler via /api/stream Function
+        async function openPlayerStream() {
             if (!activeAnime) return;
 
             if (player && typeof player.pauseVideo === 'function') {
@@ -1222,7 +1235,7 @@ Type "help" for commands.
             playerAnimeSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
             updatePlayerActionStates();
 
-            // Save to Continue Watching History
+            // Save History
             historyList = historyList.filter(item => item.id !== activeAnime.id);
             historyList.unshift({
                 id: activeAnime.id,
@@ -1240,13 +1253,63 @@ Type "help" for commands.
             if (historyList.length > 10) historyList.pop();
             localStorage.setItem('proxy_history', JSON.stringify(historyList));
 
-            videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
-            
             if (playerView.style.display !== 'flex') {
                 playerView.style.display = 'flex';
                 fetchAndRenderEpisodes(activeAnime);
             } else {
                 renderFilteredEpisodes(fetchedEpisodesCache, epSearchInput.value.trim());
+            }
+
+            // Display loading overlay and fetch direct stream link via serverless API
+            playerOverlay.style.display = 'flex';
+            playerOverlayMsg.textContent = 'Fetching ad-free stream...';
+
+            try {
+                const res = await fetch(`/api/stream?id=${activeAnime.id}&ep=${ep}&track=${track}`);
+                const data = await res.json();
+
+                if (!res.ok || !data.streamUrl) {
+                    throw new Error(data.error || 'Stream URL unavailable');
+                }
+
+                playHlsStream(data.streamUrl, data.subtitles || []);
+                playerOverlay.style.display = 'none';
+
+            } catch (err) {
+                playerOverlayMsg.textContent = `Stream Error: ${err.message}`;
+            }
+        }
+
+        function playHlsStream(streamUrl, subtitles = []) {
+            // Clean up existing tracks
+            Array.from(nativeVideoPlayer.querySelectorAll('track')).forEach(t => t.remove());
+
+            // Add subtitle tracks if available
+            subtitles.forEach((sub, i) => {
+                if (sub.url && sub.lang) {
+                    const trackEl = document.createElement('track');
+                    trackEl.kind = 'subtitles';
+                    trackEl.label = sub.lang;
+                    trackEl.srclang = sub.lang.toLowerCase().slice(0, 2);
+                    trackEl.src = sub.url;
+                    if (sub.lang.toLowerCase().includes('english') || i === 0) {
+                        trackEl.default = true;
+                    }
+                    nativeVideoPlayer.appendChild(trackEl);
+                }
+            });
+
+            if (Hls.isSupported()) {
+                if (hlsInstance) hlsInstance.destroy();
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(streamUrl);
+                hlsInstance.attachMedia(nativeVideoPlayer);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    nativeVideoPlayer.play().catch(() => {});
+                });
+            } else if (nativeVideoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                nativeVideoPlayer.src = streamUrl;
+                nativeVideoPlayer.play().catch(() => {});
             }
         }
 
@@ -1255,7 +1318,12 @@ Type "help" for commands.
 
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
-            videoWrapper.innerHTML = '';
+            if (hlsInstance) {
+                hlsInstance.destroy();
+                hlsInstance = null;
+            }
+            nativeVideoPlayer.pause();
+            nativeVideoPlayer.removeAttribute('src');
             epSearchInput.value = '';
 
             if (player && typeof player.playVideo === 'function') {
