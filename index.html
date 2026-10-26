@@ -681,6 +681,58 @@ Type "help" for commands.
             <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title...">
             <div class="catalog-socials-group">
             
+<!-- Fullscreen Catalog Page -->
+    <div id="catalog-page">
+        <div class="catalog-header">
+            <h2>ProxyUser.dev // Anime Catalog</h2>
+            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title...">
+            <div class="catalog-socials-group">
+                <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="catalog-social-btn discord" title="Join Discord">
+                    <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515..."></path></svg>
+                </a>
+                <a href="https://www.instagram.com/ngltrey/" target="_blank" class="catalog-social-btn instagram" title="Instagram">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204..."></path></svg>
+                </a>
+            </div>
+            <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
+        </div>
+
+        <div class="catalog-discord-banner">
+            Join the Discord for updates
+        </div>
+
+        <div class="catalog-disclaimer">
+            ⚠️ <strong>Disclaimer:</strong> External video streams contain third-party ads and popups...
+        </div>
+
+        <!-- Fully Unclipped & Scrollable Genre Bar -->
+        <div class="genre-bar" id="genreBar">
+            <button class="genre-pill active" data-genre="all">All Popular</button>
+            <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
+            <button class="genre-pill" data-genre="watched">✓ Watched</button>
+            <button class="genre-pill" data-genre="TV">📺 TV Series</button>
+            <button class="genre-pill" data-genre="MOVIE">🎬 Movies</button>
+            <button class="genre-pill" data-genre="Action">Action</button>
+            <button class="genre-pill" data-genre="Sci-Fi">Sci-Fi</button>
+            <button class="genre-pill" data-genre="Romance">Romance</button>
+            <button class="genre-pill" data-genre="Fantasy">Fantasy</button>
+            <button class="genre-pill" data-genre="Comedy">Comedy</button>
+            <button class="genre-pill" data-genre="Drama">Drama</button>
+        </div>
+
+        <!-- Continue Watching Shelf -->
+        <div class="continue-section" id="continueSection">
+            <h3><i data-lucide="play-circle" style="width:20px;height:20px;"></i> Continue Watching</h3>
+            <div class="continue-row" id="continueRow"></div>
+        </div>
+
+        <div class="catalog-grid" id="catalogGrid">
+            <div class="catalog-loading">Loading popular titles...</div>
+        </div>
+    </div>
+    <!-- END OF CATALOG PAGE -->
+
+    <!-- PROXY AI PAGE (Moved outside so it is a proper standalone overlay) -->
     <section id="proxyAiPage" aria-label="Proxy AI Gemini chat">
       <div class="ai-shell">
         <aside class="ai-sidebar">
@@ -693,7 +745,12 @@ Type "help" for commands.
           <header class="ai-top"><div><strong>Proxy AI</strong> <span style="color:#9ca3af;font-size:13px"> / Gemini</span></div><div style="display:flex;gap:10px;align-items:center"><span class="ai-model">Gemini Flash</span><button type="button" class="ai-back" id="aiBackTop">Close</button></div></header>
           <div class="ai-scroll" id="aiScroll"><div class="ai-content" id="aiMessages">
             <div class="ai-welcome" id="aiWelcome"><h2>Hey, how can I help?</h2><p>Ask a question, brainstorm ideas, or get help with code.</p>
-              <div class="ai-suggestions"><button class="ai-suggestion" data-prompt="Help me improve my website's design and mobile experience.">Improve my website <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Design and development ideas</span></button><button class="ai-suggestion" data-prompt="Explain a difficult topic in simple terms.">Explain something <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Clear, step-by-step explanations</span></button><button class="ai-suggestion" data-prompt="Help me debug this code. Ask me to paste the code and error first.">Debug some code <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Find and fix a problem</span></button><button class="ai-suggestion" data-prompt="Give me creative ideas for a personal website project.">Brainstorm ideas <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Explore new possibilities</span></button></div>
+              <div class="ai-suggestions">
+                <button class="ai-suggestion" data-prompt="Help me improve my website's design and mobile experience.">Improve my website <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Design and development ideas</span></button>
+                <button class="ai-suggestion" data-prompt="Explain a difficult topic in simple terms.">Explain something <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Clear, step-by-step explanations</span></button>
+                <button class="ai-suggestion" data-prompt="Help me debug this code. Ask me to paste the code and error first.">Debug some code <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Find and fix a problem</span></button>
+                <button class="ai-suggestion" data-prompt="Give me creative ideas for a personal website project.">Brainstorm ideas <span style="display:block;color:#999eae;font-size:12px;margin-top:6px">Explore new possibilities</span></button>
+              </div>
             </div>
           </div></div>
           <div class="ai-compose-wrap"><form id="aiForm" class="ai-compose"><textarea id="aiPrompt" rows="1" placeholder="Ask Proxy AI anything..." aria-label="Message to Gemini"></textarea><button class="ai-send" id="aiSend" type="submit" aria-label="Send message"><i data-lucide="arrow-up"></i></button></form><div class="ai-disclaimer">AI can make mistakes. Check important information. This chat uses the Gemini API and requires a configured backend.</div></div>
