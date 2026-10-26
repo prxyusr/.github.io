@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProxyUser.dev</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             margin: 0;
@@ -349,7 +348,7 @@
         .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
         .btn-watched.watched { background: #22c55e; color: #0f172a; }
 
-        /* Direct Native Player View */
+        /* Direct Embed Player View */
         #player-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(11, 12, 16, 0.95); z-index: 100;
@@ -357,7 +356,6 @@
         }
         .player-main-col { display: flex; flex-direction: column; width: 100%; max-width: 900px; height: 90vh; background: #1e293b; border-radius: 12px; overflow: hidden; }
         .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
-        .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; outline: none; }
         .player-status-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
@@ -543,15 +541,15 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- Custom Direct Native Video Player View -->
+    <!-- Custom Embed Player View -->
     <div id="player-view">
         <div class="player-main-col">
             <div class="video-container" id="videoWrapper">
-                <div id="playerOverlay" class="player-status-overlay">
-                    <i data-lucide="loader" class="animate-spin" style="width: 32px; height: 32px;"></i>
-                    <span id="playerOverlayMsg">Fetching ad-free stream...</span>
+                <div id="playerOverlay" class="player-status-overlay" style="display: none;">
+                    <span>Loading player...</span>
                 </div>
-                <video id="nativeVideoPlayer" controls crossorigin="anonymous" playsinline></video>
+                <!-- Secure Embed Frame -->
+                <iframe id="animeEmbedPlayer" src="" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
             </div>
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;">
@@ -748,9 +746,7 @@ Type "help" for commands.
         const watchBtn = document.getElementById('watchBtn');
 
         const playerView = document.getElementById('player-view');
-        const nativeVideoPlayer = document.getElementById('nativeVideoPlayer');
         const playerOverlay = document.getElementById('playerOverlay');
-        const playerOverlayMsg = document.getElementById('playerOverlayMsg');
         const epNum = document.getElementById('epNum');
         const trackSel = document.getElementById('trackSel');
         const closePlayerBtn = document.getElementById('closePlayer');
@@ -766,7 +762,6 @@ Type "help" for commands.
         const playerWatchlistBtn = document.getElementById('playerWatchlistBtn');
         const playerWatchedBtn = document.getElementById('playerWatchedBtn');
 
-        let hlsInstance = null;
         let liveAnimeList = [];
         let activeAnime = null;
         let searchTimeout = null;
@@ -1213,8 +1208,8 @@ Type "help" for commands.
             renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
         });
 
-        // Direct Native Player Handler via /api/stream Function
-        async function openPlayerStream() {
+        // Embed Player Handler
+        function openPlayerStream() {
             if (!activeAnime) return;
 
             if (player && typeof player.pauseVideo === 'function') {
@@ -1260,57 +1255,9 @@ Type "help" for commands.
                 renderFilteredEpisodes(fetchedEpisodesCache, epSearchInput.value.trim());
             }
 
-            // Display loading overlay and fetch direct stream link via serverless API
-            playerOverlay.style.display = 'flex';
-            playerOverlayMsg.textContent = 'Fetching ad-free stream...';
-
-            try {
-                const res = await fetch(`/api/stream?id=${activeAnime.id}&ep=${ep}&track=${track}`);
-                const data = await res.json();
-
-                if (!res.ok || !data.streamUrl) {
-                    throw new Error(data.error || 'Stream URL unavailable');
-                }
-
-                playHlsStream(data.streamUrl, data.subtitles || []);
-                playerOverlay.style.display = 'none';
-
-            } catch (err) {
-                playerOverlayMsg.textContent = `Stream Error: ${err.message}`;
-            }
-        }
-
-        function playHlsStream(streamUrl, subtitles = []) {
-            // Clean up existing tracks
-            Array.from(nativeVideoPlayer.querySelectorAll('track')).forEach(t => t.remove());
-
-            // Add subtitle tracks if available
-            subtitles.forEach((sub, i) => {
-                if (sub.url && sub.lang) {
-                    const trackEl = document.createElement('track');
-                    trackEl.kind = 'subtitles';
-                    trackEl.label = sub.lang;
-                    trackEl.srclang = sub.lang.toLowerCase().slice(0, 2);
-                    trackEl.src = sub.url;
-                    if (sub.lang.toLowerCase().includes('english') || i === 0) {
-                        trackEl.default = true;
-                    }
-                    nativeVideoPlayer.appendChild(trackEl);
-                }
-            });
-
-            if (Hls.isSupported()) {
-                if (hlsInstance) hlsInstance.destroy();
-                hlsInstance = new Hls();
-                hlsInstance.loadSource(streamUrl);
-                hlsInstance.attachMedia(nativeVideoPlayer);
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                    nativeVideoPlayer.play().catch(() => {});
-                });
-            } else if (nativeVideoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                nativeVideoPlayer.src = streamUrl;
-                nativeVideoPlayer.play().catch(() => {});
-            }
+            // Load Embed Source
+            const embedPlayer = document.getElementById('animeEmbedPlayer');
+            embedPlayer.src = `https://iframe.embed-player-url.com/v1/embed/${activeAnime.id}/${ep}?type=${track}`;
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
@@ -1318,12 +1265,8 @@ Type "help" for commands.
 
         closePlayerBtn.addEventListener('click', () => {
             playerView.style.display = 'none';
-            if (hlsInstance) {
-                hlsInstance.destroy();
-                hlsInstance = null;
-            }
-            nativeVideoPlayer.pause();
-            nativeVideoPlayer.removeAttribute('src');
+            const embedPlayer = document.getElementById('animeEmbedPlayer');
+            embedPlayer.src = '';
             epSearchInput.value = '';
 
             if (player && typeof player.playVideo === 'function') {
