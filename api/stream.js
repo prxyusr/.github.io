@@ -14,7 +14,7 @@ res.setHeader('Content-Type', 'application/json');
 
     try {
         // Step 1: Map MAL/Anilist ID to Gogoanime / Zoro episode stream using public Consumet API
-        const searchRes = await fetch(`https://api.consumet.org/anime/anilist/info/${id}`);
+        const searchRes = await fetch(`https://YOUR-RENDER-URL.onrender.com/anime/anilist/info/${id}`);
         
         if (!searchRes.ok) {
             return res.status(404).json({ error: 'Anime media info not found.' });
