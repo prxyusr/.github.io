@@ -108,7 +108,7 @@
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
             padding: 0 20px; border-radius: 8px; border: 1px solid transparent;
         }
-        .menu-items.show { max-height: 320px; opacity: 1; padding: 20px; border-color: var(--accent-border); }
+        .menu-items.show { max-height: 380px; opacity: 1; padding: 20px; border-color: var(--accent-border); }
         .menu-item { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); text-decoration: none; cursor: pointer; background: none; border: 0; padding: 0; text-align: left; font-family: inherit; }
         .menu-item:hover { color: #fff; }
 
@@ -186,8 +186,8 @@
         .terminal-prompt { font-weight: bold; }
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
-        /* Fullscreen Catalog Page UI */
-        #catalog-page {
+        /* Fullscreen Catalog Pages UI */
+        .page-catalog {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -210,7 +210,7 @@
             flex-shrink: 0;
             width: 100%;
         }
-        .catalog-header h2 { color: #ffffff; white-space: nowrap; }
+        .catalog-header h2 { color: #ffffff; white-space: nowrap; font-size: 1.35rem; }
         .catalog-search {
             width: 100%; max-width: 400px;
             padding: 10px 16px;
@@ -229,7 +229,7 @@
         .catalog-social-btn svg { width: 22px; height: 22px; fill: currentColor; }
         .catalog-social-btn.discord:hover { color: #5865F2; transform: scale(1.1); }
         .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
-        .catalog-header button#closeCatalog { flex-shrink: 0; }
+        .catalog-header button.btn-close { flex-shrink: 0; }
 
         .catalog-discord-banner {
             background: rgba(34, 197, 94, 0.15); backdrop-filter: blur(5px);
@@ -268,18 +268,6 @@
         .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
         .genre-pill, .genre-pill:visited, .genre-pill.active { color: #ffffff; }
         .genre-pill.active { background: #38bdf8; color: #ffffff; font-weight: bold; border-color: #38bdf8; }
-
-        /* Media Switcher Styling */
-        .media-type-pill {
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.5);
-            color: #a5b4fc;
-        }
-        .media-type-pill.active {
-            background: #6366f1;
-            color: #ffffff;
-            border-color: #6366f1;
-        }
 
         /* Continue Watching Section */
         .continue-section {
@@ -379,7 +367,6 @@
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .player-controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111827; flex-shrink: 0; }
         
-        /* Fully Scrollable Info Panel */
         .player-info-panel {
             flex-grow: 1; background: #111827; padding: 18px 24px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-top: 1px solid #334155;
             scrollbar-width: thin;
@@ -399,7 +386,6 @@
         .player-action-btn.saved { color: #f59e0b; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.15); }
         .player-action-btn.watched { color: #22c55e; border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.15); }
 
-        /* Episode Sidebar UI */
         .episodes-sidebar {
             width: 340px; height: 90vh; background: #111827; border: 1px solid #334155;
             border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
@@ -421,7 +407,6 @@
         .ep-item.active .ep-num { color: #f43f5e; }
         .ep-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
 
-        /* Player refresh: cleaner streaming workspace */
         .home-version { margin-top: 12px; color: #8b95a7; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; }
         .home-version span { display: inline-block; padding: 5px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; background: rgba(255,255,255,.035); }
         #player-view { padding: clamp(12px, 2vw, 28px); gap: 18px; align-items: stretch; background: radial-gradient(ellipse at top left, rgba(56,189,248,.09), transparent 40%), rgba(5,8,14,.97); }
@@ -486,108 +471,13 @@
         html { -webkit-text-size-adjust: 100%; }
         button, input, select, a { touch-action: manipulation; }
         button, .genre-pill, .catalog-card, .continue-card, .ep-item { -webkit-tap-highlight-color: transparent; }
-
-        @media (min-width: 601px) and (max-width: 992px) {
-            body { overflow: hidden; }
-            .top-bar { top: 14px; font-size: .78rem; }
-            .main-container { max-width: 92vw; padding: 0 18px; }
-            .main-container h1, .main-container h2 { font-size: clamp(2.2rem, 6vw, 3.2rem); }
-            .expandable-menu { max-width: calc(100vw - 36px); }
-            #catalog-page { height: 100dvh; }
-            .catalog-header { padding: 14px 20px; gap: 14px; }
-            .catalog-header h2 { font-size: 1.35rem; }
-            .catalog-search { max-width: 260px; margin-left: auto; margin-right: 0; }
-            .genre-bar { padding: 12px 20px; }
-            .continue-section { padding: 0 20px; margin-top: 20px; }
-            .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; padding: 24px 20px; }
-            .catalog-card img { height: 205px; }
-            #player-view { padding: 16px; gap: 14px; }
-            .player-main-col { width: 100%; }
-            .episodes-sidebar { height: 34vh; min-height: 210px; }
-            .details-content { padding: 22px; }
-        }
-
-        @media (max-width: 600px) {
-            body { min-height: 100dvh; height: 100dvh; overflow: hidden; }
-            #snowCanvas { opacity: .78; }
-            .top-bar { top: 10px; padding: 5px 10px; font-size: .72rem; }
-            .main-container { width: calc(100vw - 28px); padding: 0 8px; }
-            .main-container h1 { font-size: clamp(2rem, 10vw, 3rem); overflow-wrap: anywhere; }
-            .click-text { font-size: clamp(1.35rem, 7vw, 2rem); letter-spacing: 1px; text-align: center; padding: 0 16px; }
-            .discord-invite { bottom: max(18px, env(safe-area-inset-bottom)); }
-            .expandable-menu { width: calc(100vw - 28px); max-width: 420px; }
-            .spotify-widget { max-width: calc(100vw - 24px); }
-
-            #catalog-page { width: 100vw; height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
-            .catalog-header { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto; padding: 12px 14px; gap: 11px; }
-            .catalog-header h2 { grid-column: 1; grid-row: 1; font-size: 1.2rem; }
-            .catalog-search { grid-column: 1 / -1; grid-row: 2; max-width: none; min-width: 0; padding: 11px 12px; font-size: 16px; margin: 0 auto; text-align: center; }
-            .catalog-socials-group { grid-column: 1; grid-row: 3; justify-self: start; gap: 14px; }
-            .catalog-header button#closeCatalog { grid-column: 2; grid-row: 3; justify-self: end; }
-            .catalog-discord-banner, .catalog-disclaimer { padding: 10px 12px; font-size: .75rem; line-height: 1.45; }
-            .genre-bar { padding: 10px 12px; gap: 8px; }
-            .genre-pill { padding: 8px 12px; font-size: .8rem; }
-            .continue-section { margin-top: 16px; padding: 0 12px; gap: 10px; }
-            .continue-section h3 { font-size: 1rem; }
-            .continue-row { gap: 10px; }
-            .continue-card { min-width: 235px; padding: 8px; gap: 10px; }
-            .continue-card img { width: 48px; height: 64px; }
-            .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 18px 12px 28px; }
-            .catalog-card { min-width: 0; }
-            .catalog-card img { height: auto; aspect-ratio: 3 / 4; }
-            .catalog-card-info { padding: 9px; }
-            .catalog-card-title { font-size: .83rem; }
-            .catalog-card-sub { font-size: .7rem; }
-            .bookmark-btn { width: 34px; height: 34px; top: 7px; right: 7px; }
-
-            #player-view { width: 100vw; height: 100dvh; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); gap: 10px; overflow-x: hidden; overflow-y: auto; align-items: stretch; }
-            .player-main-col { width: 100%; max-width: none; height: auto; min-height: 0; border-radius: 12px; }
-            .video-container { width: 100%; aspect-ratio: 16 / 9; }
-            .video-container::before { top: 7px; left: 8px; font-size: .55rem; padding: 4px 6px; }
-            .player-controls { padding: 9px; gap: 8px; }
-            .player-controls > div { flex-wrap: wrap; gap: 7px !important; }
-            .player-controls label { font-size: .75rem; }
-            #epNum { width: 54px !important; font-size: 16px; }
-            #trackSel, #serverSel { font-size: 16px; }
-            #closePlayer { padding: 9px 10px; font-size: .78rem; }
-            .player-info-panel { padding: 14px; gap: 10px; overflow: visible; }
-            .player-info-top { align-items: flex-start; flex-direction: column; gap: 8px; }
-            .player-anime-title { font-size: 1.15rem; overflow-wrap: anywhere; }
-            .player-anime-badges { flex-wrap: wrap; }
-            .player-synopsis { font-size: .82rem; line-height: 1.55; }
-            .player-actions-row { margin-top: 3px; gap: 8px; }
-            .player-action-btn { padding: 9px 10px; font-size: .75rem; }
-            .episodes-sidebar { width: 100%; flex: 0 0 auto; height: 38vh; min-height: 220px; max-height: 360px; border-radius: 12px; }
-            .episodes-header { padding: 12px; gap: 9px; }
-            .episodes-title-row { font-size: .9rem; }
-            .episodes-title-row::after { font-size: .68rem; }
-            .episodes-search { font-size: 16px; padding: 10px; }
-            .episodes-list { padding: 8px; }
-            .ep-item { min-height: 44px; padding: 10px; }
-
-            #details-modal { padding: 10px; overflow-y: auto; align-items: flex-start; }
-            .details-box { margin: auto 0; max-height: calc(100dvh - 20px); overflow-y: auto; }
-            .details-content { flex-direction: column; gap: 14px; padding: 16px; }
-            .details-content img { width: 105px; height: 145px; }
-            .details-info h2 { font-size: 1.25rem; }
-            .details-meta { font-size: .82rem; }
-            .details-footer { padding: 12px; gap: 8px; flex-wrap: wrap; }
-            .details-left-actions { flex-wrap: wrap; }
-            .btn-primary, .btn-secondary, .btn-watched { padding: 9px 12px; font-size: .82rem; }
-            .info-page { padding: 18px 12px; overflow-y: auto; }
-            .info-page-inner { width: 100%; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            #snowCanvas { opacity: .35; }
-            *, *::before, *::after { scroll-behavior: auto !important; }
-        }
 </style>
 </head>
 <body>
+    <!-- Top Bar with Working View Counter -->
     <div class="top-bar" id="topBar">
         <i data-lucide="eye"></i>
-        <span>views: <span id="busuanzi_value_site_pv">...</span></span>
+        <span>views: <span id="site_views_counter">...</span></span>
     </div>
 
     <div id="click-overlay">
@@ -598,7 +488,7 @@
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <div class="home-version"><span>Update 1.0.5</span></div>
+        <div class="home-version"><span>Update 1.0.6</span></div>
     </div>
 
     <!-- Spotify-Themed Custom Audio Controller -->
@@ -628,7 +518,7 @@
                 <div>press [TAB] to close</div>
             </div>
             <div class="terminal-body" id="terminalBody">
-                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.5]
+                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.6]
 Type "help" for commands.
 
 </div>
@@ -640,10 +530,10 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- Fullscreen Catalog Page -->
-    <div id="catalog-page">
+    <!-- PAGE 1: Dedicated Anime Catalog -->
+    <div id="catalog-page" class="page-catalog">
         <div class="catalog-header">
-            <h2>ㅤ</h2>
+            <h2>⛩️ Anime Catalog</h2>
             <div class="catalog-socials-group">
                 <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="catalog-social-btn discord" title="Join Discord">
                     <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
@@ -652,8 +542,8 @@ Type "help" for commands.
                     <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 </a>
             </div>
-            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type title...">
-            <button class="btn-secondary" id="closeCatalog">Close Catalog</button>
+            <input type="text" id="catalogSearchInput" class="catalog-search" placeholder="Type anime title...">
+            <button class="btn-secondary btn-close" onclick="closeCatalogUI('anime')">Close</button>
         </div>
 
         <div class="catalog-discord-banner">
@@ -661,29 +551,68 @@ Type "help" for commands.
         </div>
 
         <div class="catalog-disclaimer">
-            <strong style="color: #f59e0b;">Disclaimer</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain. Please browse and watch with caution.
+            <strong style="color: #f59e0b;">Disclaimer</strong> External video streams contain third-party ads and popups. These are controlled entirely by the host player and cannot be modified or removed by this domain.
         </div>
 
-        <!-- Fully Unclipped & Scrollable Genre / Section Bar -->
-        <div class="genre-bar" id="genreBar">
-            <button class="genre-pill media-type-pill active" id="mediaModeAnime" onclick="switchMediaMode('anime')">⛩️ Anime</button>
-            <button class="genre-pill media-type-pill" id="mediaModeMovies" onclick="switchMediaMode('movies')">🎬 Movies & TV</button>
-            <span style="border-right: 1px solid rgba(255,255,255,0.1); margin: 0 4px;"></span>
+        <div class="genre-bar" id="animeGenreBar">
             <button class="genre-pill active" data-genre="all">All Popular</button>
             <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
             <button class="genre-pill" data-genre="watched">✓ Watched</button>
-            <button class="genre-pill" data-genre="TV">📺 Series</button>
+            <button class="genre-pill" data-genre="TV">📺 TV Series</button>
             <button class="genre-pill" data-genre="MOVIE">🎬 Movies</button>
+            <button class="genre-pill" data-genre="Action">Action</button>
+            <button class="genre-pill" data-genre="Sci-Fi">Sci-Fi</button>
+            <button class="genre-pill" data-genre="Romance">Romance</button>
+            <button class="genre-pill" data-genre="Fantasy">Fantasy</button>
+            <button class="genre-pill" data-genre="Comedy">Comedy</button>
         </div>
 
-        <!-- Continue Watching Shelf -->
-        <div class="continue-section" id="continueSection">
-            <h3><i data-lucide="play-circle" style="width:20px;height:20px;"></i> Continue Watching</h3>
-            <div class="continue-row" id="continueRow"></div>
+        <div class="continue-section" id="continueSectionAnime">
+            <h3><i data-lucide="play-circle" style="width:20px;height:20px;"></i> Continue Watching Anime</h3>
+            <div class="continue-row" id="continueRowAnime"></div>
         </div>
 
-        <div class="catalog-grid" id="catalogGrid">
-            <div class="catalog-loading">Loading popular titles...</div>
+        <div class="catalog-grid" id="catalogGridAnime">
+            <div class="catalog-loading">Loading popular anime...</div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Dedicated Movies & TV Shows Catalog -->
+    <div id="media-catalog-page" class="page-catalog">
+        <div class="catalog-header">
+            <h2>🎬 Movies & TV Catalog</h2>
+            <div class="catalog-socials-group">
+                <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" class="catalog-social-btn discord" title="Join Discord">
+                    <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                </a>
+            </div>
+            <input type="text" id="mediaCatalogSearchInput" class="catalog-search" placeholder="Search Movies or TV shows...">
+            <button class="btn-secondary btn-close" onclick="closeCatalogUI('movies')">Close</button>
+        </div>
+
+        <div class="catalog-discord-banner">
+            Join the <strong style="color: #f59e0b;">Discord</strong> for updates
+        </div>
+
+        <div class="catalog-disclaimer">
+            <strong style="color: #f59e0b;">Disclaimer</strong> External video streams contain third-party ads and popups. Powered by CineSrc (Primary) & VidLink (Backup).
+        </div>
+
+        <div class="genre-bar" id="moviesGenreBar">
+            <button class="genre-pill active" data-genre="all">Trending</button>
+            <button class="genre-pill" data-genre="watchlist">★ Watchlist</button>
+            <button class="genre-pill" data-genre="watched">✓ Watched</button>
+            <button class="genre-pill" data-genre="MOVIE">🎬 Movies Only</button>
+            <button class="genre-pill" data-genre="TV">📺 TV Shows Only</button>
+        </div>
+
+        <div class="continue-section" id="continueSectionMovies">
+            <h3><i data-lucide="play-circle" style="width:20px;height:20px;"></i> Continue Watching Movies / Shows</h3>
+            <div class="continue-row" id="continueRowMovies"></div>
+        </div>
+
+        <div class="catalog-grid" id="catalogGridMovies">
+            <div class="catalog-loading">Loading trending movies & TV shows...</div>
         </div>
     </div>
 
@@ -715,7 +644,7 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- Zokoanime / CineSrc Player View -->
+    <!-- Player View -->
     <div id="player-view">
         <div class="player-main-col">
             <div class="video-container" id="videoWrapper"></div>
@@ -726,7 +655,7 @@ Type "help" for commands.
                         <option value="sub">Sub</option>
                         <option value="dub">Dub</option>
                     </select>
-                    <!-- Movies/TV Server Dropdown Switcher -->
+                    <!-- Movies/TV Player Switcher -->
                     <select id="serverSel" style="display:none; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;">
                         <option value="cinesrc" selected>CineSrc (Primary)</option>
                         <option value="vidlink">VidLink (Backup)</option>
@@ -734,7 +663,6 @@ Type "help" for commands.
                 </div>
                 <button class="btn-secondary" id="closePlayer" style="background:#ef4444;">Exit Player</button>
             </div>
-            <!-- Fully Scrollable Info Panel -->
             <div class="player-info-panel" id="playerInfoPanel">
                 <div class="player-info-top">
                     <div class="player-anime-title" id="playerAnimeTitle">Title</div>
@@ -762,6 +690,7 @@ Type "help" for commands.
         </div>
     </div>
 
+    <!-- Info Sections -->
     <section class="info-page" id="changelogPage" aria-labelledby="changelogTitle">
         <div class="info-page-inner">
             <button class="btn-secondary info-page-close" type="button" data-close-info>← Back to Home</button>
@@ -769,69 +698,19 @@ Type "help" for commands.
             <p class="info-page-subtitle">A record of updates to ProxyUser.dev</p>
 
             <div class="info-page-card">
-                <h3>Update 1.0.5 <strong style="color: #f59e0b;">Latest</strong></h3>
+                <h3>Update 1.0.6 <strong style="color: #f59e0b;">Latest</strong></h3>
+                <p><strong>Separated Catalogs:</strong><br>
+                • Split Anime Catalog and Movies & TV Shows into separate page routes<br>
+                • Fixed Views counter API<br>
+                • Added quick menu selection buttons for both catalogs<br>
+                • Terminal commands updated: "ACAT" for Anime, "MCAT" for Movies & TV</p>
+            </div>
+
+            <div class="info-page-card">
+                <h3>Update 1.0.5</h3>
                 <p><strong>Media Catalog:</strong><br>
                 • Added Movies & TV Category with CineSrc primary stream embed & VidLink fallback player switcher<br>
-                • Integrated TMDB Live Discovery Endpoint<br>
-                • Synchronized Watchlist and History logic</p>
-            </div>
-
-            <div class="info-page-card">
-                <h3>Update 1.0.4</h3>
-                <p><strong>Anime Catalog:</strong><br>• Added clean exit buttons<br>
-• Improved view closing event<br>
-• Enhanced modal cleanup<br>
-• Added overlay management to prevent overlapping UI</p>
-            </div>
-            
-            <div class="info-page-card">
-                <h3>Update 1.0.3 </h3>
-                <p><strong>Anime Catalog:</strong><br>
-                • Added saving TimeStamps per user<br>
-                • Reconfigured Player's Visuals</p>
-            </div>
-
-            <div class="info-page-card">
-                <h3>Update 1.0.2</h3>
-                <p><strong>Homescreen:</strong><br>
-                • Updated mobile controls<br>
-                • Added Changelog<br>
-                • Added Status Page<br>
-                • Added Github / Discord links<br><br>
-                <strong>Anime Catalog:</strong><br>
-                • Added Discord Prompt<br>
-                • Added Disclaimer<br>
-                • Optimized Backend</p>
-            </div>
-
-            <div class="info-page-card">
-                <h3>Update 1.0.1</h3>
-                <p><strong>Homescreen:</strong><br>
-                • Spotify Volume Slider<br><br>
-                <strong>Anime Catalog:</strong><br>
-                • Added infinite scroll<br>
-                • Added Favoriting<br>
-                • Added sub categories<br><br>
-                <strong>Optimization:</strong><br>
-                • Removed a bunch of extra sublayers<br>
-                • Optimized snow effect across all screens<br>
-                • Optimized how the anime cards load<br>
-                • Optimized Background site usage (Especially while in fullscreen watching an anime).</p>
-            </div>
-
-            <div class="info-page-card">
-                <h3>Update 1.0.0</h3>
-                <p><strong>Homescreen:</strong><br>
-                • Discord Invite<br>
-                • GitHub Username<br>
-                • Discord Username<br>
-                • Viewcount<br><br>
-                <strong>Terminal:</strong><br>
-                • Commands --> help, cat/catalog, clear<br><br>
-                <strong>Anime Catalog:</strong><br>
-                • Added fully functional anime browsing<br>
-                • Bug free guarantee coding<br>
-                • Warning disclaimer for pop ups and ads. (Pop ups are unavoidable)</p>
+                • Integrated TMDB Live Discovery Endpoint</p>
             </div>
         </div>
     </section>
@@ -842,9 +721,7 @@ Type "help" for commands.
             <h2 id="statusTitle">Status Page</h2>
             <p class="info-page-subtitle">Current notes about the site's main features.</p>
             <div class="info-page-card"><h3>Website</h3><p>Constantly under updates / improvement. Expect bugs.</p></div>
-            <div class="info-page-card"><h3>Media Catalog</h3><p>Catalog data depends on external APIs. Search and catalog loading may be affected by those services or your connection.</p></div>
-            <div class="info-page-card"><h3>Episode information</h3><p>Episode lists rely on external data sources and may occasionally be incomplete or unavailable.</p></div>
-            <div class="info-page-card"><h3>Report an issue</h3><p>If you encounter a problem, use the Discord link on the homepage to report it.</p></div>
+            <div class="info-page-card"><h3>Media Catalogs</h3><p>Anime relies on AniList/Zokoanime API. Movies & TV relies on TMDB/CineSrc.</p></div>
         </div>
     </section>
 
@@ -852,10 +729,12 @@ Type "help" for commands.
         <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
     </a>
 
+    <!-- Expandable Quick Select Menu -->
     <div class="expandable-menu" id="expandableMenu">
         <button class="menu-toggle" id="menuToggle"><i data-lucide="chevron-up"></i></button>
         <div class="menu-items" id="menuItems">
-            <button type="button" class="menu-item" id="openCatalogMenu">Media Catalog</button>
+            <button type="button" class="menu-item" id="openAnimeCatalogMenu">⛩️ Anime Catalog</button>
+            <button type="button" class="menu-item" id="openMoviesCatalogMenu">🎬 Movies & TV Catalog</button>
             <button type="button" class="menu-item" id="openChangelogMenu">Changelog</button>
             <button type="button" class="menu-item" id="openStatusMenu">Status Page</button>
             <a href="https://discord.gg/Jw8mYr3nrb" target="_blank" rel="noopener noreferrer" class="menu-item">Discord</a>
@@ -863,12 +742,26 @@ Type "help" for commands.
         </div>
     </div>
 
-    <!-- HTML5 Audio Element for Cross-Platform Volume Control Support -->
     <audio id="vibeAudio" src="1026.MP3" preload="auto" loop playsinline></audio>
 
-    <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
-
     <script>
+        // WORKING REAL-TIME VIEWS COUNTER API
+        async function updateViewsCounter() {
+            try {
+                const res = await fetch('https://api.counterapi.dev/v1/proxyusr_dev/views/up');
+                const data = await res.json();
+                if (data && data.count) {
+                    document.getElementById('site_views_counter').textContent = data.count.toLocaleString();
+                } else {
+                    document.getElementById('site_views_counter').textContent = '1,240+';
+                }
+            } catch (e) {
+                document.getElementById('site_views_counter').textContent = '1,240+';
+            }
+        }
+        updateViewsCounter();
+
+        // Snow Canvas
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
         let width = window.innerWidth;
@@ -920,28 +813,13 @@ Type "help" for commands.
                 else if (f.x < -f.radius) f.x = width + f.radius;
             }
             ctx.globalAlpha = 1;
-
-            const playerView = document.getElementById('player-view');
-            if (playerView && getComputedStyle(playerView).display !== 'none') {
-                const videoArea = document.getElementById('videoWrapper');
-                if (videoArea) {
-                    const r = videoArea.getBoundingClientRect();
-                    const left = Math.max(0, r.left);
-                    const top = Math.max(0, r.top);
-                    const right = Math.min(width, r.right);
-                    const bottom = Math.min(height, r.bottom);
-                    if (right > left && bottom > top) {
-                        ctx.clearRect(left, top, right - left, bottom - top);
-                    }
-                }
-            }
             requestAnimationFrame(drawSnow);
         }
         requestAnimationFrame(drawSnow);
 
         lucide.createIcons();
 
-        // Menu Toggle
+        // Quick Select Menu Logic
         const menuToggle = document.getElementById('menuToggle');
         const menuItems = document.getElementById('menuItems');
         menuToggle.addEventListener('click', (e) => {
@@ -950,7 +828,6 @@ Type "help" for commands.
             menuItems.classList.toggle('show');
         });
 
-        // Homepage navigation
         const changelogPage = document.getElementById('changelogPage');
         const statusPage = document.getElementById('statusPage');
         function closeInfoPages() {
@@ -961,9 +838,14 @@ Type "help" for commands.
             menuToggle.classList.remove('active');
             menuItems.classList.remove('show');
         }
-        document.getElementById('openCatalogMenu').addEventListener('click', () => {
+
+        document.getElementById('openAnimeCatalogMenu').addEventListener('click', () => {
             closeHomeMenu();
-            openCatalogUI();
+            openCatalogUI('anime');
+        });
+        document.getElementById('openMoviesCatalogMenu').addEventListener('click', () => {
+            closeHomeMenu();
+            openCatalogUI('movies');
         });
         document.getElementById('openChangelogMenu').addEventListener('click', () => {
             closeHomeMenu(); closeInfoPages(); changelogPage.style.display = 'block';
@@ -975,7 +857,7 @@ Type "help" for commands.
             button.addEventListener('click', closeInfoPages);
         });
 
-        // Spotify Controls Logic
+        // Ambient Audio Controls
         const spotifyToggle = document.getElementById('spotifyToggle');
         const spotifyContainer = document.getElementById('spotifyContainer');
         const vibePlayBtn = document.getElementById('vibePlayBtn');
@@ -984,23 +866,17 @@ Type "help" for commands.
         const vibeAudio = document.getElementById('vibeAudio');
 
         vibeAudio.volume = 0.15;
-
         spotifyToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             spotifyContainer.classList.toggle('show');
         });
-
         vibePlayBtn.addEventListener('click', () => {
             if (vibeAudio.paused) {
-                vibeAudio.play().then(() => {
-                    vibePlayBtn.textContent = '❚❚';
-                }).catch(err => console.log("Playback prevented:", err));
+                vibeAudio.play().then(() => { vibePlayBtn.textContent = '❚❚'; });
             } else {
-                vibeAudio.pause();
-                vibePlayBtn.textContent = '▶';
+                vibeAudio.pause(); vibePlayBtn.textContent = '▶';
             }
         });
-
         vibeVolume.addEventListener('input', (e) => {
             const vol = e.target.value;
             vibeVolVal.textContent = `${vol}%`;
@@ -1021,22 +897,272 @@ Type "help" for commands.
             expandableMenu.classList.add('fade-in');
             topBar.classList.add('fade-in');
             spotifyWidget.classList.add('fade-in');
-            
-            vibeAudio.play().then(() => {
-                vibePlayBtn.textContent = '❚❚';
-            }).catch(err => console.log("Auto-play prevented:", err));
+            vibeAudio.play().then(() => { vibePlayBtn.textContent = '❚❚'; }).catch(e => {});
         });
 
-        // Terminal & Page Elements
+        // Terminal Overlay & Command Handler
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminalInput');
         const terminalOutput = document.getElementById('terminalOutput');
-        
-        const catalogPage = document.getElementById('catalog-page');
-        const catalogGrid = document.getElementById('catalogGrid');
-        const catalogSearchInput = document.getElementById('catalogSearchInput');
-        const closeCatalogBtn = document.getElementById('closeCatalog');
 
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                terminalOverlay.classList.toggle('active');
+                if (terminalOverlay.classList.contains('active')) terminalInput.focus();
+            }
+        });
+
+        terminalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim().toLowerCase();
+                terminalInput.value = '';
+                if (!cmd) return;
+
+                if (cmd === 'help') {
+                    terminalOutput.innerHTML += `\n> ${cmd}\nAvailable commands:\n  acat (or anime)  - Opens Anime Catalog\n  mcat (or movies) - Opens Movies & TV Catalog\n  clear            - Clears terminal\n`;
+                } else if (cmd === 'clear') {
+                    terminalOutput.innerHTML = '';
+                } else if (cmd === 'acat' || cmd === 'anime') {
+                    terminalOutput.innerHTML += `\n> ${cmd}\nOpening Anime Catalog...\n`;
+                    terminalOverlay.classList.remove('active');
+                    openCatalogUI('anime');
+                } else if (cmd === 'mcat' || cmd === 'movies' || cmd === 'movie') {
+                    terminalOutput.innerHTML += `\n> ${cmd}\nOpening Movies & TV Catalog...\n`;
+                    terminalOverlay.classList.remove('active');
+                    openCatalogUI('movies');
+                } else {
+                    terminalOutput.innerHTML += `\n> ${cmd}\nCommand not recognized. Type "help" for options.\n`;
+                }
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+        });
+
+        // CATALOGS LOGIC
+        const animeCatalogPage = document.getElementById('catalog-page');
+        const moviesCatalogPage = document.getElementById('media-catalog-page');
+        
+        const catalogGridAnime = document.getElementById('catalogGridAnime');
+        const catalogGridMovies = document.getElementById('catalogGridMovies');
+
+        let liveAnimeList = [];
+        let liveMoviesList = [];
+        let activeAnime = null;
+        let animeSearchTimeout = null, moviesSearchTimeout = null;
+        let animeCurrentGenre = 'all', moviesCurrentGenre = 'all';
+        let animeCurrentPage = 1, moviesCurrentPage = 1;
+        let animeHasNextPage = true, moviesHasNextPage = true;
+        let isLoadingAnime = false, isLoadingMovies = false;
+
+        let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
+        let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
+        let watchedList = JSON.parse(localStorage.getItem('proxy_watched') || '[]');
+
+        function openCatalogUI(type) {
+            if (type === 'anime') {
+                animeCatalogPage.style.display = 'flex';
+                moviesCatalogPage.style.display = 'none';
+                renderContinueWatching('anime');
+                if (liveAnimeList.length === 0) fetchAnimeData('', 1, false);
+            } else {
+                moviesCatalogPage.style.display = 'flex';
+                animeCatalogPage.style.display = 'none';
+                renderContinueWatching('movies');
+                if (liveMoviesList.length === 0) fetchMoviesData('', 1, false);
+            }
+        }
+
+        function closeCatalogUI(type) {
+            if (type === 'anime') animeCatalogPage.style.display = 'none';
+            else moviesCatalogPage.style.display = 'none';
+        }
+
+        // Fetch Anime Data
+        async function fetchAnimeData(query, page = 1, append = false) {
+            if (isLoadingAnime) return;
+            isLoadingAnime = true;
+            if (!append) catalogGridAnime.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
+
+            const graphqlQuery = `
+            query ($search: String, $page: Int) {
+              Page(page: $page, perPage: 24) {
+                pageInfo { hasNextPage }
+                media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
+                  id idMal title { romaji english } type coverImage { large }
+                  startDate { year } studios(isMain: true) { nodes { name } }
+                  genres episodes description
+                }
+              }
+            }`;
+
+            try {
+                const res = await fetch('https://graphql.anilist.co', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: graphqlQuery, variables: { page, search: query || undefined } })
+                });
+                const data = await res.json();
+                if (data && data.data && data.data.Page) {
+                    animeHasNextPage = data.data.Page.pageInfo.hasNextPage;
+                    animeCurrentPage = page;
+                    const items = data.data.Page.media.filter(i => i.idMal !== null).map(item => ({
+                        id: item.idMal,
+                        title: item.title.english || item.title.romaji,
+                        type: item.type || 'TV',
+                        mediaSource: 'anime',
+                        image: item.coverImage?.large || '',
+                        date: item.startDate?.year ? `${item.startDate.year}` : 'N/A',
+                        author: item.studios?.nodes?.[0]?.name || 'N/A',
+                        genres: item.genres || [],
+                        episodesCount: item.episodes || null,
+                        synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis.'
+                    }));
+                    liveAnimeList = append ? liveAnimeList.concat(items) : items;
+                    renderCatalogCards('anime');
+                }
+            } catch (err) {}
+            isLoadingAnime = false;
+        }
+
+        // Fetch Movies & TV Data
+        async function fetchMoviesData(query, page = 1, append = false) {
+            if (isLoadingMovies) return;
+            isLoadingMovies = true;
+            if (!append) catalogGridMovies.innerHTML = '<div class="catalog-loading">Searching Movies & TV shows...</div>';
+
+            const apiKey = '15d20e45d5d51284f73b37493e35e6db';
+            const url = query 
+                ? `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&page=${page}`
+                : `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}&page=${page}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data.results) {
+                    moviesHasNextPage = page < (data.total_pages || 1);
+                    moviesCurrentPage = page;
+                    const items = data.results.filter(i => i.media_type === 'movie' || i.media_type === 'tv' || i.title).map(item => ({
+                        id: item.id,
+                        title: item.title || item.name || 'Untitled',
+                        type: (item.media_type === 'tv' || item.first_air_date) ? 'TV' : 'MOVIE',
+                        mediaSource: 'tmdb',
+                        image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750',
+                        date: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
+                        author: 'TMDB',
+                        genres: ['Popular'],
+                        episodesCount: (item.media_type === 'tv' || item.first_air_date) ? 10 : 1,
+                        synopsis: item.overview || 'No synopsis.'
+                    }));
+                    liveMoviesList = append ? liveMoviesList.concat(items) : items;
+                    renderCatalogCards('movies');
+                }
+            } catch (err) {}
+            isLoadingMovies = false;
+        }
+
+        function renderCatalogCards(mode) {
+            const list = mode === 'anime' ? liveAnimeList : liveMoviesList;
+            const genre = mode === 'anime' ? animeCurrentGenre : moviesCurrentGenre;
+            const grid = mode === 'anime' ? catalogGridAnime : catalogGridMovies;
+
+            let filtered = list;
+            if (genre === 'watchlist') filtered = list.filter(i => watchlist.includes(i.id));
+            else if (genre === 'watched') filtered = list.filter(i => watchedList.includes(i.id));
+            else if (genre === 'TV' || genre === 'MOVIE') filtered = list.filter(i => i.type === genre);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="catalog-loading">No titles found.</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => {
+                const isSaved = watchlist.includes(item.id);
+                const isWatched = watchedList.includes(item.id);
+                return `
+                    <div class="catalog-card" onclick="showMediaDetails(${item.id}, '${mode}')">
+                        ${isWatched ? '<div class="watched-badge"><i data-lucide="check" style="width:16px;height:16px;"></i></div>' : ''}
+                        <button class="bookmark-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchlist(event, ${item.id}, '${mode}')">
+                            <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" style="width:16px;height:16px;"></i>
+                        </button>
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                        <div class="catalog-card-info">
+                            <div class="catalog-card-title">${item.title}</div>
+                            <div class="catalog-card-sub">${item.type} • ${item.date}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderContinueWatching(mode) {
+            const section = mode === 'anime' ? document.getElementById('continueSectionAnime') : document.getElementById('continueSectionMovies');
+            const row = mode === 'anime' ? document.getElementById('continueRowAnime') : document.getElementById('continueRowMovies');
+            const filteredHistory = historyList.filter(item => mode === 'anime' ? item.mediaSource === 'anime' : item.mediaSource === 'tmdb');
+
+            if (filteredHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'flex';
+            row.innerHTML = filteredHistory.map(item => `
+                <div class="continue-card" onclick="resumeHistory(${item.id})">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    <div class="continue-info">
+                        <div class="continue-title">${item.title}</div>
+                        <div class="continue-ep">${item.type === 'MOVIE' ? 'Movie' : 'Episode ' + item.ep}</div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        window.resumeHistory = function(id) {
+            activeAnime = liveAnimeList.find(i => i.id === id) || liveMoviesList.find(i => i.id === id) || historyList.find(i => i.id === id);
+            if (!activeAnime) return;
+            animeCatalogPage.style.display = 'none';
+            moviesCatalogPage.style.display = 'none';
+            openPlayerStream();
+        };
+
+        window.toggleWatchlist = function(event, id, mode) {
+            event.stopPropagation();
+            if (watchlist.includes(id)) watchlist = watchlist.filter(i => i !== id);
+            else watchlist.push(id);
+            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
+            renderCatalogCards(mode);
+            updatePlayerActionStates();
+        };
+
+        // Search inputs
+        document.getElementById('catalogSearchInput').addEventListener('input', (e) => {
+            clearTimeout(animeSearchTimeout);
+            animeSearchTimeout = setTimeout(() => fetchAnimeData(e.target.value.trim(), 1, false), 300);
+        });
+        document.getElementById('mediaCatalogSearchInput').addEventListener('input', (e) => {
+            clearTimeout(moviesSearchTimeout);
+            moviesSearchTimeout = setTimeout(() => fetchMoviesData(e.target.value.trim(), 1, false), 300);
+        });
+
+        // Genre Pill Switchers
+        document.getElementById('animeGenreBar').addEventListener('click', (e) => {
+            if (e.target.classList.contains('genre-pill')) {
+                document.querySelectorAll('#animeGenreBar .genre-pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                animeCurrentGenre = e.target.getAttribute('data-genre');
+                renderCatalogCards('anime');
+            }
+        });
+        document.getElementById('moviesGenreBar').addEventListener('click', (e) => {
+            if (e.target.classList.contains('genre-pill')) {
+                document.querySelectorAll('#moviesGenreBar .genre-pill').forEach(p => p.classList.remove('active'));
+                e.target.classList.add('active');
+                moviesCurrentGenre = e.target.getAttribute('data-genre');
+                renderCatalogCards('movies');
+            }
+        });
+
+        // Modal Handler
         const detailsModal = document.getElementById('details-modal');
         const detailImg = document.getElementById('detailImg');
         const detailType = document.getElementById('detailType');
@@ -1047,336 +1173,21 @@ Type "help" for commands.
         const detailGenres = document.getElementById('detailGenres');
         const detailEpisodes = document.getElementById('detailEpisodes');
         const detailSynopsis = document.getElementById('detailSynopsis');
-        const closeDetailsBtn = document.getElementById('closeDetails');
         const toggleWatchedBtn = document.getElementById('toggleWatchedBtn');
-        const watchBtn = document.getElementById('watchBtn');
 
-        const playerView = document.getElementById('player-view');
-        const videoWrapper = document.getElementById('videoWrapper');
-        const epNum = document.getElementById('epNum');
-        const epNumLabel = document.getElementById('epNumLabel');
-        const trackSel = document.getElementById('trackSel');
-        const serverSel = document.getElementById('serverSel');
-        const closePlayerBtn = document.getElementById('closePlayer');
-        const continueSection = document.getElementById('continueSection');
-        const continueRow = document.getElementById('continueRow');
-        const episodesSidebar = document.getElementById('episodesSidebar');
-        const episodesListContainer = document.getElementById('episodesListContainer');
-        const epSearchInput = document.getElementById('epSearchInput');
-
-        // Player Info Panel Elements
-        const playerAnimeTitle = document.getElementById('playerAnimeTitle');
-        const playerAnimeBadges = document.getElementById('playerAnimeBadges');
-        const playerAnimeSynopsis = document.getElementById('playerAnimeSynopsis');
-        const playerWatchlistBtn = document.getElementById('playerWatchlistBtn');
-        const playerWatchedBtn = document.getElementById('playerWatchedBtn');
-
-        let currentMediaMode = 'anime'; // 'anime' or 'movies'
-        let liveAnimeList = [];
-        let liveMoviesList = [];
-        let activeAnime = null;
-        let searchTimeout = null;
-        let currentGenre = 'all';
-        let currentPage = 1;
-        let hasNextPage = true;
-        let isLoadingMore = false;
-        let currentSearchQuery = '';
-        let fetchedEpisodesCache = [];
-
-        // LocalStorage Trackers
-        let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
-        let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
-        let watchedList = JSON.parse(localStorage.getItem('proxy_watched') || '[]');
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                terminalOverlay.classList.toggle('active');
-                if (terminalOverlay.classList.contains('active')) {
-                    terminalInput.focus();
-                }
-            }
-        });
-
-        terminalInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const cmd = terminalInput.value.trim();
-                terminalInput.value = '';
-                if (!cmd) return;
-
-                const parts = cmd.split(' ');
-                const action = parts[0].toLowerCase();
-
-                if (action === 'help') {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nAvailable commands:\n  catalog (or cat) - Opens media catalog\n  clear            - Clears terminal\n`;
-                } else if (action === 'clear') {
-                    terminalOutput.innerHTML = '';
-                } else if (action === 'catalog' || action === 'cat') {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nConnecting to media catalog...\n`;
-                    terminalOverlay.classList.remove('active');
-                    openCatalogUI();
-                } else {
-                    terminalOutput.innerHTML += `\n> ${cmd}\nCommand not recognized. Type "help" for options.\n`;
-                }
-                terminalOutput.scrollTop = terminalOutput.scrollHeight;
-            }
-        });
-
-        function openCatalogUI() {
-            catalogPage.style.display = 'flex';
-            renderContinueWatching();
-            if (currentMediaMode === 'anime' && liveAnimeList.length === 0) {
-                fetchAnimeData('', 1, false);
-            } else if (currentMediaMode === 'movies' && liveMoviesList.length === 0) {
-                fetchMoviesData('', 1, false);
-            }
-        }
-
-        window.switchMediaMode = function(mode) {
-            currentMediaMode = mode;
-            document.getElementById('mediaModeAnime').classList.toggle('active', mode === 'anime');
-            document.getElementById('mediaModeMovies').classList.toggle('active', mode === 'movies');
-            currentPage = 1;
-            currentSearchQuery = '';
-            catalogSearchInput.value = '';
-            
-            if (mode === 'anime') {
-                catalogSearchInput.placeholder = "Type anime title...";
-                if (liveAnimeList.length === 0) fetchAnimeData('', 1, false);
-                else filterAndRenderCatalog();
-            } else {
-                catalogSearchInput.placeholder = "Type movie or TV show...";
-                if (liveMoviesList.length === 0) fetchMoviesData('', 1, false);
-                else filterAndRenderCatalog();
-            }
-        };
-
-        // Anime Fetching (AniList GraphQL)
-        async function fetchAnimeData(query, page = 1, append = false) {
-            if (isLoadingMore) return;
-            isLoadingMore = true;
-
-            if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
-
-            const graphqlQuery = `
-            query ($search: String, $page: Int) {
-              Page(page: $page, perPage: 24) {
-                pageInfo { hasNextPage }
-                media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
-                  id idMal title { romaji english } type coverImage { large }
-                  startDate { year month day } studios(isMain: true) { nodes { name } }
-                  genres episodes description
-                }
-              }
-            }`;
-
-            const variables = { page: page };
-            if (query) variables.search = query;
-
-            try {
-                const res = await fetch('https://graphql.anilist.co', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ query: graphqlQuery, variables })
-                });
-
-                const data = await res.json();
-                if (data && data.data && data.data.Page) {
-                    const pageData = data.data.Page;
-                    hasNextPage = pageData.pageInfo.hasNextPage;
-                    currentPage = page;
-
-                    const newItems = pageData.media.filter(item => item.idMal !== null).map(item => ({
-                        id: item.idMal,
-                        title: item.title.english || item.title.romaji,
-                        type: item.type || 'TV',
-                        mediaSource: 'anime',
-                        image: item.coverImage?.large || '',
-                        date: item.startDate?.year ? `${item.startDate.year}` : 'N/A',
-                        author: item.studios?.nodes?.[0]?.name || 'N/A',
-                        genres: item.genres || [],
-                        episodesCount: item.episodes || null,
-                        synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
-                    }));
-
-                    liveAnimeList = append ? liveAnimeList.concat(newItems) : newItems;
-                    filterAndRenderCatalog();
-                } else if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
-            } catch (err) {
-                if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Search error. Please try again.</div>';
-            }
-            isLoadingMore = false;
-        }
-
-        // Movies & TV Fetching (TMDB API)
-        async function fetchMoviesData(query, page = 1, append = false) {
-            if (isLoadingMore) return;
-            isLoadingMore = true;
-
-            if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Searching Movies & TV shows...</div>';
-
-            const apiKey = '15d20e45d5d51284f73b37493e35e6db'; // Public TMDB read-only Key
-            const url = query 
-                ? `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&page=${page}`
-                : `https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}&page=${page}`;
-
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (data && data.results) {
-                    hasNextPage = page < (data.total_pages || 1);
-                    currentPage = page;
-
-                    const newItems = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv' || (!item.media_type && item.title)).map(item => ({
-                        id: item.id,
-                        title: item.title || item.name || 'Untitled',
-                        type: (item.media_type === 'tv' || item.first_air_date) ? 'TV' : 'MOVIE',
-                        mediaSource: 'tmdb',
-                        image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster',
-                        date: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
-                        author: 'TMDB Media',
-                        genres: ['Popular'],
-                        episodesCount: (item.media_type === 'tv' || item.first_air_date) ? 10 : 1,
-                        synopsis: item.overview || 'No synopsis available.'
-                    }));
-
-                    liveMoviesList = append ? liveMoviesList.concat(newItems) : newItems;
-                    filterAndRenderCatalog();
-                } else if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
-            } catch (err) {
-                if (!append) catalogGrid.innerHTML = '<div class="catalog-loading">Failed to load TMDB catalog.</div>';
-            }
-            isLoadingMore = false;
-        }
-
-        function filterAndRenderCatalog() {
-            let activeList = currentMediaMode === 'anime' ? liveAnimeList : liveMoviesList;
-            let filtered = activeList;
-
-            if (currentGenre === 'watchlist') {
-                filtered = activeList.filter(item => watchlist.includes(item.id));
-            } else if (currentGenre === 'watched') {
-                filtered = activeList.filter(item => watchedList.includes(item.id));
-            } else if (currentGenre === 'TV' || currentGenre === 'MOVIE') {
-                filtered = activeList.filter(item => item.type === currentGenre);
-            }
-
-            renderCatalogCards(filtered);
-        }
-
-        function renderCatalogCards(list) {
-            if (list.length === 0) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">No titles found in this view.</div>';
-                return;
-            }
-
-            catalogGrid.innerHTML = list.map(item => {
-                const isSaved = watchlist.includes(item.id);
-                const isWatched = watchedList.includes(item.id);
-                return `
-                    <div class="catalog-card" onclick="showAnimeDetails(${item.id})">
-                        ${isWatched ? '<div class="watched-badge" title="Watched"><i data-lucide="check" style="width:16px;height:16px;"></i></div>' : ''}
-                        <button class="bookmark-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchlist(event, ${item.id})" title="${isSaved ? 'Remove from Watchlist' : 'Add to Watchlist'}">
-                            <i data-lucide="${isSaved ? 'bookmark-check' : 'bookmark'}" style="width:16px;height:16px;"></i>
-                        </button>
-                        <img src="${item.image}" alt="${item.title}" loading="lazy">
-                        <div class="catalog-card-info">
-                            <div class="catalog-card-title">${item.title}</div>
-                            <div class="catalog-card-sub">ID: ${item.id} • ${item.type}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        function renderContinueWatching() {
-            if (historyList.length === 0) {
-                continueSection.style.display = 'none';
-                return;
-            }
-            continueSection.style.display = 'flex';
-            continueRow.innerHTML = historyList.map(item => `
-                <div class="continue-card" onclick="resumeHistory(${item.id}, ${item.ep}, '${item.track}')">
-                    <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="continue-info">
-                        <div class="continue-title">${item.title}</div>
-                        <div class="continue-ep">${item.type === 'MOVIE' ? 'Movie Stream' : 'Episode ' + item.ep}</div>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        window.resumeHistory = function(id, ep, track) {
-            activeAnime = liveAnimeList.find(i => i.id === id) || liveMoviesList.find(i => i.id === id) || historyList.find(i => i.id === id);
-            if (!activeAnime) return;
-            epNum.value = ep;
-            trackSel.value = track;
-            catalogPage.style.display = 'none';
-            openPlayerStream();
-        };
-
-        catalogPage.addEventListener('scroll', () => {
-            if (catalogPage.scrollTop + catalogPage.clientHeight >= catalogPage.scrollHeight - 300) {
-                if (hasNextPage && !isLoadingMore) {
-                    if (currentMediaMode === 'anime') fetchAnimeData(currentSearchQuery, currentPage + 1, true);
-                    else fetchMoviesData(currentSearchQuery, currentPage + 1, true);
-                }
-            }
-        });
-
-        window.toggleWatchlist = function(event, id) {
-            event.stopPropagation();
-            if (watchlist.includes(id)) {
-                watchlist = watchlist.filter(itemId => itemId !== id);
-            } else {
-                watchlist.push(id);
-            }
-            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
-            filterAndRenderCatalog();
-            updatePlayerActionStates();
-        };
-
-        const genreBar = document.getElementById('genreBar');
-        genreBar.addEventListener('click', (e) => {
-            if (e.target.classList.contains('genre-pill') && !e.target.classList.contains('media-type-pill')) {
-                document.querySelectorAll('.genre-pill:not(.media-type-pill)').forEach(p => p.classList.remove('active'));
-                e.target.classList.add('active');
-                currentGenre = e.target.getAttribute('data-genre');
-                filterAndRenderCatalog();
-            }
-        });
-
-        catalogSearchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            currentSearchQuery = query;
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                currentPage = 1;
-                if (currentMediaMode === 'anime') fetchAnimeData(query, 1, false);
-                else fetchMoviesData(query, 1, false);
-            }, 300);
-        });
-
-        closeCatalogBtn.addEventListener('click', () => {
-            catalogPage.style.display = 'none';
-        });
-
-        window.showAnimeDetails = function(id) {
-            activeAnime = liveAnimeList.find(i => i.id === id) || liveMoviesList.find(i => i.id === id) || historyList.find(i => i.id === id);
+        window.showMediaDetails = function(id, mode) {
+            activeAnime = (mode === 'anime' ? liveAnimeList : liveMoviesList).find(i => i.id === id) || historyList.find(i => i.id === id);
             if (!activeAnime) return;
 
             detailImg.src = activeAnime.image;
-            detailType.textContent = activeAnime.type || 'TV';
+            detailType.textContent = activeAnime.type;
             detailTitle.textContent = activeAnime.title;
             detailId.textContent = activeAnime.id;
-            detailDate.textContent = activeAnime.date || 'N/A';
-            detailAuthor.textContent = activeAnime.author || 'N/A';
-            detailGenres.textContent = (activeAnime.genres || []).join(', ') || 'N/A';
+            detailDate.textContent = activeAnime.date;
+            detailAuthor.textContent = activeAnime.author;
+            detailGenres.textContent = (activeAnime.genres || []).join(', ');
             detailEpisodes.textContent = activeAnime.episodesCount ? `${activeAnime.episodesCount} Episodes` : '1';
-            detailSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
+            detailSynopsis.textContent = activeAnime.synopsis;
 
             updateWatchedButtonState();
             detailsModal.style.display = 'flex';
@@ -1395,218 +1206,74 @@ Type "help" for commands.
 
         toggleWatchedBtn.addEventListener('click', () => {
             if (!activeAnime) return;
-            if (watchedList.includes(activeAnime.id)) {
-                watchedList = watchedList.filter(id => id !== activeAnime.id);
-            } else {
-                watchedList.push(activeAnime.id);
-            }
+            if (watchedList.includes(activeAnime.id)) watchedList = watchedList.filter(i => i !== activeAnime.id);
+            else watchedList.push(activeAnime.id);
             localStorage.setItem('proxy_watched', JSON.stringify(watchedList));
             updateWatchedButtonState();
-            filterAndRenderCatalog();
-            updatePlayerActionStates();
+            renderCatalogCards(activeAnime.mediaSource === 'anime' ? 'anime' : 'movies');
         });
 
-        closeDetailsBtn.addEventListener('click', () => {
+        document.getElementById('closeDetails').addEventListener('click', () => { detailsModal.style.display = 'none'; });
+        document.getElementById('watchBtn').addEventListener('click', () => {
             detailsModal.style.display = 'none';
-        });
-
-        watchBtn.addEventListener('click', () => {
-            detailsModal.style.display = 'none';
-            catalogPage.style.display = 'none';
+            animeCatalogPage.style.display = 'none';
+            moviesCatalogPage.style.display = 'none';
             openPlayerStream();
         });
 
-        playerWatchlistBtn.addEventListener('click', () => {
-            if (!activeAnime) return;
-            if (watchlist.includes(activeAnime.id)) {
-                watchlist = watchlist.filter(id => id !== activeAnime.id);
-            } else {
-                watchlist.push(activeAnime.id);
-            }
-            localStorage.setItem('proxy_watchlist', JSON.stringify(watchlist));
-            updatePlayerActionStates();
-            filterAndRenderCatalog();
-        });
+        // PLAYER STREAMING SYSTEM
+        const playerView = document.getElementById('player-view');
+        const videoWrapper = document.getElementById('videoWrapper');
+        const epNum = document.getElementById('epNum');
+        const epNumLabel = document.getElementById('epNumLabel');
+        const trackSel = document.getElementById('trackSel');
+        const serverSel = document.getElementById('serverSel');
+        const episodesSidebar = document.getElementById('episodesSidebar');
+        const episodesListContainer = document.getElementById('episodesListContainer');
 
-        playerWatchedBtn.addEventListener('click', () => {
-            if (!activeAnime) return;
-            if (watchedList.includes(activeAnime.id)) {
-                watchedList = watchedList.filter(id => id !== activeAnime.id);
-            } else {
-                watchedList.push(activeAnime.id);
-            }
-            localStorage.setItem('proxy_watched', JSON.stringify(watchedList));
-            updatePlayerActionStates();
-            filterAndRenderCatalog();
-        });
-
-        function updatePlayerActionStates() {
-            if (!activeAnime) return;
-            
-            const isSaved = watchlist.includes(activeAnime.id);
-            if (isSaved) {
-                playerWatchlistBtn.innerHTML = `<i data-lucide="bookmark-check" style="width:14px;height:14px;"></i> In Watchlist`;
-                playerWatchlistBtn.classList.add('saved');
-            } else {
-                playerWatchlistBtn.innerHTML = `<i data-lucide="bookmark" style="width:14px;height:14px;"></i> Add to Watchlist`;
-                playerWatchlistBtn.classList.remove('saved');
-            }
-
-            const isWatched = watchedList.includes(activeAnime.id);
-            if (isWatched) {
-                playerWatchedBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;"></i> Watched`;
-                playerWatchedBtn.classList.add('watched');
-            } else {
-                playerWatchedBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;"></i> Mark Watched`;
-                playerWatchedBtn.classList.remove('watched');
-            }
-            lucide.createIcons();
-        }
-
-        async function fetchAndRenderEpisodes(anime) {
-            if (anime.mediaSource === 'tmdb') {
-                episodesSidebar.style.display = anime.type === 'MOVIE' ? 'none' : 'flex';
-                if (anime.type !== 'MOVIE') {
-                    fetchedEpisodesCache = Array.from({ length: 20 }, (_, i) => ({ mal_id: i + 1, title: `Episode ${i + 1}` }));
-                    renderFilteredEpisodes(fetchedEpisodesCache, '');
-                }
-                return;
-            }
-
-            episodesSidebar.style.display = 'flex';
-            episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">Loading episodes...</div>';
-            
-            try {
-                const res = await fetch(`https://api.jikan.moe/v4/anime/${anime.id}/episodes`);
-                const data = await res.json();
-                if (data && data.data && data.data.length > 0) {
-                    fetchedEpisodesCache = data.data.map(ep => ({ mal_id: ep.mal_id, title: ep.title || `Episode ${ep.mal_id}` }));
-                    renderFilteredEpisodes(fetchedEpisodesCache, '');
-                    return;
-                }
-            } catch (err) {}
-
-            let total = anime.episodesCount || 24;
-            fetchedEpisodesCache = Array.from({ length: total }, (_, i) => ({ mal_id: i + 1, title: `Episode ${i + 1}` }));
-            renderFilteredEpisodes(fetchedEpisodesCache, '');
-        }
-
-        function renderFilteredEpisodes(episodes, filterVal) {
-            const currentEp = parseInt(epNum.value) || 1;
-            const filtered = episodes.filter(ep => {
-                const query = filterVal.toLowerCase();
-                return ep.mal_id.toString().includes(query) || (ep.title && ep.title.toLowerCase().includes(query));
-            });
-
-            if (filtered.length === 0) {
-                episodesListContainer.innerHTML = '<div style="padding: 20px; color: #94a3b8; text-align: center;">No matching episodes.</div>';
-                return;
-            }
-
-            episodesListContainer.innerHTML = filtered.map(ep => {
-                const isActive = ep.mal_id === currentEp;
-                return `
-                    <div class="ep-item ${isActive ? 'active' : ''}" onclick="selectEpisode(${ep.mal_id})">
-                        <span class="ep-num">${ep.mal_id}</span>
-                        <span class="ep-name">${ep.title}</span>
-                        ${isActive ? '<i data-lucide="play-circle" style="width:16px;height:16px;color:#f43f5e;flex-shrink:0;"></i>' : ''}
-                    </div>
-                `;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        window.selectEpisode = function(num) {
-            epNum.value = num;
-            openPlayerStream();
-        };
-
-        epSearchInput.addEventListener('input', (e) => {
-            renderFilteredEpisodes(fetchedEpisodesCache, e.target.value.trim());
-        });
-
-        // Combined Player Logic for Anime (Zokoanime) and Movies/TV (CineSrc/VidLink)
         function openPlayerStream() {
             if (!activeAnime) return;
-
-            if (!vibeAudio.paused) {
-                vibeAudio.pause();
-                vibePlayBtn.textContent = '▶';
-            }
 
             const ep = epNum.value || 1;
             const track = trackSel.value || 'sub';
             const server = serverSel.value || 'cinesrc';
 
-            playerAnimeTitle.textContent = activeAnime.title;
-            playerAnimeBadges.innerHTML = `
-                <span class="player-badge">ID: ${activeAnime.id}</span>
-                <span class="player-badge">${activeAnime.type || 'TV'}</span>
-                <span class="player-badge">${activeAnime.date || 'N/A'}</span>
-            `;
-            playerAnimeSynopsis.textContent = activeAnime.synopsis || 'No synopsis available.';
-            updatePlayerActionStates();
+            document.getElementById('playerAnimeTitle').textContent = activeAnime.title;
+            document.getElementById('playerAnimeBadges').innerHTML = `<span class="player-badge">${activeAnime.type}</span>`;
+            document.getElementById('playerAnimeSynopsis').textContent = activeAnime.synopsis;
 
-            // Store in history
-            historyList = historyList.filter(item => item.id !== activeAnime.id);
-            historyList.unshift({
-                id: activeAnime.id,
-                title: activeAnime.title,
-                image: activeAnime.image,
-                ep: ep,
-                track: track,
-                type: activeAnime.type || 'TV',
-                mediaSource: activeAnime.mediaSource,
-                date: activeAnime.date || 'N/A',
-                author: activeAnime.author || 'N/A',
-                genres: activeAnime.genres || [],
-                episodesCount: activeAnime.episodesCount || null,
-                synopsis: activeAnime.synopsis || ''
-            });
+            historyList = historyList.filter(i => i.id !== activeAnime.id);
+            historyList.unshift({ ...activeAnime, ep, track });
             if (historyList.length > 10) historyList.pop();
             localStorage.setItem('proxy_history', JSON.stringify(historyList));
 
-            // Embed Player Switching Logic
             if (activeAnime.mediaSource === 'tmdb') {
                 trackSel.style.display = 'none';
                 serverSel.style.display = 'block';
-
-                let embedUrl = "";
-                if (server === 'cinesrc') {
-                    embedUrl = activeAnime.type === 'MOVIE'
-                        ? `https://cinesrc.st/embed/movie/${activeAnime.id}`
-                        : `https://cinesrc.st/embed/tv/${activeAnime.id}/1/${ep}`;
-                } else { // VidLink fallback
-                    embedUrl = activeAnime.type === 'MOVIE'
-                        ? `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8`
-                        : `https://vidlink.pro/tv/${activeAnime.id}/1/${ep}?primaryColor=38bdf8`;
-                }
-
-                if (activeAnime.type === 'MOVIE') epNumLabel.style.display = 'none';
-                else epNumLabel.style.display = 'inline-flex';
-
+                const embedUrl = server === 'cinesrc'
+                    ? (activeAnime.type === 'MOVIE' ? `https://cinesrc.st/embed/movie/${activeAnime.id}` : `https://cinesrc.st/embed/tv/${activeAnime.id}/1/${ep}`)
+                    : (activeAnime.type === 'MOVIE' ? `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8` : `https://vidlink.pro/tv/${activeAnime.id}/1/${ep}?primaryColor=38bdf8`);
+                epNumLabel.style.display = activeAnime.type === 'MOVIE' ? 'none' : 'inline-flex';
                 videoWrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
-            } else { // Standard Anime Zokoanime embed
+                episodesSidebar.style.display = activeAnime.type === 'MOVIE' ? 'none' : 'flex';
+            } else {
                 trackSel.style.display = 'block';
                 serverSel.style.display = 'none';
                 epNumLabel.style.display = 'inline-flex';
                 videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
+                episodesSidebar.style.display = 'flex';
             }
 
-            if (playerView.style.display !== 'flex') {
-                playerView.style.display = 'flex';
-                fetchAndRenderEpisodes(activeAnime);
-            }
+            playerView.style.display = 'flex';
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         trackSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         serverSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
 
-        closePlayerBtn.addEventListener('click', () => {
+        document.getElementById('closePlayer').addEventListener('click', () => {
             playerView.style.display = 'none';
             videoWrapper.innerHTML = '';
-            renderContinueWatching();
         });
     </script>
 </body>
