@@ -117,10 +117,6 @@
         }
         .info-page-inner { max-width: 900px; margin: 0 auto; }
         .info-page h2 { margin: 0 0 10px; font-size: clamp(1.8rem, 4vw, 2.6rem); }
-        .info-page-subtitle { color: #94a3b8; margin: 0 0 28px; }
-        .info-page-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 18px 20px; margin: 12px 0; }
-        .info-page-card h3 { margin: 0 0 8px; }
-        .info-page-card p { margin: 0; color: #cbd5e1; line-height: 1.6; }
         .info-page-close { margin-bottom: 26px; }
 
         .spotify-widget {
@@ -183,65 +179,33 @@
         .terminal-input { background: transparent; border: none; outline: none; color: #fff; font-family: inherit; font-size: inherit; flex-grow: inherit; }
 
         .page-catalog {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(11, 15, 25, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 80;
-            flex-direction: column;
-            overflow-y: auto;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(8px);
+            z-index: 80; flex-direction: column; overflow-y: auto;
         }
 
         .catalog-header {
-            background: rgba(17, 24, 39, 0.98);
-            backdrop-filter: blur(10px);
-            padding: 16px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            flex-shrink: 0;
-            width: 100%;
-            position: relative;
+            background: rgba(17, 24, 39, 0.98); backdrop-filter: blur(10px);
+            padding: 16px 40px; display: flex; align-items: center; justify-content: space-between;
+            gap: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; width: 100%; position: relative;
         }
         .catalog-search {
-            width: 100%; max-width: 450px;
-            padding: 10px 18px;
+            width: 100%; max-width: 450px; padding: 10px 18px;
             border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(31, 41, 55, 0.8); color: #fff; font-size: 0.95rem; outline: none;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
+            position: absolute; left: 50%; transform: translateX(-50%); text-align: center;
         }
-        .catalog-socials-group {
-            display: flex; align-items: center; gap: 16px;
-            flex-shrink: 0;
-            margin-left: auto;
-        }
-        .catalog-social-btn {
-            color: #ffffff; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; transition: color 0.2s, transform 0.2s;
-        }
+        .catalog-socials-group { display: flex; align-items: center; gap: 16px; flex-shrink: 0; margin-left: auto; }
+        .catalog-social-btn { color: #ffffff; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: color 0.2s, transform 0.2s; }
         .catalog-social-btn svg { width: 22px; height: 22px; fill: currentColor; }
         .catalog-social-btn.discord:hover { color: #5865F2; transform: scale(1.1); }
-        .catalog-social-btn.instagram:hover { color: #E1306C; transform: scale(1.1); }
-        .catalog-header button.btn-close { flex-shrink: 0; }
 
         .genre-bar {
             background: rgba(11, 15, 25, 0.98); backdrop-filter: blur(6px);
-            padding: 14px 40px; display: flex; gap: 10px; 
-            overflow-x: auto; overflow-y: hidden;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
-            flex-shrink: 0; width: 100%;
+            padding: 14px 40px; display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: thin; scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; width: 100%;
         }
-        .genre-bar::-webkit-scrollbar { height: 6px; }
-        .genre-bar::-webkit-scrollbar-track { background: transparent; }
-        .genre-bar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
 
         .genre-pill {
             background: rgba(30, 41, 59, 0.8); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.08);
@@ -251,27 +215,9 @@
         .genre-pill:hover { background: rgba(56, 189, 248, 0.15); color: #fff; border-color: rgba(56, 189, 248, 0.3); }
         .genre-pill.active { background: #38bdf8; color: #ffffff; font-weight: bold; border-color: #38bdf8; }
 
-        .continue-section {
-            max-width: 1300px; margin: 30px auto 0 auto; padding: 0 40px; width: 100%;
-            display: none; flex-direction: column; gap: 15px; flex-shrink: 0;
-        }
-        .continue-section h3 { font-size: 1.2rem; color: #ffffff; display: flex; align-items: center; gap: 8px; }
-        .continue-row { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
-        .continue-card {
-            background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 8px; padding: 10px; display: flex; gap: 15px; align-items: center;
-            min-width: 280px; cursor: pointer; transition: transform 0.2s, background 0.2s; flex-shrink: 0;
-        }
-        .continue-card:hover { transform: translateY(-3px); background: rgba(30, 41, 59, 1); border-color: #38bdf8; }
-        .continue-card img { width: 60px; height: 80px; object-fit: cover; border-radius: 4px; }
-        .continue-info { display: flex; flex-direction: column; gap: 4px; }
-        .continue-title { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
-        .continue-ep { font-size: 0.75rem; color: #38bdf8; font-weight: bold; }
-
         .catalog-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px; padding: 40px; max-width: 1300px; margin: 0 auto; width: 100%;
-            flex-grow: 1;
+            gap: 20px; padding: 40px; max-width: 1300px; margin: 0 auto; width: 100%; flex-grow: 1;
         }
         .catalog-card {
             background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(5px);
@@ -305,15 +251,11 @@
         .details-meta { font-size: 0.9rem; color: #94a3b8; line-height: 1.5; }
         .details-footer {
             background: #111827; padding: 15px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-top: 1px solid #334155;
+            display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155;
         }
-        .details-left-actions { display: flex; gap: 10px; align-items: center; }
         .btn-primary { background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; }
         .btn-primary:hover { background: #0284c7; color: #fff; }
         .btn-secondary { background: #334155; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
-        .btn-watched { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-        .btn-watched:hover { background: rgba(34, 197, 94, 0.3); }
 
         #player-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -328,15 +270,10 @@
         
         .player-info-panel {
             flex-grow: 1; background: #111827; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-top: 1px solid #334155;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+            scrollbar-width: thin; scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
         }
-        .player-info-panel::-webkit-scrollbar { width: 6px; }
-        .player-info-panel::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.4); border-radius: 4px; }
-
         .player-info-top { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .player-anime-title { font-size: 1.2rem; font-weight: bold; color: #f8fafc; }
-        .player-anime-badges { display: flex; gap: 8px; align-items: center; }
         .player-synopsis { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
 
         .episodes-sidebar {
@@ -383,7 +320,7 @@
 
     <div class="main-container" id="mainContainer">
         <h1><b> 𝐏𝐫𝐨𝐱𝐲 𝐔𝐬𝐞𝐫 </b></h1>
-        <div class="home-version"><span>Update 1.0.7</span></div>
+        <div class="home-version"><span>Update 1.0.8</span></div>
     </div>
 
     <div class="spotify-widget" id="spotifyWidget">
@@ -411,7 +348,7 @@
                 <div>press [TAB] to close</div>
             </div>
             <div class="terminal-body" id="terminalBody">
-                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.7]
+                <div class="terminal-output" id="terminalOutput">Proxy OS [Version 1.0.8]
 Type "help" for commands.
 
 </div>
@@ -434,9 +371,7 @@ Type "help" for commands.
             </div>
         </div>
         <div class="genre-bar" id="animeGenreBar">
-            <button class="genre-pill active" data-genre="all">All Popular</button>
-            <button class="genre-pill" data-genre="TV">📺 TV Series</button>
-            <button class="genre-pill" data-genre="MOVIE">🎬 Movies</button>
+            <button class="genre-pill active" data-genre="all">All Popular Anime</button>
         </div>
         <div class="catalog-grid" id="catalogGridAnime"></div>
     </div>
@@ -449,7 +384,7 @@ Type "help" for commands.
             </div>
         </div>
         <div class="genre-bar" id="moviesGenreBar">
-            <button class="genre-pill active" data-genre="all">Trending</button>
+            <button class="genre-pill active" data-genre="all">Trending Movies & TV</button>
             <button class="genre-pill" data-genre="MOVIE">🎬 Movies Only</button>
             <button class="genre-pill" data-genre="TV">📺 TV Shows Only</button>
         </div>
@@ -471,9 +406,7 @@ Type "help" for commands.
                 </div>
             </div>
             <div class="details-footer">
-                <div class="details-left-actions">
-                    <button class="btn-secondary" id="closeDetails">Back</button>
-                </div>
+                <button class="btn-secondary" id="closeDetails">Back</button>
                 <button class="btn-primary" id="watchBtn">Watch Stream</button>
             </div>
         </div>
@@ -535,7 +468,6 @@ Type "help" for commands.
     <audio id="vibeAudio" src="1026.MP3" preload="auto" loop playsinline></audio>
 
     <script>
-        // Fixed view counter with session storage guard to prevent artificial inflation
         async function updateViewsCounter() {
             try {
                 const hasCounted = sessionStorage.getItem('proxy_viewed');
@@ -633,16 +565,40 @@ Type "help" for commands.
             }
         });
 
-        const PRELOADED_MOVIES_AND_SHOWS = [
-            { id: 157336, title: "Interstellar", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", date: "2014", author: "TMDB", genres: ["Sci-Fi"], episodesCount: 1, synopsis: "Explorers travel through a wormhole in space." },
-            { id: 693134, title: "Dune: Part Two", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", date: "2024", author: "TMDB", genres: ["Sci-Fi"], episodesCount: 1, synopsis: "Paul Atreides unites with Chani and the Fremen." },
-            { id: 66732, title: "Stranger Things", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", date: "2016", author: "TMDB", genres: ["Sci-Fi"], episodesCount: 34, synopsis: "A small town uncovers a mystery involving supernatural forces." },
-            { id: 100088, title: "The Last of Us", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyve4z0wH0Hl.jpg", date: "2023", author: "TMDB", genres: ["Action"], episodesCount: 9, synopsis: "Surviving in a post-apocalyptic world." },
-            { id: 82856, title: "The Mandalorian", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/eU1i6eHXlzMOlEq0ku1R97Y4hnY.jpg", date: "2019", author: "TMDB", genres: ["Sci-Fi"], episodesCount: 24, synopsis: "The travels of a lone bounty hunter in the outer reaches." },
-            { id: 1396, title: "Breaking Bad", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/ztkUQFRFXphLRmrfqbuwXjOa7Xb.jpg", date: "2008", author: "TMDB", genres: ["Drama"], episodesCount: 62, synopsis: "A chemistry teacher turns to manufacturing methamphetamine." }
-        ];
-
         let liveAnimeList = [], liveMoviesList = [], activeAnime = null;
+        let currentFilterType = 'all';
+
+        async function fetchTMDBTrending() {
+            try {
+                // Fetch real trending movies and TV shows from TMDB via a clean public API or fallback list
+                const res = await fetch('https://api.themoviedb.org/3/trending/all/week?api_key=3d941584e03f5dbff8fc272379f8da98');
+                const data = await res.json();
+                if (data && data.results) {
+                    liveMoviesList = data.results.map(item => ({
+                        id: item.id,
+                        title: item.title || item.name || 'Untitled',
+                        type: (item.media_type === 'movie' ? 'MOVIE' : 'TV'),
+                        mediaSource: 'tmdb',
+                        image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyve4z0wH0Hl.jpg',
+                        date: (item.release_date || item.first_air_date || '2024').substring(0, 4),
+                        episodesCount: item.media_type === 'tv' ? 10 : 1,
+                        synopsis: item.overview || 'No synopsis available.'
+                    }));
+                    renderCatalogCards('movies');
+                }
+            } catch (err) {
+                // Fallback list if network/API fails
+                liveMoviesList = [
+                    { id: 157336, title: "Interstellar", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", date: "2014", episodesCount: 1, synopsis: "Explorers travel through a wormhole in space." },
+                    { id: 693134, title: "Dune: Part Two", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", date: "2024", episodesCount: 1, synopsis: "Paul Atreides unites with Chani and the Fremen." },
+                    { id: 66732, title: "Stranger Things", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", date: "2016", episodesCount: 34, synopsis: "A small town uncovers a mystery involving supernatural forces." },
+                    { id: 100088, title: "The Last of Us", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyve4z0wH0Hl.jpg", date: "2023", episodesCount: 9, synopsis: "Surviving in a post-apocalyptic world." },
+                    { id: 82856, title: "The Mandalorian", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/eU1i6eHXlzMOlEq0ku1R97Y4hnY.jpg", date: "2019", episodesCount: 24, synopsis: "The travels of a lone bounty hunter." },
+                    { id: 1396, title: "Breaking Bad", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/ztkUQFRFXphLRmrfqbuwXjOa7Xb.jpg", date: "2008", episodesCount: 62, synopsis: "A chemistry teacher turns to manufacturing." }
+                ];
+                renderCatalogCards('movies');
+            }
+        }
 
         function openCatalogUI(type) {
             if (type === 'anime') {
@@ -652,7 +608,7 @@ Type "help" for commands.
             } else {
                 document.getElementById('media-catalog-page').style.display = 'flex';
                 document.getElementById('catalog-page').style.display = 'none';
-                if (liveMoviesList.length === 0) { liveMoviesList = PRELOADED_MOVIES_AND_SHOWS; renderCatalogCards('movies'); }
+                if (liveMoviesList.length === 0) fetchTMDBTrending();
             }
         }
 
@@ -669,7 +625,7 @@ Type "help" for commands.
                 });
                 const data = await res.json();
                 liveAnimeList = data.data.Page.media.map(item => ({
-                    id: item.idMal, title: item.title.english || item.title.romaji, type: item.type || 'TV', mediaSource: 'anime',
+                    id: item.idMal, title: item.title.english || item.title.romaji, type: 'ANIME', mediaSource: 'anime',
                     image: item.coverImage?.large || '', date: item.startDate?.year || 'N/A', genres: item.genres || [],
                     episodesCount: item.episodes || 12, synopsis: item.description?.replace(/<[^>]*>?/gm, '') || 'No synopsis.'
                 }));
@@ -678,8 +634,13 @@ Type "help" for commands.
         }
 
         function renderCatalogCards(mode) {
-            const list = mode === 'anime' ? liveAnimeList : liveMoviesList;
             const grid = document.getElementById(mode === 'anime' ? 'catalogGridAnime' : 'catalogGridMovies');
+            let list = mode === 'anime' ? liveAnimeList : liveMoviesList;
+
+            if (mode === 'movies' && currentFilterType !== 'all') {
+                list = list.filter(i => i.type === currentFilterType);
+            }
+
             grid.innerHTML = list.map(item => `
                 <div class="catalog-card" onclick="showMediaDetails(${item.id}, '${mode}')">
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
@@ -690,6 +651,15 @@ Type "help" for commands.
                 </div>
             `).join('');
         }
+
+        document.querySelectorAll('#moviesGenreBar .genre-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                document.querySelectorAll('#moviesGenreBar .genre-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentFilterType = pill.getAttribute('data-genre');
+                renderCatalogCards('movies');
+            });
+        });
 
         window.showMediaDetails = function(id, mode) {
             activeAnime = (mode === 'anime' ? liveAnimeList : liveMoviesList).find(i => i.id === id);
@@ -710,7 +680,7 @@ Type "help" for commands.
             openPlayerStream();
         });
 
-        // PLAYER STREAMING SYSTEM (With Dynamic Season Selector + Unsandboxed TV Series & Unrestricted Anime Sandbox)
+        // PLAYER STREAMING SYSTEM (Fixed TMDB Movie & TV URLs + Sandbox Adblocker)
         const playerView = document.getElementById('player-view');
         const videoWrapper = document.getElementById('videoWrapper');
         const epNum = document.getElementById('epNum');
@@ -733,27 +703,32 @@ Type "help" for commands.
                 serverSel.style.display = 'block';
 
                 let embedUrl = '';
-                let sandboxAttr = '';
+                // Robust sandbox adblocker/popup blocker string
+                const sandboxAdblockAttr = 'sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"';
 
                 if (activeAnime.type === 'MOVIE') {
                     seasonNumLabel.style.display = 'none';
-                    embedUrl = server === 'cinesrc' ? `https://cinesrc.st/embed/movie/${activeAnime.id}` : `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8`;
-                    sandboxAttr = 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"';
+                    // Correct standard CineSrc and VidLink Movie Embed URLs
+                    embedUrl = server === 'cinesrc' 
+                        ? `https://cinesrc.st/embed/movie/${activeAnime.id}` 
+                        : `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8`;
                 } else {
-                    // TV SHOW: Show season selector and use no-sandbox to prevent 404 / player errors
+                    // Correct standard CineSrc and VidLink TV Show Embed URLs with Season & Episode
                     seasonNumLabel.style.display = 'flex';
-                    embedUrl = server === 'cinesrc' ? `https://cinesrc.st/embed/tv/${activeAnime.id}/${season}/${ep}` : `https://vidlink.pro/tv/${activeAnime.id}/${season}/${ep}?primaryColor=38bdf8`;
-                    sandboxAttr = ''; 
+                    embedUrl = server === 'cinesrc' 
+                        ? `https://cinesrc.st/embed/tv/${activeAnime.id}/${season}/${ep}` 
+                        : `https://vidlink.pro/tv/${activeAnime.id}/${season}/${ep}?primaryColor=38bdf8`;
                 }
 
-                videoWrapper.innerHTML = `<iframe src="${embedUrl}" ${sandboxAttr} allowfullscreen></iframe>`;
+                videoWrapper.innerHTML = `<iframe src="${embedUrl}" ${sandboxAdblockAttr} allowfullscreen></iframe>`;
                 document.getElementById('episodesSidebar').style.display = activeAnime.type === 'MOVIE' ? 'none' : 'flex';
                 renderDummyEpisodes(activeAnime.episodesCount || 10);
             } else {
                 trackSel.style.display = 'block';
                 serverSel.style.display = 'none';
                 seasonNumLabel.style.display = 'none';
-                // ANIME: Added extended sandbox permissions for media embedding compatibility
+                
+                // Anime un-sandboxed/permissive view as required
                 videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/sub?color=38bdf8" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-presentation allow-orientation-lock" allowfullscreen></iframe>`;
                 document.getElementById('episodesSidebar').style.display = 'flex';
                 renderDummyEpisodes(activeAnime.episodesCount || 24);
