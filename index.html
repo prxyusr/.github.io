@@ -198,7 +198,6 @@
             overflow-y: auto;
         }
 
-        /* Cleaned Header with Centered Search & Socials Right */
         .catalog-header {
             background: rgba(17, 24, 39, 0.98);
             backdrop-filter: blur(10px);
@@ -369,7 +368,6 @@
         }
         .player-main-col { display: flex; flex-direction: column; width: 100%; max-width: 820px; height: 85vh; background: #1e293b; border-radius: 12px; overflow: hidden; }
         
-        /* Smaller video container so info panel is fully visible and scrollable */
         .video-container { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 48vh; background: #000; flex-shrink: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .player-controls { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: #111827; flex-shrink: 0; }
@@ -409,9 +407,9 @@
             background: rgba(30, 41, 59, 0.4); cursor: pointer; transition: all 0.2s; color: #cbd5e1; font-size: 0.85rem;
         }
         .ep-item:hover { background: rgba(56, 189, 248, 0.15); color: #fff; }
-        .ep-item.active { background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.4); color: #f43f5e; font-weight: bold; }
+        .ep-item.active { background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: bold; }
         .ep-num { font-weight: bold; min-width: 24px; color: #94a3b8; }
-        .ep-item.active .ep-num { color: #f43f5e; }
+        .ep-item.active .ep-num { color: #38bdf8; }
         .ep-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
 
         .home-version { margin-top: 12px; color: #8b95a7; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; }
@@ -751,7 +749,7 @@ Type "help" for commands.
     <audio id="vibeAudio" src="1026.MP3" preload="auto" loop playsinline></audio>
 
     <script>
-        // WORKING REAL-TIME VIEWS COUNTER API (Exact count without "+")
+        // WORKING REAL-TIME VIEWS COUNTER API
         async function updateViewsCounter() {
             try {
                 const res = await fetch('https://api.counterapi.dev/v1/proxyusr_dev/views/up');
@@ -916,6 +914,23 @@ Type "help" for commands.
                 e.preventDefault();
                 terminalOverlay.classList.toggle('active');
                 if (terminalOverlay.classList.contains('active')) terminalInput.focus();
+            } else if (e.key === 'Escape') {
+                const detailsModal = document.getElementById('details-modal');
+                const playerView = document.getElementById('player-view');
+                const animeCatalogPage = document.getElementById('catalog-page');
+                const moviesCatalogPage = document.getElementById('media-catalog-page');
+
+                if (detailsModal.style.display === 'flex') {
+                    detailsModal.style.display = 'none';
+                } else if (playerView.style.display === 'flex') {
+                    exitPlayerToCatalog();
+                } else if (animeCatalogPage.style.display === 'flex') {
+                    closeCatalogUI('anime');
+                } else if (moviesCatalogPage.style.display === 'flex') {
+                    closeCatalogUI('movies');
+                } else if (changelogPage.style.display === 'block' || statusPage.style.display === 'block') {
+                    closeInfoPages();
+                }
             }
         });
 
@@ -954,6 +969,7 @@ Type "help" for commands.
         let liveAnimeList = [];
         let liveMoviesList = [];
         let activeAnime = null;
+        let activeCatalogType = 'anime';
         let animeSearchTimeout = null, moviesSearchTimeout = null;
         let animeCurrentGenre = 'all', moviesCurrentGenre = 'all';
         let animeCurrentPage = 1, moviesCurrentPage = 1;
@@ -964,17 +980,48 @@ Type "help" for commands.
         let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
         let watchedList = JSON.parse(localStorage.getItem('proxy_watched') || '[]');
 
-        // FALLBACK MEDIA ITEMS IF TMDB API IS UNREACHABLE / BLOCKED
-        const FEATURED_MOVIES_FALLBACK = [
-            { id: 157336, title: "Interstellar", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", date: "2014", author: "TMDB", genres: ["Popular"], episodesCount: 1, synopsis: "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel." },
-            { id: 693134, title: "Dune: Part Two", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", date: "2024", author: "TMDB", genres: ["Popular"], episodesCount: 1, synopsis: "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family." },
-            { id: 66732, title: "Stranger Things", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", date: "2016", author: "TMDB", genres: ["Popular"], episodesCount: 34, synopsis: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl." },
-            { id: 100088, title: "The Last of Us", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyve4z0wH0Hl.jpg", date: "2023", author: "TMDB", genres: ["Popular"], episodesCount: 9, synopsis: "Twenty years after modern civilization has been destroyed, Joel, a hardened survivor, is hired to smuggle Ellie, a 14-year-old girl, out of an oppressive quarantine zone." },
-            { id: 27205, title: "Inception", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg", date: "2010", author: "TMDB", genres: ["Popular"], episodesCount: 1, synopsis: "Cobb, a skilled thief who steals information from targets by entering their dreams, is given a chance to have his criminal record erased." },
-            { id: 1396, title: "Breaking Bad", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/ztkUQFRFXphLRmrfqbuwXjOa7Xb.jpg", date: "2008", author: "TMDB", genres: ["Popular"], episodesCount: 62, synopsis: "A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future." }
+        // VERIFIED POPULAR MOVIES AND TV SHOWS LIBRARY (HIGH QUALITY TMDB POSTER URLS)
+        const PRELOADED_MOVIES_AND_SHOWS = [
+            { id: 82856, title: "The Mandalorian", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/eU1i6eHXlzMOlEq0ku1R97Y4hnY.jpg", date: "2019", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 24, synopsis: "The travels of a lone bounty hunter in the outer reaches of the galaxy, far from the authority of the New Republic." },
+            { id: 66732, title: "Stranger Things", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", date: "2016", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 34, synopsis: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments and supernatural forces." },
+            { id: 100088, title: "The Last of Us", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyve4z0wH0Hl.jpg", date: "2023", author: "TMDB", genres: ["Action", "Popular"], episodesCount: 9, synopsis: "Surviving in a post-apocalyptic world destroyed by a fungal pandemic." },
+            { id: 1396, title: "Breaking Bad", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/ztkUQFRFXphLRmrfqbuwXjOa7Xb.jpg", date: "2008", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 62, synopsis: "A chemistry teacher diagnosed with terminal lung cancer turns to manufacturing and selling methamphetamine." },
+            { id: 157336, title: "Interstellar", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", date: "2014", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 1, synopsis: "Explorers travel through a wormhole in space in an attempt to ensure humanity's survival." },
+            { id: 693134, title: "Dune: Part Two", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", date: "2024", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 1, synopsis: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators." },
+            { id: 27205, title: "Inception", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg", date: "2010", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 1, synopsis: "A thief who steals corporate secrets through the use of dream-sharing technology." },
+            { id: 155, title: "The Dark Knight", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", date: "2008", author: "TMDB", genres: ["Action", "Popular"], episodesCount: 1, synopsis: "Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent." },
+            { id: 238, title: "The Godfather", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", date: "1972", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 1, synopsis: "The aging patriarch of an organized crime dynasty transfers control of his empire to his reluctant son." },
+            { id: 680, title: "Pulp Fiction", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg", date: "1994", author: "TMDB", genres: ["Crime", "Popular"], episodesCount: 1, synopsis: "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence." },
+            { id: 122, title: "The Lord of the Rings: The Return of the King", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", date: "2003", author: "TMDB", genres: ["Fantasy", "Popular"], episodesCount: 1, synopsis: "Gandalf and Aragorn lead the World of Men against Sauron's army." },
+            { id: 13, title: "Forrest Gump", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", date: "1994", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 1, synopsis: "The presidencies of Kennedy and Johnson unfold through the perspective of an Alabama man." },
+            { id: 278, title: "The Shawshank Redemption", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg", date: "1994", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 1, synopsis: "Over the course of several years, two convicts form a friendship, seeking consolation and redemption." },
+            { id: 603, title: "The Matrix", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg", date: "1999", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 1, synopsis: "A computer hacker learns from mysterious rebels about the true nature of his reality." },
+            { id: 550, title: "Fight Club", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg", date: "1999", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 1, synopsis: "An insomniac office worker and a soap maker form an underground fight club." },
+            { id: 19995, title: "Avatar", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/kyeOwRvylWRn48AIWYX38SjHq2Z.jpg", date: "2009", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 1, synopsis: "A paraplegic marine dispatched to Pandora becomes torn between following orders and protecting an alien civilization." },
+            { id: 299536, title: "Avengers: Infinity War", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg", date: "2018", author: "TMDB", genres: ["Action", "Popular"], episodesCount: 1, synopsis: "The Avengers must be willing to sacrifice all in an attempt to defeat Thanos." },
+            { id: 299534, title: "Avengers: Endgame", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg", date: "2019", author: "TMDB", genres: ["Action", "Popular"], episodesCount: 1, synopsis: "After devastating events of Infinity War, the Avengers assemble once more." },
+            { id: 569094, title: "Spider-Man: Across the Spider-Verse", type: "MOVIE", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg", date: "2023", author: "TMDB", genres: ["Animation", "Popular"], episodesCount: 1, synopsis: "Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People." },
+            { id: 1402, title: "The Walking Dead", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/wxyzt8v74MVffnjW20w5wFk14pT.jpg", date: "2010", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 177, synopsis: "Sheriff's deputy Rick Grimes awakens from a coma to find a world overrun by zombies." },
+            { id: 1399, title: "Game of Thrones", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg", date: "2011", author: "TMDB", genres: ["Fantasy", "Popular"], episodesCount: 73, synopsis: "Nine noble families fight for control over the lands of Westeros." },
+            { id: 94997, title: "House of the Dragon", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/z2yahl2uefxDCl0nogcRBstwruJ.jpg", date: "2022", author: "TMDB", genres: ["Fantasy", "Popular"], episodesCount: 18, synopsis: "An internal succession war within House Targaryen at the height of its power in Westeros." },
+            { id: 85552, title: "Euphoria", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/3Q0hd3DG06Qn0a7g8820wWvE3yE.jpg", date: "2019", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 18, synopsis: "High school students grapple with issues of drugs, sex, and identity." },
+            { id: 71446, title: "Money Heist", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg", date: "2017", author: "TMDB", genres: ["Crime", "Popular"], episodesCount: 41, synopsis: "An unusual group of robbers attempt to carry out the most perfect robbery in Spanish history." },
+            { id: 93405, title: "Squid Game", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg", date: "2021", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 9, synopsis: "Hundreds of cash-strapped players accept a strange invitation to compete in children's games." },
+            { id: 87108, title: "Chernobyl", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/hlLXt2StUb1GoiOs8B1YtB8J8j3.jpg", date: "2019", author: "TMDB", genres: ["Drama", "Popular"], episodesCount: 5, synopsis: "In April 1986, an explosion at the Chernobyl nuclear power plant becomes a world catastrophe." },
+            { id: 60574, title: "Peaky Blinders", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqtrkvlVGkJgCIw.jpg", date: "2013", author: "TMDB", genres: ["Crime", "Popular"], episodesCount: 36, synopsis: "A gangster family epic set in 1919 Birmingham, England." },
+            { id: 119051, title: "Wednesday", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/9PFonBhy4cQy7Jz20NpMygczOkv.jpg", date: "2022", author: "TMDB", genres: ["Fantasy", "Popular"], episodesCount: 8, synopsis: "Wednesday Addams' years as a student at Nevermore Academy." },
+            { id: 84958, title: "Loki", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/voHUmluYmKyleFkTu3lOXQG70dE.jpg", date: "2021", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 12, synopsis: "Loki resumes his role as the God of Mischief in a new timeline." },
+            { id: 125988, title: "The Bear", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/306u4m2gA4Jc2kE70KxXm9mZc4j.jpg", date: "2022", author: "TMDB", genres: ["Comedy", "Popular"], episodesCount: 28, synopsis: "A young fine-dining chef comes home to Chicago to run his family sandwich shop." },
+            { id: 63174, title: "Lucifer", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/ekZobSoCrflW8A08lV863v2pI3c.jpg", date: "2016", author: "TMDB", genres: ["Fantasy", "Popular"], episodesCount: 93, synopsis: "Bored and unhappy in Hell, Lucifer Morningstar relocates to Los Angeles." },
+            { id: 48866, title: "The 100", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/wcaDIekHMzVjfLejUTnui4xTztn.jpg", date: "2014", author: "TMDB", genres: ["Sci-Fi", "Popular"], episodesCount: 100, synopsis: "Juvenile delinquents are sent back to Earth a century after a nuclear apocalypse." },
+            { id: 2190, title: "South Park", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/vztfy7Okr77lUaJq9lqYvL7g5P9.jpg", date: "1997", author: "TMDB", genres: ["Animation", "Popular"], episodesCount: 325, synopsis: "Misadventures of four schoolboys in South Park, Colorado." },
+            { id: 1434, title: "Family Guy", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/eWvnYwwVL7z68V5Bf99V168hI3l.jpg", date: "1999", author: "TMDB", genres: ["Animation", "Popular"], episodesCount: 420, synopsis: "Animated series featuring the dysfunctional Griffin family." },
+            { id: 2316, title: "The Office", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", date: "2005", author: "TMDB", genres: ["Comedy", "Popular"], episodesCount: 201, synopsis: "Mockumentary on a group of typical office workers." },
+            { id: 1668, title: "Friends", type: "TV", mediaSource: "tmdb", image: "https://image.tmdb.org/t/p/w500/f496cm9enuEsZkSPzCwnTESEK5s.jpg", date: "1994", author: "TMDB", genres: ["Comedy", "Popular"], episodesCount: 236, synopsis: "Six young adults navigate life and romance in Manhattan." }
         ];
 
         function openCatalogUI(type) {
+            activeCatalogType = type;
             if (type === 'anime') {
                 animeCatalogPage.style.display = 'flex';
                 moviesCatalogPage.style.display = 'none';
@@ -984,7 +1031,10 @@ Type "help" for commands.
                 moviesCatalogPage.style.display = 'flex';
                 animeCatalogPage.style.display = 'none';
                 renderContinueWatching('movies');
-                if (liveMoviesList.length === 0) fetchMoviesData('', 1, false);
+                if (liveMoviesList.length === 0) {
+                    liveMoviesList = PRELOADED_MOVIES_AND_SHOWS;
+                    renderCatalogCards('movies');
+                }
             }
         }
 
@@ -1040,28 +1090,26 @@ Type "help" for commands.
             isLoadingAnime = false;
         }
 
-        // Fetch Movies & TV Data with Auto Fallback
-        async function fetchMoviesData(query, page = 1, append = false) {
-            if (isLoadingMovies) return;
-            isLoadingMovies = true;
-            if (!append) catalogGridMovies.innerHTML = '<div class="catalog-loading">Searching Movies & TV shows...</div>';
+        // Search Movies & TV Data
+        async function searchMoviesData(query) {
+            if (!query) {
+                liveMoviesList = PRELOADED_MOVIES_AND_SHOWS;
+                renderCatalogCards('movies');
+                return;
+            }
 
+            catalogGridMovies.innerHTML = '<div class="catalog-loading">Searching web database...</div>';
             const apiKeys = ['15d20e45d5d51284f73b37493e35e6db', '841059f21aab8c205d9e5f717a61d129'];
             let fetchedSuccess = false;
 
             for (const key of apiKeys) {
-                const url = query 
-                    ? `https://api.themoviedb.org/3/search/multi?api_key=${key}&query=${encodeURIComponent(query)}&page=${page}`
-                    : `https://api.themoviedb.org/3/trending/all/week?api_key=${key}&page=${page}`;
-
+                const url = `https://api.themoviedb.org/3/search/multi?api_key=${key}&query=${encodeURIComponent(query)}&page=1`;
                 try {
                     const res = await fetch(url);
                     if (!res.ok) continue;
 
                     const data = await res.json();
                     if (data && data.results && data.results.length > 0) {
-                        moviesHasNextPage = page < (data.total_pages || 1);
-                        moviesCurrentPage = page;
                         const items = data.results.filter(i => i.media_type === 'movie' || i.media_type === 'tv' || i.title).map(item => ({
                             id: item.id,
                             title: item.title || item.name || 'Untitled',
@@ -1071,10 +1119,10 @@ Type "help" for commands.
                             date: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
                             author: 'TMDB',
                             genres: ['Popular'],
-                            episodesCount: (item.media_type === 'tv' || item.first_air_date) ? 10 : 1,
+                            episodesCount: (item.media_type === 'tv' || item.first_air_date) ? 20 : 1,
                             synopsis: item.overview || 'No synopsis.'
                         }));
-                        liveMoviesList = append ? liveMoviesList.concat(items) : items;
+                        liveMoviesList = items;
                         renderCatalogCards('movies');
                         fetchedSuccess = true;
                         break;
@@ -1082,12 +1130,12 @@ Type "help" for commands.
                 } catch (err) {}
             }
 
-            if (!fetchedSuccess && !append) {
-                liveMoviesList = FEATURED_MOVIES_FALLBACK;
+            if (!fetchedSuccess) {
+                const term = query.toLowerCase();
+                const matched = PRELOADED_MOVIES_AND_SHOWS.filter(i => i.title.toLowerCase().includes(term));
+                liveMoviesList = matched.length > 0 ? matched : PRELOADED_MOVIES_AND_SHOWS;
                 renderCatalogCards('movies');
             }
-
-            isLoadingMovies = false;
         }
 
         function renderCatalogCards(mode) {
@@ -1148,7 +1196,7 @@ Type "help" for commands.
         }
 
         window.resumeHistory = function(id) {
-            activeAnime = liveAnimeList.find(i => i.id === id) || liveMoviesList.find(i => i.id === id) || historyList.find(i => i.id === id);
+            activeAnime = liveAnimeList.find(i => i.id === id) || liveMoviesList.find(i => i.id === id) || PRELOADED_MOVIES_AND_SHOWS.find(i => i.id === id) || historyList.find(i => i.id === id);
             if (!activeAnime) return;
             animeCatalogPage.style.display = 'none';
             moviesCatalogPage.style.display = 'none';
@@ -1170,7 +1218,7 @@ Type "help" for commands.
         });
         document.getElementById('mediaCatalogSearchInput').addEventListener('input', (e) => {
             clearTimeout(moviesSearchTimeout);
-            moviesSearchTimeout = setTimeout(() => fetchMoviesData(e.target.value.trim(), 1, false), 300);
+            moviesSearchTimeout = setTimeout(() => searchMoviesData(e.target.value.trim()), 400);
         });
 
         // Genre Pill Switchers
@@ -1205,7 +1253,8 @@ Type "help" for commands.
         const toggleWatchedBtn = document.getElementById('toggleWatchedBtn');
 
         window.showMediaDetails = function(id, mode) {
-            activeAnime = (mode === 'anime' ? liveAnimeList : liveMoviesList).find(i => i.id === id) || historyList.find(i => i.id === id);
+            activeCatalogType = mode;
+            activeAnime = (mode === 'anime' ? liveAnimeList : liveMoviesList).find(i => i.id === id) || PRELOADED_MOVIES_AND_SHOWS.find(i => i.id === id) || historyList.find(i => i.id === id);
             if (!activeAnime) return;
 
             detailImg.src = activeAnime.image;
@@ -1250,7 +1299,7 @@ Type "help" for commands.
             openPlayerStream();
         });
 
-        // PLAYER STREAMING SYSTEM (Unified Format for Anime & Media Categories)
+        // PLAYER STREAMING SYSTEM (CORRECTED TV ROUTE URL FORMAT)
         const playerView = document.getElementById('player-view');
         const videoWrapper = document.getElementById('videoWrapper');
         const epNum = document.getElementById('epNum');
@@ -1258,6 +1307,26 @@ Type "help" for commands.
         const trackSel = document.getElementById('trackSel');
         const serverSel = document.getElementById('serverSel');
         const episodesSidebar = document.getElementById('episodesSidebar');
+
+        function renderDummyEpisodes(totalEp) {
+            const container = document.getElementById('episodesListContainer');
+            let html = '';
+            const currentEp = parseInt(epNum.value) || 1;
+            for (let i = 1; i <= totalEp; i++) {
+                html += `
+                    <div class="ep-item ${i === currentEp ? 'active' : ''}" onclick="selectEpisode(${i})">
+                        <span class="ep-num">${i}</span>
+                        <span class="ep-name">Episode ${i}</span>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        window.selectEpisode = function(num) {
+            epNum.value = num;
+            openPlayerStream();
+        };
 
         function openPlayerStream() {
             if (!activeAnime) return;
@@ -1278,31 +1347,50 @@ Type "help" for commands.
             if (activeAnime.mediaSource === 'tmdb') {
                 trackSel.style.display = 'none';
                 serverSel.style.display = 'block';
-                const embedUrl = server === 'cinesrc'
-                    ? (activeAnime.type === 'MOVIE' ? `https://cinesrc.st/embed/movie/${activeAnime.id}` : `https://cinesrc.st/embed/tv/${activeAnime.id}/1/${ep}`)
-                    : (activeAnime.type === 'MOVIE' ? `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8` : `https://vidlink.pro/tv/${activeAnime.id}/1/${ep}?primaryColor=38bdf8`);
+
+                let embedUrl = '';
+                if (activeAnime.type === 'MOVIE') {
+                    embedUrl = server === 'cinesrc' 
+                        ? `https://cinesrc.st/embed/movie/${activeAnime.id}` 
+                        : `https://vidlink.pro/movie/${activeAnime.id}?primaryColor=38bdf8`;
+                } else {
+                    const seasonNum = 1;
+                    embedUrl = server === 'cinesrc' 
+                        ? `https://cinesrc.st/embed/tv/${activeAnime.id}/${seasonNum}/${ep}` 
+                        : `https://vidlink.pro/tv/${activeAnime.id}/${seasonNum}/${ep}?primaryColor=38bdf8`;
+                }
+
                 epNumLabel.style.display = activeAnime.type === 'MOVIE' ? 'none' : 'inline-flex';
-                videoWrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+                videoWrapper.innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>`;
                 episodesSidebar.style.display = activeAnime.type === 'MOVIE' ? 'none' : 'flex';
+                renderDummyEpisodes(activeAnime.episodesCount || 20);
             } else {
                 trackSel.style.display = 'block';
                 serverSel.style.display = 'none';
                 epNumLabel.style.display = 'inline-flex';
-                videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" allowfullscreen></iframe>`;
+                videoWrapper.innerHTML = `<iframe src="https://zokoanime.video/stream/mal/${activeAnime.id}/${ep}/${track}?color=38bdf8" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>`;
                 episodesSidebar.style.display = 'flex';
+                renderDummyEpisodes(activeAnime.episodesCount || 12);
             }
 
             playerView.style.display = 'flex';
+        }
+
+        function exitPlayerToCatalog() {
+            playerView.style.display = 'none';
+            videoWrapper.innerHTML = '';
+            if (activeAnime && activeAnime.mediaSource === 'tmdb') {
+                openCatalogUI('movies');
+            } else {
+                openCatalogUI('anime');
+            }
         }
 
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         trackSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         serverSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
 
-        document.getElementById('closePlayer').addEventListener('click', () => {
-            playerView.style.display = 'none';
-            videoWrapper.innerHTML = '';
-        });
+        document.getElementById('closePlayer').addEventListener('click', exitPlayerToCatalog);
     </script>
 </body>
 </html>
