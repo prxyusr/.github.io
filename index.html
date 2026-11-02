@@ -1199,20 +1199,23 @@
         #player-view, #media-player-view { 
             padding: clamp(12px, 2vw, 28px); 
             gap: 18px; 
-            align-items: stretch; 
+            align-items: center; /* FIXED: changed from stretch to center to prevent height stretching & bunching */
+            justify-content: center;
             background: radial-gradient(ellipse at top left, rgba(56, 189, 248, .09), transparent 40%), rgba(5, 8, 14, .97); 
         }
 
         .player-main-col { 
-            width: auto; 
-            max-width: none; 
+            width: 70%; /* FIXED: explicitly bound max width proportions so main column and sidebar sit side-by-side cleanly without overflowing */
+            max-width: 900px;
             min-width: 0; 
             flex: 1 1 auto; 
-            height: min(92vh, 980px); 
+            height: min(88vh, 900px); /* FIXED: constrained height slightly to fit window perfectly */
             background: #0d1421; 
             border: 1px solid rgba(148, 163, 184, .18); 
             border-radius: 16px; 
             box-shadow: 0 24px 80px rgba(0, 0, 0, .38); 
+            display: flex;
+            flex-direction: column;
         }
 
         .video-container { 
@@ -1251,6 +1254,7 @@
             flex-wrap: wrap; 
             background: #101a2a; 
             border-bottom: 1px solid rgba(148, 163, 184, .12); 
+            flex-shrink: 0;
         }
 
         .player-controls label { 
@@ -1280,13 +1284,15 @@
 
         .player-info-panel { 
             background: linear-gradient(180deg, #0e1726, #0b111d); 
-            padding: 22px clamp(16px, 2.2vw, 30px); 
-            gap: 13px; 
+            padding: 18px clamp(16px, 2.2vw, 24px); 
+            gap: 10px; 
             border-top: 1px solid rgba(148, 163, 184, .12); 
+            flex: 1 1 auto; /* FIXED: allows panel to distribute remaining space properly inside the main column */
+            overflow-y: auto;
         }
 
         .player-anime-title { 
-            font-size: clamp(1.15rem, 2vw, 1.65rem); 
+            font-size: clamp(1.15rem, 2vw, 1.5rem); 
             letter-spacing: -.025em; 
         }
 
@@ -1299,9 +1305,9 @@
 
         .player-synopsis { 
             max-width: 850px; 
-            font-size: .9rem; 
+            font-size: .85rem; 
             color: #a6b3c7; 
-            line-height: 1.7; 
+            line-height: 1.6; 
         }
 
         .player-actions-row { 
@@ -1316,13 +1322,15 @@
         }
 
         .episodes-sidebar { 
-            width: clamp(270px, 25vw, 350px); 
-            flex: 0 0 clamp(270px, 25vw, 350px); 
-            height: min(92vh, 980px); 
+            width: clamp(270px, 25vw, 340px); 
+            flex: 0 0 clamp(270px, 25vw, 340px); 
+            height: min(88vh, 900px); /* FIXED: matched height with main column so they align cleanly */
             background: #0d1421; 
             border: 1px solid rgba(148, 163, 184, .18); 
             border-radius: 16px; 
             box-shadow: 0 24px 80px rgba(0, 0, 0, .28); 
+            display: flex;
+            flex-direction: column;
         }
                 
         #player-view .player-main-col,
@@ -1337,6 +1345,7 @@
             padding: 20px 18px 16px; 
             background: linear-gradient(180deg, #162236, #101827); 
             border-bottom: 1px solid rgba(148, 163, 184, .14); 
+            flex-shrink: 0;
         }
 
         .episodes-title-row { 
@@ -1369,6 +1378,8 @@
         .episodes-list { 
             padding: 10px; 
             gap: 5px; 
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         .ep-item { 
@@ -1434,8 +1445,8 @@
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
-            flex: 0 0 auto;
-            min-height: 150px;
+            flex: 1 1 auto;
+            min-height: 120px;
             width: 100%;
             box-sizing: border-box;
             position: relative;
@@ -2038,7 +2049,7 @@
                 </div>
             </div>
         </div>
-        <div class="episodes-sidebar">
+        <div class="episodes-sidebar" id="episodesSidebar">
             <div class="episodes-header">
                 <div class="episodes-title-row">
                     <span>List of episodes:</span>
@@ -2057,7 +2068,7 @@
             <div class="video-container" id="mediaVideoWrapper"></div>
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;" id="mediaPlayerControlsRow">
-                    <label>Ep: <input type="number" id="mediaEpNum" value="1" min="1" style="width:60px; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;"></label>
+                    <label id="mediaEpInputLabel">Ep: <input type="number" id="mediaEpNum" value="1" min="1" style="width:60px; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;"></label>
                 </div>
                 <button class="btn-secondary" id="closeMediaPlayer" style="background:#ef4444;">Exit Player</button>
             </div>
@@ -2454,6 +2465,8 @@
         const mediaContinueRow = document.getElementById('mediaContinueRow');
         const mediaEpisodesListContainer = document.getElementById('mediaEpisodesListContainer');
         const mediaEpSearchInput = document.getElementById('mediaEpSearchInput');
+        const mediaEpisodesSidebar = document.getElementById('mediaEpisodesSidebar'); // Reference for hiding sidebar on movies
+        const mediaEpInputLabel = document.getElementById('mediaEpInputLabel'); // Reference for hiding ep selector on movies
         
         const playerAnimeTitle = document.getElementById('playerAnimeTitle');
         const playerAnimeBadges = document.getElementById('playerAnimeBadges');
@@ -2889,7 +2902,7 @@
                     <img src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.onerror=null; this.classList.add('img-load-failed');">
                     <div class="continue-info">
                         <div class="continue-title">${item.title}</div>
-                        <div class="continue-ep">Episode / Part ${item.ep}</div>
+                        <div class="continue-ep">${item.type === 'MOVIE' ? 'Movie' : 'Episode / Part ' + item.ep}</div>
                     </div>
                 </div>
             `).join('');
@@ -3365,17 +3378,27 @@
             localStorage.setItem('proxy_media_history', JSON.stringify(mediaHistoryList));
             
             const themeParams = '?primaryColor=38bdf8&secondaryColor=0f172a&iconColor=ffffff';
-            if (activeMedia.type === 'TV') {
-                mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/tv/${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
-            } else {
+            
+            // FIXED: Hide episode information sidebar & episode selector controls ONLY FOR MOVIES
+            if (activeMedia.type === 'MOVIE') {
+                if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'none';
+                if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'none';
                 mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/movie/${activeMedia.id}${themeParams}" allowfullscreen></iframe>`;
+            } else {
+                if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'flex';
+                if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'inline-block';
+                mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/tv/${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
             }
             
             if (mediaPlayerView.style.display !== 'flex') {
                 mediaPlayerView.style.display = 'flex';
-                fetchAndRenderMediaEpisodes(activeMedia);
+                if (activeMedia.type !== 'MOVIE') {
+                    fetchAndRenderMediaEpisodes(activeMedia);
+                }
             } else {
-                renderFilteredMediaEpisodes(fetchedMediaEpisodesCache, mediaEpSearchInput.value.trim());
+                if (activeMedia.type !== 'MOVIE') {
+                    renderFilteredMediaEpisodes(fetchedMediaEpisodesCache, mediaEpSearchInput.value.trim());
+                }
             }
         }
 
