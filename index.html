@@ -1199,17 +1199,17 @@
         #player-view, #media-player-view { 
             padding: clamp(12px, 2vw, 28px); 
             gap: 18px; 
-            align-items: center; /* FIXED: changed from stretch to center to prevent height stretching & bunching */
+            align-items: center; 
             justify-content: center;
             background: radial-gradient(ellipse at top left, rgba(56, 189, 248, .09), transparent 40%), rgba(5, 8, 14, .97); 
         }
 
         .player-main-col { 
-            width: 70%; /* FIXED: explicitly bound max width proportions so main column and sidebar sit side-by-side cleanly without overflowing */
+            width: 70%; 
             max-width: 900px;
             min-width: 0; 
             flex: 1 1 auto; 
-            height: min(88vh, 900px); /* FIXED: constrained height slightly to fit window perfectly */
+            height: min(88vh, 900px); 
             background: #0d1421; 
             border: 1px solid rgba(148, 163, 184, .18); 
             border-radius: 16px; 
@@ -1262,11 +1262,13 @@
             font-size: .8rem; 
         }
 
-        #epNum, #trackSel, #mediaEpNum, #mediaTrackSel { 
+        #epNum, #trackSel, #mediaEpNum, #mediaTrackSel, #mediaSourceSel { 
             min-height: 34px; 
             padding: 6px 9px !important; 
             border: 1px solid #34445c !important; 
             border-radius: 8px !important; 
+            background: #0f172a !important;
+            color: #fff !important;
         }
 
         #closePlayer, #closeMediaPlayer { 
@@ -1287,7 +1289,7 @@
             padding: 18px clamp(16px, 2.2vw, 24px); 
             gap: 10px; 
             border-top: 1px solid rgba(148, 163, 184, .12); 
-            flex: 1 1 auto; /* FIXED: allows panel to distribute remaining space properly inside the main column */
+            flex: 1 1 auto; 
             overflow-y: auto;
         }
 
@@ -1324,7 +1326,7 @@
         .episodes-sidebar { 
             width: clamp(270px, 25vw, 340px); 
             flex: 0 0 clamp(270px, 25vw, 340px); 
-            height: min(88vh, 900px); /* FIXED: matched height with main column so they align cleanly */
+            height: min(88vh, 900px); 
             background: #0d1421; 
             border: 1px solid rgba(148, 163, 184, .18); 
             border-radius: 16px; 
@@ -2069,6 +2071,12 @@
             <div class="player-controls">
                 <div style="display:flex; gap:10px; align-items:center; color:#fff;" id="mediaPlayerControlsRow">
                     <label id="mediaEpInputLabel">Ep: <input type="number" id="mediaEpNum" value="1" min="1" style="width:60px; padding:4px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;"></label>
+                    <label>Source: 
+                        <select id="mediaSourceSel">
+                            <option value="vidlink">VidLink (Primary)</option>
+                            <option value="vidsrc">VidSrc (Backup)</option>
+                        </select>
+                    </label>
                 </div>
                 <button class="btn-secondary" id="closeMediaPlayer" style="background:#ef4444;">Exit Player</button>
             </div>
@@ -2460,6 +2468,7 @@
         const mediaPlayerView = document.getElementById('media-player-view');
         const mediaVideoWrapper = document.getElementById('mediaVideoWrapper');
         const mediaEpNum = document.getElementById('mediaEpNum');
+        const mediaSourceSel = document.getElementById('mediaSourceSel'); // Reference for source selector dropdown
         const closeMediaPlayerBtn = document.getElementById('closeMediaPlayer');
         const mediaContinueSection = document.getElementById('mediaContinueSection');
         const mediaContinueRow = document.getElementById('mediaContinueRow');
@@ -3358,6 +3367,8 @@
             }
             
             const ep = mediaEpNum.value || 1;
+            const source = mediaSourceSel ? mediaSourceSel.value : 'vidlink';
+            
             mediaPlayerTitle.textContent = activeMedia.title;
             mediaPlayerBadges.innerHTML = `
                 <span class="player-badge">ID: ${activeMedia.id}</span>
@@ -3379,15 +3390,24 @@
             
             const themeParams = '?primaryColor=38bdf8&secondaryColor=0f172a&iconColor=ffffff';
             
-            // FIXED: Hide episode information sidebar & episode selector controls ONLY FOR MOVIES
             if (activeMedia.type === 'MOVIE') {
                 if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'none';
                 if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'none';
-                mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/movie/${activeMedia.id}${themeParams}" allowfullscreen></iframe>`;
+                
+                if (source === 'vidsrc') {
+                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidsrc.cc/v2/embed/movie/${activeMedia.id}" allowfullscreen></iframe>`;
+                } else {
+                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/movie/${activeMedia.id}${themeParams}" allowfullscreen></iframe>`;
+                }
             } else {
                 if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'flex';
                 if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'inline-block';
-                mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/tv/${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
+                
+                if (source === 'vidsrc') {
+                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidsrc.cc/v2/embed/tv/${activeMedia.id}/${ep}" allowfullscreen></iframe>`;
+                } else {
+                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/tv/${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
+                }
             }
             
             if (mediaPlayerView.style.display !== 'flex') {
@@ -3405,6 +3425,7 @@
         epNum.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         trackSel.addEventListener('change', () => { if(playerView.style.display === 'flex') openPlayerStream(); });
         mediaEpNum.addEventListener('change', () => { if(mediaPlayerView.style.display === 'flex') openMediaPlayerStream(); });
+        if(mediaSourceSel) mediaSourceSel.addEventListener('change', () => { if(mediaPlayerView.style.display === 'flex') openMediaPlayerStream(); });
         
         closePlayerBtn.addEventListener('click', exitAnimePlayerToCatalog);
         closeMediaPlayerBtn.addEventListener('click', exitMediaPlayerToCatalog);
