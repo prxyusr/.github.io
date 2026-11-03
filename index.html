@@ -3418,25 +3418,32 @@
             
             const themeParams = '?primaryColor=38bdf8&secondaryColor=0f172a&iconColor=ffffff';
             
-            if (activeMedia.type === 'MOVIE') {
-                if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'none';
-                if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'none';
-                
-                if (source === 'vidsrc') {
-                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidsrc.me/embed/movie?tmdb=${activeMedia.id}" allowfullscreen></iframe>`;
-                } else {
-                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/movie/${activeMedia.id}${themeParams}" allowfullscreen></iframe>`;
-                }
-            } else {
-                if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'flex';
-                if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'inline-block';
-                
-                if (source === 'vidsrc') {
-                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidsrc.me/embed/tv?tmdb=${activeMedia.id}&season=1&episode=${ep}" allowfullscreen></iframe>`;
-                } else {
-                    mediaVideoWrapper.innerHTML = `<iframe src="https://vidlink.pro/tv/${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
-                }
-            }
+// Pre-calculated Base64 strings for your streaming providers
+const _vSrcMovie = "aHR0cHM6Ly92aWRzcmMubWUvZW1iZWQvbW92aWU/dG1kYj0=";          // https://vidsrc.me/embed/movie?tmdb=
+const _vLnkMovie = "aHR0cHM6Ly92aWRsaW5rLnByby9tb3ZpZS8=";                    // https://vidlink.pro/movie/
+const _vSrcTv    = "aHR0cHM6Ly92aWRzcmMubWUvZW1iZWQvdHY/dG1kYj0=";          // https://vidsrc.me/embed/tv?tmdb=
+const _vLnkTv    = "aHR0cHM6Ly92aWRsaW5rLnByby90di8=";                       // https://vidlink.pro/tv/
+
+if (activeMedia.type === 'MOVIE') {
+    if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'none';
+    if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'none';
+    
+    if (source === 'vidsrc') {
+        mediaVideoWrapper.innerHTML = `<iframe src="${atob(_vSrcMovie)}${activeMedia.id}" allowfullscreen></iframe>`;
+    } else {
+        mediaVideoWrapper.innerHTML = `<iframe src="${atob(_vLnkMovie)}${activeMedia.id}${themeParams}" allowfullscreen></iframe>`;
+    }
+} else {
+    if (mediaEpisodesSidebar) mediaEpisodesSidebar.style.display = 'flex';
+    if (mediaEpInputLabel) mediaEpInputLabel.style.display = 'inline-block';
+    
+    if (source === 'vidsrc') {
+        mediaVideoWrapper.innerHTML = `<iframe src="${atob(_vSrcTv)}${activeMedia.id}&season=1&episode=${ep}" allowfullscreen></iframe>`;
+    } else {
+        mediaVideoWrapper.innerHTML = `<iframe src="${atob(_vLnkTv)}${activeMedia.id}/1/${ep}${themeParams}" allowfullscreen></iframe>`;
+    }
+}
+
             
             if (mediaPlayerView.style.display !== 'flex') {
                 mediaPlayerView.style.display = 'flex';
