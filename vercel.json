@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/_vsrc/movie/:path*",
+      "destination": "https://vidsrc.me*"
+    },
+    {
+      "source": "/_vsrc/tv/:path*",
+      "destination": "https://vidsrc.me*"
+    },
+    {
+      "source": "/_vidlink/:path*",
+      "destination": "https://vidlink.pro*"
+    }
+  ]
+}
