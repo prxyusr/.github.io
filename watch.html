@@ -66,7 +66,6 @@
 
     <div class="player-container">
         <div class="video-wrapper">
-            <!-- Replaced local HTML5 video with an unrestricted player iframe -->
             <iframe id="animePlayer" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
         <div class="info-panel">
@@ -79,35 +78,37 @@
         const animeId = params.get('id');
         const episode = params.get('ep') || '1';
         const track = params.get('track') || 'sub';
+        
+        // Supports selecting between 'vidsrc' and 'vidlink' via URL parameter (defaults to vidsrc)
+        const source = params.get('source') || 'vidsrc'; 
+        
+        // Supports movie vs tv context via URL parameter (defaults to tv for anime)
+        const mediaType = params.get('type') || 'TV'; 
 
         const playerFrame = document.getElementById('animePlayer');
         const title = document.getElementById('player-title');
 
-        // REPLACE THIS URL with your actual deployed Render Web Service domain link
-        const RENDER_BACKEND_URL = "https://github-io-2omt.onrender.com";
-
-        async function initStandalonePlayer() {
+        function initStandalonePlayer() {
             if (!animeId) {
-                title.innerHTML = '<span style="color: #ef4444;">Error: No Anime ID specified.</span>';
+                title.innerHTML = '<span style="color: #ef4444;">Error: No Media ID specified.</span>';
                 return;
             }
 
-            try {
-                // Routing the API request out to the unblocked Render proxy endpoint
-                const response = await fetch(`${RENDER_BACKEND_URL}/api/stream?id=${animeId}&ep=${episode}&track=${track}`);
-                const data = await response.json();
+            title.textContent = `Episode ${episode} (${track.toUpperCase()})`;
 
-                if (!response.ok || !data.embedUrl) {
-                    throw new Error(data.error || 'Unable to fetch stream player URL.');
+            // Constructing the local proxy path so requests go through YOUR domain
+            if (mediaType.toUpperCase() === 'MOVIE') {
+                if (source === 'vidsrc') {
+                    playerFrame.src = `/_vsrc/movie/${animeId}`;
+                } else {
+                    playerFrame.src = `/_vidlink/movie/${animeId}`;
                 }
-
-                title.textContent = `Episode ${episode} (${track.toUpperCase()})`;
-                
-                // Mount the direct unblocked embed destination straight into the player source window
-                playerFrame.src = data.embedUrl;
-
-            } catch (err) {
-                title.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            } else {
+                if (source === 'vidsrc') {
+                    playerFrame.src = `/_vsrc/tv/${animeId}?season=1&episode=${episode}`;
+                } else {
+                    playerFrame.src = `/_vidlink/tv/${animeId}/1/${episode}`;
+                }
             }
         }
 
