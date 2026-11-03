@@ -1,29 +1,30 @@
-export default async function handler(req, res) {
-    // Enable CORS so your GitHub Pages frontend can call this API without errors
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Enable CORS so your GitHub Pages frontend can call this backend
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    next();
+});
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    // Extract the parameters sent by your frontend catalog
+// This endpoint acts as the unblocked routing tunnel
+app.get('/api/stream', (req, res) => {
     const { id, ep = 1, track = 'sub' } = req.query;
+    if (!id) return res.status(400).json({ error: 'Missing id parameter' });
 
-    if (!id) {
-        return res.status(400).json({ error: 'Missing required query parameter: id' });
-    }
-
-    // Construct the canonical URL for the player player layout
+    // Build the video player link that the school block normally stops
     const targetEmbedUrl = `https://zokoanime.video{id}/${ep}/${track}`;
 
-    // Send the correct path back down to your watch.html
-    return res.status(200).json({
+    // Send the correct player link down to your watch.html frame
+    res.json({
         success: true,
-        animeId: id,
-        episode: ep,
-        track: track,
         embedUrl: targetEmbedUrl
     });
-}
+});
+
+app.listen(PORT, () => console.log(`Proxy running on port ${PORT}`));
