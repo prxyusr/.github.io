@@ -1,16 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/_vsrc/movie/:path*",
-      "destination": "https://vidsrc.me*"
+      "source": "/_vsrc/movie/:id",
+      "destination": "https://vidsrc.me"
     },
     {
-      "source": "/_vsrc/tv/:path*",
-      "destination": "https://vidsrc.me*"
+      "source": "/_vsrc/tv/:id",
+      "destination": "https://vidsrc.me"
     },
     {
-      "source": "/_vidlink/:path*",
-      "destination": "https://vidlink.pro*"
+      "source": "/_vidlink/movie/:id",
+      "destination": "https://vidlink.pro"
+    },
+    {
+      "source": "/_vidlink/tv/:id/:season/:episode",
+      "destination": "https://vidlink.pro"
     }
   ]
 }
