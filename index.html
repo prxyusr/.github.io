@@ -2346,13 +2346,15 @@
     
     <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
     <script>
-        // Snowfall canvas setup
+        // Snowfall canvas setup with 60 FPS Throttling Optimization
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
         let width = window.innerWidth;
         let height = window.innerHeight;
         let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
         let lastFrame = 0;
+        let lastSnowTime = 0;
+        const fpsInterval = 1000 / 60; // Cap at 60 FPS to save GPU cycles on high-refresh displays
         const flakes = [];
         const FLAKE_COUNT = 90;
 
@@ -2389,11 +2391,16 @@
         resizeSnowCanvas();
 
         function drawSnow(timestamp) {
+            requestAnimationFrame(drawSnow);
+
             if (document.hidden) { 
                 lastFrame = 0; 
-                requestAnimationFrame(drawSnow); 
                 return; 
             }
+
+            const elapsed = timestamp - lastSnowTime;
+            if (elapsed < fpsInterval) return;
+            lastSnowTime = timestamp - (elapsed % fpsInterval);
             
             const dt = lastFrame ? Math.min((timestamp - lastFrame) / 1000, 0.05) : 0;
             lastFrame = timestamp;
@@ -2435,7 +2442,6 @@
                     ctx.clearRect(left, top, right - left, bottom - top);
                 }
             }
-            requestAnimationFrame(drawSnow);
         }
         
         requestAnimationFrame(drawSnow);
@@ -2616,17 +2622,17 @@
         const mediaPlayerWatchlistBtn = document.getElementById('mediaPlayerWatchlistBtn');
         const mediaPlayerWatchedBtn = document.getElementById('mediaPlayerWatchedBtn');
 
-        // State for Anime Catalog Pagination (24 items per page = 4 rows)
+        // State & Pagination Caches
         let liveAnimeList = [];
         let activeAnime = null;
         let searchTimeout = null;
         let currentGenre = 'all';
         let currentAnimePage = 1;
-        let maxAnimePages = 20; // Anilist popular limit cap
+        let maxAnimePages = 20;
         let currentSearchQuery = '';
         let fetchedEpisodesCache = [];
+        const animePageCache = {}; // Pagination Cache for Anime
 
-        // State for Media Catalog Pagination (24 items per page = 4 rows)
         let liveMediaList = [];
         let activeMedia = null;
         let mediaSearchTimeout = null;
@@ -2635,6 +2641,7 @@
         let fetchedMediaEpisodesCache = [];
         let currentMediaPage = 1;
         let maxMediaPages = 20;
+        const mediaPageCache = {}; // Pagination Cache for Media
 
         let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
         let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
@@ -2643,18 +2650,45 @@
         let mediaHistoryList = JSON.parse(localStorage.getItem('proxy_media_history') || '[]');
         let mediaWatchedList = JSON.parse(localStorage.getItem('proxy_media_watched') || '[]');
 
+        // --- 1. MEMORY CLEANUP & PLAYER DESTRUCTION ---
+        function destroyActivePlayers() {
+            if (videoWrapper) {
+                videoWrapper.innerHTML = '';
+            }
+            if (mediaVideoWrapper) {
+                mediaVideoWrapper.innerHTML = '';
+            }
+            fetchedEpisodesCache = [];
+            fetchedMediaEpisodesCache = [];
+        }
+
         function exitAnimePlayerToCatalog() {
+            destroyActivePlayers();
             playerView.style.display = 'none';
-            videoWrapper.innerHTML = '';
             renderContinueWatching();
             catalogPage.style.display = 'flex';
         }
 
         function exitMediaPlayerToCatalog() {
+            destroyActivePlayers();
             mediaPlayerView.style.display = 'none';
-            mediaVideoWrapper.innerHTML = '';
             renderMediaContinueWatching();
             mediaCatalogPage.style.display = 'flex';
+        }
+
+        // --- 2. UNLOADING PREVIOUS PAGE DOM NODES & BUFFERS ---
+        function clearAnimeCatalogGrid() {
+            if (catalogGrid) {
+                catalogGrid.innerHTML = '<div class="catalog-loading">Loading popular titles...</div>';
+            }
+            liveAnimeList = [];
+        }
+
+        function clearMediaCatalogGrid() {
+            if (mediaCatalogGrid) {
+                mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Loading media catalog...</div>';
+            }
+            liveMediaList = [];
         }
 
         window.addEventListener('keydown', (e) => {
@@ -2746,7 +2780,15 @@
         }
 
         async function fetchAnimeData(query, page = 1) {
-            catalogGrid.innerHTML = '<div class="catalog-loading">Searching anime database...</div>';
+            const cacheKey = `${query}_${page}`;
+            if (!query && animePageCache[cacheKey]) {
+                liveAnimeList = animePageCache[cacheKey];
+                currentAnimePage = page;
+                filterAndRenderCatalog();
+                return;
+            }
+
+            clearAnimeCatalogGrid();
             
             const graphqlQuery = `
             query ($search: String, $page: Int) {
@@ -2819,6 +2861,9 @@
                             synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
                         }));
                         
+                    if (!query) {
+                        animePageCache[cacheKey] = liveAnimeList;
+                    }
                     filterAndRenderCatalog();
                 } else {
                     catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
@@ -2829,7 +2874,15 @@
         }
 
         async function fetchMediaData(query = '', page = 1) {
-            mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Loading media catalog...</div>';
+            const cacheKey = `${query}_${page}`;
+            if (!query && mediaPageCache[cacheKey]) {
+                liveMediaList = mediaPageCache[cacheKey];
+                currentMediaPage = page;
+                filterAndRenderMediaCatalog();
+                return;
+            }
+
+            clearMediaCatalogGrid();
             
             try {
                 let fetchedResults = [];
@@ -2884,7 +2937,6 @@
                         synopsis: item.overview || 'No synopsis available.'
                     }));
                     
-                    // Slice to 24 items per page to strictly enforce 4 rows
                     fetchedResults = [...movies, ...shows].filter(item => item.poster_path).slice(0, 24);
                 }
                 
@@ -2893,6 +2945,9 @@
                     image: `https://image.tmdb.org/t/p/w500${item.poster_path}`
                 }));
                 
+                if (!query) {
+                    mediaPageCache[cacheKey] = liveMediaList;
+                }
                 filterAndRenderMediaCatalog();
             } catch (err) {
                 mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Failed to load media catalog. Please check connection.</div>';
@@ -3181,22 +3236,35 @@
             }
         });
 
+        // Optimized Search with Increased Debounce (400ms) & Instant Clear
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             currentSearchQuery = query;
             clearTimeout(searchTimeout);
+            
+            if (query === '') {
+                fetchAnimeData('', 1);
+                return;
+            }
+
             searchTimeout = setTimeout(() => {
                 fetchAnimeData(query, 1);
-            }, 300);
+            }, 400);
         });
 
         mediaCatalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             currentMediaQuery = query;
             clearTimeout(mediaSearchTimeout);
+            
+            if (query === '') {
+                fetchMediaData('', 1);
+                return;
+            }
+
             mediaSearchTimeout = setTimeout(() => {
                 fetchMediaData(query, 1);
-            }, 300);
+            }, 400);
         });
 
         closeCatalogBtn.addEventListener('click', () => {
