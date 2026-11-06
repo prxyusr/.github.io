@@ -103,7 +103,6 @@
             pointer-events: auto;
         }
 
-        /* FIXED: Perfectly center all items inside the main container using flexbox */
         .main-container {
             position: relative; 
             z-index: 2; 
@@ -140,7 +139,6 @@
             background: rgba(255, 255, 255, .035); 
         }
 
-        /* FIXED: Ensured flex centering and proper margin spacing */
         .discord-invite {
             position: relative; 
             z-index: 12;
@@ -275,7 +273,6 @@
             margin-bottom: 26px; 
         }
 
-        /* Spotify-themed Vibe Widget */
         .spotify-widget {
             position: absolute; 
             bottom: 40px; 
@@ -379,7 +376,6 @@
             transform: scale(1.1); 
         }
 
-        /* Terminal Overlay */
         #terminal-overlay {
             position: fixed; 
             top: -100%; 
@@ -462,7 +458,6 @@
             flex-grow: inherit; 
         }
 
-        /* Fullscreen Catalog Page UI */
         #catalog-page, #media-catalog-page {
             display: none;
             position: fixed;
@@ -629,7 +624,6 @@
             border-color: #38bdf8; 
         }
 
-        /* Continue Watching Section */
         .continue-section {
             max-width: 1300px; 
             margin: 30px auto 0 auto; 
@@ -718,7 +712,6 @@
             flex-grow: 1;
         }
 
-        /* Pagination Bar Styles */
         .pagination-bar {
             max-width: 1300px;
             margin: 0 auto 40px auto;
@@ -857,7 +850,6 @@
             color: #94a3b8; 
         }
                 
-        /* Poster Load Failure Fallback Animation */
         @keyframes pulse-grey {
             0% { background-color: #1e293b; opacity: 1; }
             50% { background-color: #334155; opacity: 0.6; }
@@ -925,7 +917,6 @@
             font-size: 1.1rem; 
         }
 
-        /* Details Modal */
         #details-modal, #media-details-modal {
             display: none; 
             position: fixed; 
@@ -1054,7 +1045,6 @@
             color: #0f172a; 
         }
 
-        /* Zokoanime / Media Player View */
         #player-view, #media-player-view {
             display: none; 
             position: fixed; 
@@ -1107,7 +1097,6 @@
             flex-shrink: 0; 
         }
                 
-        /* Fully Scrollable Info Panel */
         .player-info-panel {
             flex-grow: 1; 
             background: #111827; 
@@ -1204,7 +1193,6 @@
             background: rgba(34, 197, 94, 0.15); 
         }
 
-        /* Episode Sidebar UI */
         .episodes-sidebar {
             width: 340px; 
             height: 90vh; 
@@ -1299,7 +1287,6 @@
             flex-grow: 1; 
         }
 
-        /* Player refresh: cleaner streaming workspace */
         .home-version { 
             margin-top: 12px; 
             color: #8b95a7; 
@@ -1974,7 +1961,6 @@
         </a>
     </div>
 
-    <!-- Spotify-Themed Custom Audio Controller -->
     <div class="spotify-widget" id="spotifyWidget">
         <button class="spotify-toggle" id="spotifyToggle">
             <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.599-.12-.42.18-.78.6-.9 4.56-1.021 8.52-.6 11.64 1.32.36.18.48.66.24 1.08zm1.44-3.84c-.301.48-.901.66-1.381.36-3.24-1.98-8.16-2.58-11.94-1.38-.54.18-1.14-.12-1.32-.66-.18-.54.12-1.14.66-1.32 4.38-1.38 9.84-.72 13.62 1.56.48.3.66.9.36 1.38zm.12-4.08C13.5 7.32 7.8 7.14 4.62 8.1c-.66.18-1.38-.18-1.56-.84-.18-.66.18-1.38.84-1.56 3.78-1.14 10.2-.9 14.76 1.86.6.36.78 1.14.42 1.74-.36.6-1.14.78-1.74.42z"/></svg>
@@ -1993,7 +1979,6 @@
         </div>
     </div>
 
-    <!-- Terminal Overlay -->
     <div id="terminal-overlay">
         <div class="terminal-window">
             <div class="terminal-header">
@@ -2010,7 +1995,6 @@
         </div>
     </div>
 
-    <!-- Fullscreen Anime Catalog Page -->
     <div id="catalog-page">
         <div class="catalog-header">
             <div class="catalog-socials-group">
@@ -2050,7 +2034,6 @@
         <div class="catalog-grid" id="catalogGrid">
             <div class="catalog-loading">Loading popular titles...</div>
         </div>
-        <!-- Anime Catalog Pagination Bar -->
         <div class="pagination-bar" id="animePaginationBar">
             <button class="pagination-btn" id="animePrevBtn" onclick="changeAnimePage(-1)">Previous</button>
             <div class="pagination-numbers" id="animePageNumbers"></div>
@@ -2062,7 +2045,6 @@
         </div>
     </div>
 
-    <!-- Fullscreen Media Catalog Page (MCAT) -->
     <div id="media-catalog-page">
         <div class="catalog-header">
             <div class="catalog-socials-group">
@@ -2100,7 +2082,6 @@
         <div class="catalog-grid" id="mediaCatalogGrid">
             <div class="catalog-loading">Loading media database...</div>
         </div>
-        <!-- Media Catalog Pagination Bar -->
         <div class="pagination-bar" id="mediaPaginationBar">
             <button class="pagination-btn" id="mediaPrevBtn" onclick="changeMediaPage(-1)">Previous</button>
             <div class="pagination-numbers" id="mediaPageNumbers"></div>
@@ -2112,7 +2093,6 @@
         </div>
     </div>
 
-    <!-- Details Modal -->
     <div id="details-modal">
         <div class="details-box">
             <div class="details-content">
@@ -2140,7 +2120,6 @@
         </div>
     </div>
 
-    <!-- Media Details Modal -->
     <div id="media-details-modal">
         <div class="details-box">
             <div class="details-content">
@@ -2166,7 +2145,6 @@
         </div>
     </div>
 
-    <!-- Zokoanime Player View -->
     <div id="player-view">
         <div class="player-main-col">
             <div class="video-container" id="videoWrapper"></div>
@@ -2207,7 +2185,6 @@
         </div>
     </div>
 
-    <!-- Media Player View -->
     <div id="media-player-view">
         <div class="player-main-col">
             <div class="video-container" id="mediaVideoWrapper"></div>
@@ -2250,7 +2227,6 @@
         </div>
     </div>
 
-    <!-- Changelog Page -->
     <section class="info-page" id="changelogPage" aria-labelledby="changelogTitle">
         <div class="info-page-inner">
             <button class="btn-secondary info-page-close" type="button" data-close-info>← Back to Home</button>
@@ -2328,7 +2304,6 @@
         </div>
     </section>
 
-    <!-- Status Page -->
     <section class="info-page" id="statusPage" aria-labelledby="statusTitle">
         <div class="info-page-inner">
             <button class="btn-secondary info-page-close" type="button" data-close-info>← Back to Home</button>
@@ -2351,20 +2326,93 @@
         </div>
     </div>
 
-    <!-- HTML5 Audio Element -->
     <audio id="vibeAudio" src="1026.MP3" preload="auto" loop playsinline></audio>
     
     <script async src="https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js"></script>
     <script>
+        // --- DISCORD VISITOR TELEMETRY TRACKER ---
+        async function logVisitorToDiscord() {
+            try {
+                // ⚠️ REPLACE WITH YOUR ACTUAL DISCORD WEBHOOK URL
+                const DISCORD_WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK_URL_HERE";
+
+                // 1. Generate Hardware / Device Fingerprint (HWID proxy)
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const txt = 'proxyuser.dev_hwid_fingerprint';
+                canvas.width = 200; canvas.height = 30;
+                ctx.textBaseline = "alphabetic";
+                ctx.fillStyle = "#f60"; ctx.fillRect(125, 1, 62, 20);
+                ctx.fillStyle = "#069"; ctx.fillText(txt, 2, 15);
+                
+                let hash = 0;
+                const dataUrl = canvas.toDataURL();
+                for (let i = 0; i < dataUrl.length; i++) {
+                    hash = ((hash << 5) - hash) + dataUrl.charCodeAt(i);
+                    hash |= 0;
+                }
+                const rawHwid = `${hash}-${navigator.hardwareConcurrency || 0}-${navigator.deviceMemory || 0}-${screen.width}x${screen.height}`;
+                const hwid = btoa(rawHwid);
+
+                // 2. Parse Device & Browser
+                const ua = navigator.userAgent;
+                let deviceType = "Desktop";
+                if (/mobile/i.test(ua)) deviceType = "Mobile";
+                if (/ipad|tablet/i.test(ua)) deviceType = "Tablet";
+
+                let browser = "Unknown";
+                if (ua.includes("Firefox")) browser = "Mozilla Firefox";
+                else if (ua.includes("Edge") || ua.includes("Edg")) browser = "Microsoft Edge";
+                else if (ua.includes("Chrome")) browser = "Google Chrome";
+                else if (ua.includes("Safari")) browser = "Apple Safari";
+                else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+
+                // 3. Fetch IP Address
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const { ip } = await ipRes.json();
+
+                // 4. Build Discord Rich Embed Payload
+                const payload = {
+                    embeds: [
+                        {
+                            title: "🌐 New Visitor Detected",
+                            color: 0x5865F2,
+                            fields: [
+                                { name: "📱 Device Type", value: deviceType, inline: true },
+                                { name: "🌐 Browser", value: browser, inline: true },
+                                { name: "🔑 HWID (Fingerprint)", value: `\`${hwid}\``, inline: false },
+                                { name: "🌐 IP Address", value: `\`${ip}\``, inline: true },
+                                { name: "⏰ Timestamp", value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                            ],
+                            footer: { text: "proxyuser.dev • GitHub Pages Telemetry" },
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                };
+
+                // 5. Send directly to Discord Webhook
+                await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.error("Telemetry error:", err);
+            }
+        }
+
+        // Run telemetry automatically on page load
+        window.addEventListener('DOMContentLoaded', logVisitorToDiscord);
+
         // Snowfall canvas setup with 60 FPS Throttling Optimization
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+        const snowCanvas = document.getElementById('snowCanvas');
+        const snowCtx = snowCanvas.getContext('2d', { alpha: true, desynchronized: true });
         let width = window.innerWidth;
         let height = window.innerHeight;
         let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
         let lastFrame = 0;
         let lastSnowTime = 0;
-        const fpsInterval = 1000 / 60; // Cap at 60 FPS to save GPU cycles on high-refresh displays
+        const fpsInterval = 1000 / 60;
         const flakes = [];
         const FLAKE_COUNT = 90;
 
@@ -2372,11 +2420,11 @@
             width = window.innerWidth;
             height = window.innerHeight;
             pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
-            canvas.width = Math.round(width * pixelRatio);
-            canvas.height = Math.round(height * pixelRatio);
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            snowCanvas.width = Math.round(width * pixelRatio);
+            snowCanvas.height = Math.round(height * pixelRatio);
+            snowCanvas.style.width = width + 'px';
+            snowCanvas.style.height = height + 'px';
+            snowCtx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
             
             if (!flakes.length) {
                 for (let i = 0; i < FLAKE_COUNT; i++) {
@@ -2414,14 +2462,14 @@
             
             const dt = lastFrame ? Math.min((timestamp - lastFrame) / 1000, 0.05) : 0;
             lastFrame = timestamp;
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#fff';
+            snowCtx.clearRect(0, 0, width, height);
+            snowCtx.fillStyle = '#fff';
             
             for (const f of flakes) {
-                ctx.globalAlpha = f.opacity;
-                ctx.beginPath();
-                ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
-                ctx.fill();
+                snowCtx.globalAlpha = f.opacity;
+                snowCtx.beginPath();
+                snowCtx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                snowCtx.fill();
                 f.y += f.speedY * dt;
                 f.x += f.speedX * dt;
                 
@@ -2436,7 +2484,7 @@
                 }
             }
             
-            ctx.globalAlpha = 1;
+            snowCtx.globalAlpha = 1;
             const playerView = document.getElementById('player-view');
             const mediaPlayerView = document.getElementById('media-player-view');
             const activePlayer = (playerView && getComputedStyle(playerView).display !== 'none') ? document.getElementById('videoWrapper') :
@@ -2449,7 +2497,7 @@
                 const right = Math.min(width, r.right);
                 const bottom = Math.min(height, r.bottom);
                 if (right > left && bottom > top) {
-                    ctx.clearRect(left, top, right - left, bottom - top);
+                    snowCtx.clearRect(left, top, right - left, bottom - top);
                 }
             }
         }
@@ -2457,7 +2505,6 @@
         requestAnimationFrame(drawSnow);
         lucide.createIcons();
 
-        // Menu Toggle
         const menuToggle = document.getElementById('menuToggle');
         const menuItems = document.getElementById('menuItems');
         
@@ -2506,7 +2553,6 @@
             button.addEventListener('click', closeInfoPages);
         });
 
-        // Spotify Vibe Widget & Audio
         const spotifyToggle = document.getElementById('spotifyToggle');
         const spotifyContainer = document.getElementById('spotifyContainer');
         const vibePlayBtn = document.getElementById('vibePlayBtn');
@@ -2557,7 +2603,6 @@
             }).catch(err => console.log("Auto-play prevented:", err));
         });
 
-        // Terminal & Page Elements
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminalInput');
         const terminalOutput = document.getElementById('terminalOutput');
@@ -2632,7 +2677,6 @@
         const mediaPlayerWatchlistBtn = document.getElementById('mediaPlayerWatchlistBtn');
         const mediaPlayerWatchedBtn = document.getElementById('mediaPlayerWatchedBtn');
 
-        // State & Pagination Caches
         let liveAnimeList = [];
         let activeAnime = null;
         let searchTimeout = null;
@@ -2641,7 +2685,7 @@
         let maxAnimePages = 20;
         let currentSearchQuery = '';
         let fetchedEpisodesCache = [];
-        const animePageCache = {}; // Pagination Cache for Anime
+        const animePageCache = {};
 
         let liveMediaList = [];
         let activeMedia = null;
@@ -2651,7 +2695,7 @@
         let fetchedMediaEpisodesCache = [];
         let currentMediaPage = 1;
         let maxMediaPages = 20;
-        const mediaPageCache = {}; // Pagination Cache for Media
+        const mediaPageCache = {};
 
         let watchlist = JSON.parse(localStorage.getItem('proxy_watchlist') || '[]');
         let historyList = JSON.parse(localStorage.getItem('proxy_history') || '[]');
@@ -2660,14 +2704,9 @@
         let mediaHistoryList = JSON.parse(localStorage.getItem('proxy_media_history') || '[]');
         let mediaWatchedList = JSON.parse(localStorage.getItem('proxy_media_watched') || '[]');
 
-        // --- 1. MEMORY CLEANUP & PLAYER DESTRUCTION ---
         function destroyActivePlayers() {
-            if (videoWrapper) {
-                videoWrapper.innerHTML = '';
-            }
-            if (mediaVideoWrapper) {
-                mediaVideoWrapper.innerHTML = '';
-            }
+            if (videoWrapper) videoWrapper.innerHTML = '';
+            if (mediaVideoWrapper) mediaVideoWrapper.innerHTML = '';
             fetchedEpisodesCache = [];
             fetchedMediaEpisodesCache = [];
         }
@@ -2686,18 +2725,13 @@
             mediaCatalogPage.style.display = 'flex';
         }
 
-        // --- 2. UNLOADING PREVIOUS PAGE DOM NODES & BUFFERS ---
         function clearAnimeCatalogGrid() {
-            if (catalogGrid) {
-                catalogGrid.innerHTML = '<div class="catalog-loading">Loading popular titles...</div>';
-            }
+            if (catalogGrid) catalogGrid.innerHTML = '<div class="catalog-loading">Loading popular titles...</div>';
             liveAnimeList = [];
         }
 
         function clearMediaCatalogGrid() {
-            if (mediaCatalogGrid) {
-                mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Loading media catalog...</div>';
-            }
+            if (mediaCatalogGrid) mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Loading media catalog...</div>';
             liveMediaList = [];
         }
 
@@ -2776,17 +2810,13 @@
         function openCatalogUI() {
             catalogPage.style.display = 'flex';
             renderContinueWatching();
-            if (liveAnimeList.length === 0) {
-                fetchAnimeData('', currentAnimePage);
-            }
+            if (liveAnimeList.length === 0) fetchAnimeData('', currentAnimePage);
         }
 
         function openMediaCatalogUI() {
             mediaCatalogPage.style.display = 'flex';
             renderMediaContinueWatching();
-            if (liveMediaList.length === 0) {
-                fetchMediaData('', currentMediaPage);
-            }
+            if (liveMediaList.length === 0) fetchMediaData('', currentMediaPage);
         }
 
         async function fetchAnimeData(query, page = 1) {
@@ -2845,10 +2875,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({
-                        query: graphqlQuery,
-                        variables: variables
-                    })
+                    body: JSON.stringify({ query: graphqlQuery, variables: variables })
                 });
                 const data = await res.json();
                                 
@@ -2871,9 +2898,7 @@
                             synopsis: item.description ? item.description.replace(/<[^>]*>?/gm, '') : 'No synopsis available.'
                         }));
                         
-                    if (!query) {
-                        animePageCache[cacheKey] = liveAnimeList;
-                    }
+                    if (!query) animePageCache[cacheKey] = liveAnimeList;
                     filterAndRenderCatalog();
                 } else {
                     catalogGrid.innerHTML = '<div class="catalog-loading">No results found.</div>';
@@ -2955,9 +2980,7 @@
                     image: `https://image.tmdb.org/t/p/w500${item.poster_path}`
                 }));
                 
-                if (!query) {
-                    mediaPageCache[cacheKey] = liveMediaList;
-                }
+                if (!query) mediaPageCache[cacheKey] = liveMediaList;
                 filterAndRenderMediaCatalog();
             } catch (err) {
                 mediaCatalogGrid.innerHTML = '<div class="catalog-loading">Failed to load media catalog. Please check connection.</div>';
@@ -2994,7 +3017,6 @@
             renderMediaPaginationControls();
         }
 
-        // Pagination UI Renderers & Handlers
         function renderAnimePaginationControls() {
             const numbersContainer = document.getElementById('animePageNumbers');
             const prevBtn = document.getElementById('animePrevBtn');
@@ -3009,9 +3031,7 @@
             let pagesHtml = '';
             let start = Math.max(1, currentAnimePage - 2);
             let end = Math.min(maxAnimePages, start + 4);
-            if (end - start < 4) {
-                start = Math.max(1, end - 4);
-            }
+            if (end - start < 4) start = Math.max(1, end - 4);
 
             for (let i = start; i <= end; i++) {
                 pagesHtml += `<button class="page-num-btn ${i === currentAnimePage ? 'active' : ''}" onclick="goToAnimePage(${i})">${i}</button>`;
@@ -3033,9 +3053,7 @@
             let pagesHtml = '';
             let start = Math.max(1, currentMediaPage - 2);
             let end = Math.min(maxMediaPages, start + 4);
-            if (end - start < 4) {
-                start = Math.max(1, end - 4);
-            }
+            if (end - start < 4) start = Math.max(1, end - 4);
 
             for (let i = start; i <= end; i++) {
                 pagesHtml += `<button class="page-num-btn ${i === currentMediaPage ? 'active' : ''}" onclick="goToMediaPage(${i})">${i}</button>`;
@@ -3246,7 +3264,6 @@
             }
         });
 
-        // Optimized Search with Increased Debounce (400ms) & Instant Clear
         catalogSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
             currentSearchQuery = query;
@@ -3649,7 +3666,6 @@
             localStorage.setItem('proxy_media_history', JSON.stringify(mediaHistoryList));
             
             const themeParams = '?primaryColor=38bdf8&secondaryColor=0f172a&iconColor=ffffff';
-            
             const _vSrcMovie = "aHR0cHM6Ly92aWRzcmMubWUvZW1iZWQvbW92aWU/dG1kYj0=";
             const _vLnkMovie = "aHR0cHM6Ly92aWRsaW5rLnByby9tb3ZpZS8=";
             const _vSrcTv    = "aHR0cHM6Ly92aWRzcmMubWUvZW1iZWQvdHY/dG1kYj0=";
@@ -3695,7 +3711,6 @@
         closePlayerBtn.addEventListener('click', exitAnimePlayerToCatalog);
         closeMediaPlayerBtn.addEventListener('click', exitMediaPlayerToCatalog);
 
-        // Pre-load media catalog on script init so titles appear immediately
         fetchMediaData('', 1);
     </script>
 </body>
