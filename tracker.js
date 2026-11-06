@@ -1,10 +1,7 @@
-// tracker.js - Runs entirely in the browser on GitHub Pages
 async function logVisitorToDiscord() {
   try {
-    // ⚠️ WARNING: Since this is on GitHub Pages, anyone can inspect your source code and see this URL!
-    const DISCORD_WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK_URL_HERE";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR_NEW_WEBHOOK_ID/YOUR_NEW_WEBHOOK_TOKEN";
 
-    // 1. Generate Hardware / Device Fingerprint (HWID)
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 200; canvas.height = 30;
@@ -20,7 +17,6 @@ async function logVisitorToDiscord() {
     }
     const hwid = btoa(`${hash}-${navigator.hardwareConcurrency || 0}-${screen.width}x${screen.height}`);
 
-    // 2. Parse Device & Browser
     const ua = navigator.userAgent;
     let deviceType = /mobile/i.test(ua) ? "Mobile" : /ipad|tablet/i.test(ua) ? "Tablet" : "Desktop";
     let browser = "Unknown";
@@ -29,11 +25,9 @@ async function logVisitorToDiscord() {
     else if (ua.includes("Chrome")) browser = "Google Chrome";
     else if (ua.includes("Safari")) browser = "Apple Safari";
 
-    // 3. Fetch IP Address
     const ipRes = await fetch('https://api.ipify.org?format=json');
     const { ip } = await ipRes.json();
 
-    // 4. Build Discord Rich Embed Payload
     const payload = {
       embeds: [
         {
@@ -51,7 +45,6 @@ async function logVisitorToDiscord() {
       ]
     };
 
-    // 5. Send directly to Discord
     await fetch(DISCORD_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,5 +56,4 @@ async function logVisitorToDiscord() {
   }
 }
 
-// Run when the page loads
 window.addEventListener('DOMContentLoaded', logVisitorToDiscord);
